@@ -1,0 +1,18 @@
+.globl _printf
+
+CHPUT = 0x00a2
+
+_printf::
+	di
+Loop:	
+	ld a,(hl)
+	and a
+	jr z,Done
+	call CHPUT
+	inc hl
+	jr Loop
+Done:
+	ei
+	ret
+
+

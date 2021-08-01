@@ -10,6 +10,9 @@ game: bin libs
 	
 hello: bin libs	
 	make -C hello
+	
+consolehello: bin libs	
+	make -C consolehello
 
 docs:
 	make -C docs
@@ -29,7 +32,7 @@ ap:
 bin/apultra: bin
 	make -C tools ../bin/apultra
 
-.PHONY: clean cleanall docs libs game hello
+.PHONY: clean cleanall docs libs game hello consolehello
 clean:
 	make -C src/ubox clean
 	make -C src/spman clean
