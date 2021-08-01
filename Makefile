@@ -13,6 +13,9 @@ hello: bin libs
 	
 consolehello: bin libs	
 	make -C consolehello
+	
+timer: bin libs	
+	make -C timer
 
 docs:
 	make -C docs
