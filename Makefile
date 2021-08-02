@@ -7,15 +7,6 @@ libs: lib ubox spman mplayer ap
 game: bin libs
 	make -C tools
 	make -C game
-	
-hello: bin libs	
-	make -C hello
-	
-consolehello: bin libs	
-	make -C consolehello
-	
-timer: bin libs	
-	make -C timer
 
 docs:
 	make -C docs
@@ -35,7 +26,7 @@ ap:
 bin/apultra: bin
 	make -C tools ../bin/apultra
 
-.PHONY: clean cleanall docs libs game hello consolehello
+.PHONY: clean cleanall docs libs game
 clean:
 	make -C src/ubox clean
 	make -C src/spman clean
