@@ -14,12 +14,16 @@ export PATH := $(PWD)/../bin:$(PATH)
 04_clibrary: bin	
 	make -C 04_clibrary
 
-.PHONY: clean cleanall 01_hello 02_consolehello 03_timer
+05_sound: bin	
+	make -C 05_sound
+
+.PHONY: clean cleanall 01_hello 02_consolehello 03_timer 04_clibrary 05_sound
 clean:
 	make -C 01_hello clean
 	make -C 02_consolehello clean
 	make -C 03_timer clean
-	make -C 04_clibrary
+	make -C 04_clibrary clean
+	make -C 05_sound clean
 
 bin:
 	mkdir -p ./bin

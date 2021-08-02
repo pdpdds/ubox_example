@@ -1,0 +1,7 @@
+include "alienall_playerconfig.asm"
+
+include "../../../src/mplayer/akm/akm_ubox.asm"
+
+songDisarkGenerateExternalLabel:
+include "alienall.asm"
+
