@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "ubox.h"
-#include <stdio.h>
+#include "printf.h"
 
 #define LOCAL
 #include "tiles.h"

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "ubox.h"
-#include <stdio.h>
+#include "printf.h"
 
 #define LOCAL
 #include "tiles.h"
@@ -13,6 +13,10 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
         ubox_put_tile(x++, y, *text++ + 128 - 31);
 }
 
+void _putchar(char character)
+{
+	ubox_put_tile(0, 0, character + 128 - 31);	
+}
 
 char buffer[10];
 

@@ -11,11 +11,15 @@ export PATH := $(PWD)/../bin:$(PATH)
 03_timer: bin	
 	make -C 03_timer
 
+04_clibrary: bin	
+	make -C 04_clibrary
+
 .PHONY: clean cleanall 01_hello 02_consolehello 03_timer
 clean:
 	make -C 01_hello clean
 	make -C 02_consolehello clean
 	make -C 03_timer clean
+	make -C 04_clibrary
 
 bin:
 	mkdir -p ./bin
