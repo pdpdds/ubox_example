@@ -1,0 +1,21 @@
+.globl _ubox_set_tiles
+
+LDIRVM = 0x005c
+
+_ubox_set_tiles::
+	ld de, #0
+	ld bc, #256 * 8
+	push hl
+	call LDIRVM
+	pop hl
+
+	ld de, #256 * 8
+	ld bc, #256 * 8
+	push hl
+	call LDIRVM
+	pop hl
+
+	ld de, #256 * 8 * 2
+	ld bc, #256 * 8
+	jp LDIRVM
+

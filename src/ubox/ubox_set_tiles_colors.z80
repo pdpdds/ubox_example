@@ -1,0 +1,21 @@
+.globl _ubox_set_tiles_colors
+
+LDIRVM = 0x005c
+
+_ubox_set_tiles_colors::
+	ld de, #0x2000
+	ld bc, #256 * 8
+	push hl
+	call LDIRVM
+	pop hl
+
+	ld de, #0x2000 + 256  * 8
+	ld bc, #256 * 8
+	push hl
+	call LDIRVM
+	pop hl
+
+	ld de, #0x2000 + 256  * 8 * 2
+	ld bc, #256 * 8
+	jp LDIRVM
+

@@ -1,0 +1,19 @@
+{
+    "entities": [
+        {
+            "bytes": 0,
+            "name": "unused",
+            "w": 1
+        },
+        {
+            "bytes": 0,
+            "name": "player",
+            "w": 1
+        },
+        {
+            "bytes": 0,
+            "name": "enemy",
+            "w": 1
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+.globl _ubox_fill_screen
+
+FILVRM = 0x0056
+
+_ubox_fill_screen::
+	ld a, l
+	ld hl, #0x1800
+	ld bc, #768
+	jp FILVRM
+
