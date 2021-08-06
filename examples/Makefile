@@ -1,4 +1,4 @@
-all: 01_hello 02_consolehello 03_timer
+all: 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte
 
 export PATH := $(PWD)/../bin:$(PATH)
 	
