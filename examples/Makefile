@@ -20,7 +20,10 @@ export PATH := $(PWD)/../bin:$(PATH)
 06_effect: bin	
 	make -C 06_effect
 
-.PHONY: clean cleanall 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect
+07_snakebyte: bin	
+	make -C 07_snakebyte	
+
+.PHONY: clean cleanall 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte
 clean:
 	make -C 01_hello clean
 	make -C 02_consolehello clean
@@ -28,6 +31,7 @@ clean:
 	make -C 04_clibrary clean
 	make -C 05_sound clean
 	make -C 06_effect clean
+	make -C 07_snakebyte clean
 
 bin:
 	mkdir -p ./bin
