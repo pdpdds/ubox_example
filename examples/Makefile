@@ -1,4 +1,4 @@
-all: 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte
+all: 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte 08_breakout
 
 export PATH := $(PWD)/../bin:$(PATH)
 	
@@ -23,7 +23,10 @@ export PATH := $(PWD)/../bin:$(PATH)
 07_snakebyte: bin	
 	make -C 07_snakebyte	
 
-.PHONY: clean cleanall 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte
+08_breakout: bin	
+	make -C 08_breakout	
+
+.PHONY: clean cleanall 01_hello 02_consolehello 03_timer 04_clibrary 05_sound 06_effect 07_snakebyte 08_breakout
 clean:
 	make -C 01_hello clean
 	make -C 02_consolehello clean
@@ -32,6 +35,7 @@ clean:
 	make -C 05_sound clean
 	make -C 06_effect clean
 	make -C 07_snakebyte clean
+	make -C 08_breakout clean
 
 bin:
 	mkdir -p ./bin
