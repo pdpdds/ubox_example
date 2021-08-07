@@ -15,13 +15,13 @@
 #define PADDLE_WIDTH 32
 #define PADDLE_HEIGHT 16
 
-#define BALL_VELOCITY_X 1
-#define BALL_VELOCITY_Y 1
+#define BALL_VELOCITY_X 2
+#define BALL_VELOCITY_Y 2
 
 struct BallInfo
 {
 	int vel_x, vel_y;
-	uint8_t x, y;
+	int x, y;
 	uint8_t radius;
 };
 
@@ -36,6 +36,14 @@ struct entity
 	uint8_t delay;
 	uint8_t frame;
 	void (*update)();
+};
+
+struct Rect
+{
+	uint8_t x1;
+	uint8_t y1;
+	uint8_t x2;
+	uint8_t y2;
 };
 
 struct entity sample;
@@ -53,108 +61,25 @@ char g_bricks_dirty_map[BRICKS_X_COUNT][BRICKS_Y_COUNT];
 extern uint8_t g_gamestate;
 
 const unsigned char enemy_sprite[3][32] = {
-	{
-		0x00,
-		0x00,
-		0x1f,
-		0x3f,
-		0x3f,
-		0x7f,
-		0x7f,
-		0x7f,
-		0x7f,
-		0x3f,
-		0x3f,
-		0x0e,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x80,
-		0x80,
-		0xc0,
-		0xc0,
-		0xc0,
-		0xc0,
-		0x80,
-		0x80,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-	},
-	{
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-	},
-	{
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-		0xff,
-	}};
+{
+0x00, 0x00, 0x00, 0x07, 0x0f, 0x0f, 0x1f, 0x1f,
+0x1f, 0x1f, 0x0f, 0x0f, 0x03, 0x00, 0x00, 0x00,
+0x00, 0x00, 0x00, 0xc0, 0xe0, 0xe0, 0xf0, 0xf0,
+0xf0, 0xf0, 0xe0, 0xe0, 0x80, 0x00, 0x00, 0x00,
+},
+{
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+},
+{
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+}
+};
 
 struct sprite_attr sp;
 
@@ -202,7 +127,7 @@ void run_game()
 
 		spman_update();
 
-		if (g_gamestate == STATE_GAME_OVER)
+		if (g_gamestate == STATE_GAME_OVER || g_gamestate == STATE_GAME_CLEAR)
 			break;
 	}
 
@@ -241,16 +166,16 @@ static int GetBrickCount()
 
 void ResetBall()
 {
-	g_ball.x = g_screen_width / 2;
-	g_ball.y = g_screen_height / 2;
+	g_ball.x = g_screen_width / 2 + 8;
+	g_ball.y = g_screen_height / 2 + 8;
 	g_ball.vel_x = BALL_VELOCITY_X;
 	g_ball.vel_y = BALL_VELOCITY_Y;
-	g_ball.radius = 10;
+	g_ball.radius = 4;
 }
 
-int InRect(int posx, int posy, int left, int top, int right, int bottom)
+int InRect(int posx, int posy, struct Rect* rect)
 {
-	if (posx > left && posx < right && posy > top && posy < bottom)
+	if (posx >= rect->x1 && posx < rect->x2 && posy >= rect->y1 && posy < rect->y2)
 		return 1;
 
 	return 0;
@@ -276,15 +201,28 @@ void UpdatePaddle(int paddle_posx)
 //지금은 구현하지 않음
 void RandomBallSpeed()
 {
-	if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 2))
+	if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 4))
 	{
-		if (g_ball.vel_x > 0)
-			g_ball.vel_x *= -1;
+
+		g_ball.vel_x = -3;
+	
+	}
+	else if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 2))
+	{
+		
+			g_ball.vel_x = -2;
+		
+			
+	}
+	else if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 2) + (PADDLE_WIDTH / 4))
+	{
+		
+			g_ball.vel_x = 2;
 	}
 	else
 	{
-		if (g_ball.vel_x < 0)
-			g_ball.vel_x *= -1;
+		
+			g_ball.vel_x = 3;
 	}
 }
 
@@ -292,16 +230,18 @@ void UpdateBall()
 {
 	//패들과 공의 충돌체크
 	//공이 아래로 내려가는 경우에만 패들과 충돌할 수 있다.
+	struct Rect rect;
+	rect.x1 = g_paddle_posx;
+	rect.y1 = g_paddle_posy;
+	rect.x2 = g_paddle_posx + PADDLE_WIDTH;
+	rect.y2 = g_paddle_posy + PADDLE_HEIGHT;
+
 	if (g_ball.vel_y > 0)
 	{
-		if (InRect(g_ball.x + g_ball.radius, g_ball.y + g_ball.radius,
-			g_paddle_posx,
-			g_paddle_posy,
-			g_paddle_posx + (PADDLE_WIDTH),
-			g_paddle_posy + PADDLE_HEIGHT) == 1) 
+		//패들과 공이 충돌했다면 반전시킨다.
+		if (InRect(g_ball.x, g_ball.y + g_ball.radius, &rect) == 1) 
 		{			
-			g_ball.vel_y *= -1; //패들과 공이 충돌했다면 반전시킨다.
-
+			g_ball.vel_y *= -1; 
 			RandomBallSpeed();
 		}	
 	}
@@ -310,19 +250,49 @@ void UpdateBall()
 	g_ball.x += g_ball.vel_x;
 	g_ball.y += g_ball.vel_y;
 
-	//벽돌 상태를 갱신한다
-	for (int y = 0; y < BRICKS_Y_COUNT; y++) 
+	// 공이 화면의 가장자리와 부딪치면 속도를 반전시킨다.
+	if (g_ball.x + 8 >= g_screen_width - 8)
 	{
-		for (int x = 0; x < BRICKS_X_COUNT; x++) 
+		g_ball.vel_x *= -1;
+	}
+
+	if ((g_ball.x - 8) <= 0)
+	{
+		g_ball.vel_x *= -1;
+	}
+
+	if (g_ball.y - 8 <= 0) {
+		g_ball.vel_y *= -1;
+	}
+
+	//벽돌 상태를 갱신한다
+	for (int y = 0; y < BRICKS_Y_COUNT; y++)
+	{
+		for (int x = 0; x < BRICKS_X_COUNT; x++)
 		{
-			if (g_bricks[x][y] != 0)  //벽돌이 존재한다면
-			{ 
+			if (g_bricks[x][y] != 0) //벽돌이 존재한다면
+			{
 				//벽돌과 공이 충돌했다면 공의 y속도를 반전시키고 벽돌을 없앤다.
-				if (InRect(g_ball.x, g_ball.y,
-					x * BRICK_WIDTH, y * BRICK_HEIGHT,
-					(x + 1) * BRICK_WIDTH - BRICK_GAP,
-					(y + 1) * BRICK_HEIGHT - BRICK_GAP) == 1) 
-				{					
+
+				struct Rect rect;
+				rect.x1 = x * BRICK_WIDTH;
+				rect.y1 = y * BRICK_HEIGHT;
+				rect.x2 = (x + 1) * BRICK_WIDTH - BRICK_GAP;
+				rect.y2 = (y + 1) * BRICK_HEIGHT - BRICK_GAP;
+
+				char result = 0;
+				if (g_ball.vel_y > 0)
+				{
+					result = InRect(g_ball.x, g_ball.y + g_ball.radius, &rect);
+				}
+
+				if (g_ball.vel_y < 0)
+				{
+					result = InRect(g_ball.x, g_ball.y - g_ball.radius, &rect);
+				}
+
+				if (result == 1)
+				{
 					g_ball.vel_y *= -1;
 					g_bricks[x][y] = 0;
 					g_bricks_dirty_map[x][y] = 1;
@@ -331,24 +301,15 @@ void UpdateBall()
 		}
 	}
 
-	// 공이 화면의 가장자리와 부딪치면 속도를 반전시킨다.
-	if (g_ball.x >= g_screen_width - 16)
-	{
-		g_ball.vel_x *= -1;
-	}
-	if (g_ball.x == 0)
-	{
-		g_ball.vel_x *= -1;
-	}
-
-	if (g_ball.y == 0) {
-		g_ball.vel_y *= -1;
-	}
-
 	// 공이 바닥으로 내려가면 업데이트를 멈추고 대기상태로 만든다.
 	if (g_ball.y >= g_screen_height)
 	{
 		g_gamestate = STATE_GAME_OVER;
+	}
+
+	if(CheckGameEnd())
+	{
+		g_gamestate = STATE_GAME_CLEAR;
 	}
 }
 
@@ -388,12 +349,14 @@ void ProcessLogic(int mouse_posx)
 	}
 }
 
-void CheckGameEnd()
+char CheckGameEnd()
 {
 	if (GetBrickCount() == 0)
 	{
-		InitGame(g_screen_width, g_screen_height);
+		return 1;
 	}
+
+	return 0;
 }
 
 void DrawWorld()
@@ -417,11 +380,11 @@ void DrawWorld()
 	{
 		//공을 화면에 그린다
 		//RenderCircle(g_ball.x, g_ball.y, 4, 255, 255, 0);
-		sp.x = g_ball.x;
-		sp.y = g_ball.y;
+		sp.x = g_ball.x - 8;
+		sp.y = g_ball.y - 8;
 		sp.pattern = sample.pat + 0 * 8;
 		// green
-		sp.attr = 12;
+		sp.attr = 13;
 		spman_alloc_fixed_sprite(&sp);
 	}
 
