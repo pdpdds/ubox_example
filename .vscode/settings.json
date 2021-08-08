@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "game.h": "c",
+        "string.h": "c",
+        "spman.h": "c",
+        "ubox.h": "c"
+    }
+}
