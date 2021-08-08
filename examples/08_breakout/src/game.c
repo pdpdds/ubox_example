@@ -60,7 +60,7 @@ char g_bricks[BRICKS_X_COUNT][BRICKS_Y_COUNT];
 char g_bricks_dirty_map[BRICKS_X_COUNT][BRICKS_Y_COUNT];
 extern uint8_t g_gamestate;
 
-const unsigned char enemy_sprite[3][32] = {
+const unsigned char breakout_sprite[3][32] = {
 {
 0x00, 0x00, 0x00, 0x07, 0x0f, 0x0f, 0x1f, 0x1f,
 0x1f, 0x1f, 0x0f, 0x0f, 0x03, 0x00, 0x00, 0x00,
@@ -374,7 +374,7 @@ void DrawWorld()
 		}
 	}
 
-	sample.pat = spman_alloc_pat(0, enemy_sprite[0], 6, 0);
+	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 6, 0);
 
 	if (g_gamestate == STATE_IN_GAME)
 	{
@@ -391,7 +391,7 @@ void DrawWorld()
 	// 패들을 화면에 그린다.
 	//RenderRect(g_paddle_posx, g_paddle_posy, g_paddle_posx + PADDLE_WIDTH, g_paddle_posy + PADDLE_HEIGHT, 255, 255, 255, 1);
 
-	sample.pat = spman_alloc_pat(0, enemy_sprite[0], 6, 0);
+	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 6, 0);
 	sp.x = g_paddle_posx;
 	sp.y = g_paddle_posy;
 	sp.pattern = sample.pat + 1 * 8;
