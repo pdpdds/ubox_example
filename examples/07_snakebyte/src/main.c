@@ -18,6 +18,20 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
         ubox_put_tile(x++, y, *text++ + 128 - 31);
 }
 
+volatile long g_tick_count = 0; //틱 카운트
+
+int now()
+{
+	return g_tick_count;
+}
+
+void my_isr()
+{
+  
+   g_tick_count++;
+}
+
+
 void draw_menu()
 {
     uint8_t i;
@@ -34,7 +48,7 @@ void draw_menu()
         ubox_put_tile(11 + i, 8, 96 + i);
     }*/
 
-    put_text(11, 9, "BREAK OUT");
+    put_text(13, 9, "TETRIS");
     put_text(8, 11, "PRESS SPACE BAR");
 
     //put_text(7, 2, "UBOX MSX LIB DEMO!");
@@ -64,7 +78,7 @@ void draw_end_game()
 
     ubox_fill_screen(WHITESPACE_TILE);
 
-    put_text(3, 9, "GAME CLEAR!");
+    put_text(3, 9, "GAME ALL CLEAR!");
 
     put_text(3, 12, "(PRESS ESC)");
 
@@ -73,9 +87,7 @@ void draw_end_game()
     // wait until ESC is pressed
     while (1)
     {
-         ctl = ubox_select_ctl();
-        
-        if (ctl == UBOX_MSX_KEY_ESC)
+        if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
             break;
         
         ubox_wait();
@@ -105,6 +117,28 @@ void draw_game_over()
 
 }       
 
+void draw_stage_clear()
+{
+    ubox_disable_screen();
+
+    put_text(11, 10, "STAGE CLEAR");
+
+    ubox_enable_screen();
+
+    // play game over music
+    //mplayer_init(SONG, SONG_GAME_OVER);
+
+    ubox_wait_for(128);
+
+    ubox_disable_screen();
+    ubox_fill_screen(WHITESPACE_TILE);
+    ubox_enable_screen();
+
+    g_gamestate = STATE_IN_GAME;
+}
+
+
+
 void main()
 {
     
@@ -131,6 +165,7 @@ void main()
 
     ubox_enable_screen();
 
+	ubox_set_user_isr(my_isr);
     // reg 1: activate sprites, v-blank int on, 16x16 sprites
     ubox_wvdp(1, 0xe2);
 
@@ -148,8 +183,11 @@ void main()
         case STATE_GAME_OVER:
             draw_game_over();
             break;
-        case STATE_GAME_CLEAR:
+        case STATE_NO_MAP:
             draw_end_game();
+            break; 
+        case STATE_GAME_CLEAR:
+            draw_stage_clear();
             break;
         case STATE_IN_GAME:
             run_game();
@@ -192,14 +230,8 @@ extern void RenderTile(int x, int y, int x_count, int y_count, int tileNum)
     //for(int i = 0; i < y_count; i++)
        // for(int j = 0; j < x_count; j++)
             
-            ubox_put_tile(x, y, 42 + 0);
-            ubox_put_tile(x, y + 1, 74 + 0);
-
-            ubox_put_tile(x + 1, y, 42 + 1);
-            ubox_put_tile(x + 1, y + 1, 74 + 1);
-
-            ubox_put_tile(x + 2, y, 42 + 2);
-            ubox_put_tile(x + 2, y + 1, 74 + 2);
+            ubox_put_tile(x, y, tileNum);
+            
             
             //ubox_put_tile(x, y, 42 + 2);
             //ubox_put_tile(x, y + 1, 74 + 0);
@@ -210,10 +242,10 @@ extern void RenderTile(int x, int y, int x_count, int y_count, int tileNum)
 
 extern void EraseTile(int x, int y, int x_count, int y_count, int tileNum)
 {
-   
-    for(int i = 0; i < y_count; i++)
-        for(int j = 0; j < x_count; j++)
-            ubox_put_tile(x + j, y + i, tileNum);
+   ubox_put_tile(x, y, tileNum);
+    //for(int i = 0; i < y_count; i++)
+     //   for(int j = 0; j < x_count; j++)
+          //  ubox_put_tile(x + j, y + i, tileNum);
 
 }
  
