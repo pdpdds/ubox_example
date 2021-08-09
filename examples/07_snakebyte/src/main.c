@@ -48,7 +48,7 @@ void draw_menu()
         ubox_put_tile(11 + i, 8, 96 + i);
     }*/
 
-    put_text(13, 9, "TETRIS");
+    put_text(11, 9, "SNAKEBYTE");
     put_text(8, 11, "PRESS SPACE BAR");
 
     //put_text(7, 2, "UBOX MSX LIB DEMO!");

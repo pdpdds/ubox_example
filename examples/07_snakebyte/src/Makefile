@@ -1,4 +1,4 @@
-TARGET := 10_tetris
+TARGET := 07_snakebyte
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer
