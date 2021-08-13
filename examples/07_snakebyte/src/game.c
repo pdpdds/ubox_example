@@ -4,7 +4,6 @@
 #include <time.h>
 #include "ubox.h"
 #include "game.h"
-#include "spman.h"
 
 #define WHITESPACE_TILE 129
 
@@ -53,7 +52,7 @@ typedef enum
 typedef enum
 {
 	nothing = 0,
-	apple,
+	frog,
 	snake
 } object;
 
@@ -65,7 +64,7 @@ typedef struct snake_node
 	struct snake_node *next;
 } snake_node;
 
-int g_score = 0;						   //획득점수
+int g_score = 0; //획득점수
 int g_objMap[MAP_HEIGHT][MAP_WIDTH];
 
 extern uint8_t g_gamestate;
@@ -75,44 +74,41 @@ int input_step_time = 4; //입력 수용 오프셋
 long g_next_step = 0;		//조각 이동가능한 시간. 현재시간이 이 값을 넘으면 조각을 이동시킨다.
 long g_next_input_step = 0; //입력받을 수 있는 시간. 현재시간이 이 값을 넘지 못하면 입력을 받을 수 없다.
 
-int game_over()
+snake_node *g_player = 0;
+
+void ProcessLogic(snake_node *player);
+
+int GameOver()
 {
 	g_gamestate = STATE_GAME_OVER;
 	return 0;
 }
 
-
-void draw_map()
+void DrawMap()
 {
 	for (int index = 0; index < MAP_WIDTH + 1; index++)
-		RenderTile(index, 0, 1, 0, 77);
+		RenderTile(index, 0, 77);
 
 	for (int index = 0; index < MAP_WIDTH + 2; index++)
-		RenderTile(index, MAP_HEIGHT + 1, 1, 0, 77);
+		RenderTile(index, MAP_HEIGHT + 1, 77);
 
 	for (int index = 1; index < MAP_HEIGHT + 1; index++)
-		RenderTile(0, index, 1, 0, 77);
+		RenderTile(0, index, 77);
 
 	for (int index = 0; index < MAP_HEIGHT + 1; index++)
-		RenderTile(MAP_WIDTH + 1, index, 1, 0, 77);
-	
+		RenderTile(MAP_WIDTH + 1, index, 77);
 }
 
 void run_game()
 {
-
 	g_gamestate = STATE_IN_GAME;
 
 	InitGame(32 * 8, 21 * 8);
 
-	spman_init();
-
 	ubox_disable_screen();
-
 	ubox_fill_screen(WHITESPACE_TILE);
 
-	draw_map();
-
+	DrawMap();
 	ubox_enable_screen();
 
 	while (1)
@@ -120,33 +116,29 @@ void run_game()
 		if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
 			break;
 
-		ProcessLogic();
+		ProcessLogic(g_player);
 
 		DrawWorld();
 
 		ubox_wait();
 
-		spman_update();
-
-		if (g_gamestate == STATE_GAME_OVER || g_gamestate == STATE_GAME_CLEAR)
+		if (g_gamestate == STATE_GAME_OVER)
 			break;
 	}
-
-	spman_hide_all_sprites();
 }
-snake_node* g_player = 0;
+
 void InitGame(int screen_width, int screen_height)
 {
 	g_screen_width = screen_width;
 	g_screen_height = screen_height;
 
 	g_player = malloc(sizeof(snake_node));
-	g_player->dir = left; //init direction
+	g_player->dir = left; //초기 방향
 	g_player->x = MAP_WIDTH / 2;
 	g_player->y = MAP_HEIGHT / 2;
 	g_player->next = NULL;
 
-	int i, j; 
+	int i, j;
 	for (i = 0; i < MAP_HEIGHT; i++)
 	{
 		for (j = 0; j < MAP_WIDTH; j++)
@@ -158,40 +150,40 @@ void InitGame(int screen_width, int screen_height)
 	srandom((unsigned int)time(NULL));
 	randomize();
 
-	generate_new_apple();
+	GenerateNewFrog();
 
 	g_next_step = now() + step_time;
 	g_next_input_step = now() + input_step_time;
 }
 
-snake_node* move_body(snake_node* player, int tempx, int tempy)
+snake_node *move_body(snake_node *player, int tempx, int tempy)
 {
 	if (player->next == NULL)
 	{
-		g_objMap[player->y][player->x] = nothing; 
+		g_objMap[player->y][player->x] = nothing;
 	}
-	else //we need to keep traversing
+	else
 	{
 		player->next = move_body(player->next, player->x, player->y);
 	}
 	player->x = tempx;
 	player->y = tempy;
 	return player;
-
 }
 
-void generate_new_apple()
+void GenerateNewFrog()
 {
 	int randy, randx;
 
-	do {
+	do
+	{
 		randy = (int)(rand() % MAP_HEIGHT);
 		randx = (int)(rand() % MAP_WIDTH);
 	} while (g_objMap[randy][randx] != nothing);
-	g_objMap[randy][randx] = apple;
+	g_objMap[randy][randx] = frog;
 }
 
-void ProcessInput(snake_node *player)
+void ProcessLogic(snake_node *player)
 {
 	if (g_gamestate != STATE_IN_GAME)
 		return;
@@ -226,8 +218,8 @@ void ProcessInput(snake_node *player)
 					tempx = player->x - 1;
 				}
 				else
-				{ //allow for wrap around
-					game_over();
+				{
+					GameOver();
 				}
 			}
 			else if (player->dir == right)
@@ -239,7 +231,7 @@ void ProcessInput(snake_node *player)
 				}
 				else
 				{
-					game_over();
+					GameOver();
 				}
 			}
 			else if (player->dir == up)
@@ -250,7 +242,7 @@ void ProcessInput(snake_node *player)
 				}
 				else
 				{
-					game_over();
+					GameOver();
 				}
 			}
 			else if (player->dir == down)
@@ -262,15 +254,15 @@ void ProcessInput(snake_node *player)
 				}
 				else
 				{
-					game_over();
+					GameOver();
 				}
-			}			
+			}
 
-			if (g_objMap[tempy][tempx] == apple) 
+			if (g_objMap[tempy][tempx] == frog)
 			{
 				g_score++;
 				snake_node *temp = player;
-				while (temp->next != NULL) 
+				while (temp->next != NULL)
 				{
 					temp = temp->next;
 				}
@@ -283,64 +275,51 @@ void ProcessInput(snake_node *player)
 				newNode->dir = temp->dir;
 				newNode->next = NULL;
 				temp->next = newNode;
-				generate_new_apple();
+
+				GenerateNewFrog();
 			}
 			else if (g_objMap[tempy][tempx] == snake)
 			{
-				game_over();
+				GameOver();
 			}
 			else
 			{
 				player = move_body(player, tempx, tempy);
 			}
 
-			g_objMap[tempy][tempx] = snake; 
+			g_objMap[tempy][tempx] = snake;
 
 			g_next_step = now() + step_time;
 		}
 	}
 }
 
-//보드를 그린다
-void DrawObject()
+void DrawWorld()
 {
-	
-	for (int row = 0; row < MAP_HEIGHT; row++)
+	uint8_t c = 0;
+
+	//맵의 정보를 그린다.
+	for (uint8_t row = 0; row < MAP_HEIGHT; row++)
 	{
-		for (int col = 0; col < MAP_WIDTH; col++)
+		for (uint8_t col = 0; col < MAP_WIDTH; col++)
 		{
-			int c = 0; //color to draw
-			if (g_objMap[row][col] == nothing) {
+
+			if (g_objMap[row][col] == nothing) //정보가 없으면 검은색을 그린다.
 				c = 85;
-			}
-			else if (g_objMap[row][col] == apple) {
+
+			else if (g_objMap[row][col] == frog) //개구리라면 녹색을 그린다.
 				c = 74;
-			}
-			else if (g_objMap[row][col] == snake) 
+
+			else if (g_objMap[row][col] == snake)
 			{
-				if(g_player->x == col && g_player->y == row)
-				{
-		
+				//뱀의 머리라면 노란색을 그리고 그렇지 않으면 흰색을 그린다.
+				if (g_player->x == col && g_player->y == row) 
 					c = 77;
-				}	
 				else
 					c = 81;
 			}
 
-			RenderTile(col + 1, row + 1, 1, 0, c);
+			RenderTile(col + 1, row + 1, c); //타일을 그린다. 
 		}
 	}
-}
-
-
-void DrawWorld()
-{
-	
-	DrawObject();
-	
-}
-
-void ProcessLogic()
-{
-	ProcessInput(g_player);
 }

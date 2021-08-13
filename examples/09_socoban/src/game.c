@@ -1,23 +1,15 @@
 #include <stdint.h>
 #include "ubox.h"
 #include "game.h"
-#include "spman.h"
 
 #define WHITESPACE_TILE 129
 
 #define SOCOBAN_MAX_WIDTH 20
 #define SOCOBAN_MAX_HEIGHT 20
 
-#define tileSize 8
-
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 128
 
-#define SDL_RATIO_X(width) GAME_WIDTH
-#define SDL_RATIO_Y(height) GAME_HEIGHT
-
-#define SDL_REVERSE_RATIO_X(width) GAME_WIDTH
-#define SDL_REVERSE_RATIO_Y(height) GAME_HEIGHT
 
 enum enumSpaceProperty
 {
@@ -192,8 +184,6 @@ void run_game()
 
 	InitGame(32 * 8, 21 * 8);
 
-	spman_init();
-
 	ubox_disable_screen();
 
 	ubox_fill_screen(WHITESPACE_TILE);
@@ -213,24 +203,12 @@ void run_game()
 
 		ubox_wait();
 
-		spman_update();
-
 		if (g_gamestate == STATE_GAME_OVER || g_gamestate == STATE_GAME_CLEAR)
 			break;
 
 		if (g_bLevelReset == 0)
 			run_game();
 	}
-
-	spman_hide_all_sprites();
-}
-
-int InRect(int posx, int posy, struct Rect *rect)
-{
-	if (posx >= rect->x1 && posx < rect->x2 && posy >= rect->y1 && posy < rect->y2)
-		return 1;
-
-	return 0;
 }
 
 void DrawBoard()
@@ -238,22 +216,18 @@ void DrawBoard()
 	ubox_disable_screen();
 
 	for (int index = 0; index < SOCOBAN_MAX_WIDTH; index++)
-		RenderTile(index, 0, 1, 0, 74);
+		RenderTile(index, 0, 74);
 
 	for (int index = 0; index < SOCOBAN_MAX_WIDTH; index++)
-		RenderTile(index, SOCOBAN_MAX_HEIGHT - 1, 1, 0, 74);
+		RenderTile(index, SOCOBAN_MAX_HEIGHT - 1, 74);
 
 	for (int index = 1; index < SOCOBAN_MAX_HEIGHT - 1; index++)
-		RenderTile(0, index, 1, 0, 74);
+		RenderTile(0, index, 74);
 
 	for (int index = 0; index < SOCOBAN_MAX_HEIGHT - 1; index++)
-		RenderTile(SOCOBAN_MAX_WIDTH - 1, index, 1, 0, 74);
+		RenderTile(SOCOBAN_MAX_WIDTH - 1, index, 74);
 
 	ubox_enable_screen();
-}
-
-void DrawGround()
-{
 }
 
 void InitGame(int screen_width, int screen_height)
@@ -409,11 +383,11 @@ void DrawWall()
 		{
 			if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BLOCK)
 			{
-				RenderTile(x, y, 1, 0, 77);
+				RenderTile(x, y, 77);
 			}
 			else if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX_POINT)
 			{
-				RenderTile(x, y, 1, 0, 81);
+				RenderTile(x, y, 81);
 			}
 		}
 	}
@@ -430,12 +404,12 @@ void DrawBox()
 		{
 			if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX_POINT && g_mapInfo.boxInfo[y][x] != g_mapInfo.pMapPointer[y][x])
 			{
-				RenderTile(x, y, 1, 0, 81);
+				RenderTile(x, y, 81);
 			}
 
 			if (g_mapInfo.boxInfo[y][x] == ENUM_SPACE_BOX)
 			{
-				RenderTile(x, y, 1, 0, 79);
+				RenderTile(x, y, 79);
 			}
 		}
 	}
@@ -443,13 +417,13 @@ void DrawBox()
 
 void DrawPlayer()
 {
-	RenderTile(g_playerInfo.x, g_playerInfo.y, 1, 0, 128);
+	RenderTile(g_playerInfo.x, g_playerInfo.y, 128);
 
 	if (g_playerInfo.old_x == 0 && g_playerInfo.old_y == 0)
 		return;
 
 	if (g_mapInfo.pMapPointer[g_playerInfo.old_y][g_playerInfo.old_x] != ENUM_SPACE_BOX_POINT)
-		RenderTile(g_playerInfo.old_x, g_playerInfo.old_y, 1, 0, 85);
+		RenderTile(g_playerInfo.old_x, g_playerInfo.old_y, 85);
 }
 
 void DrawWorld()

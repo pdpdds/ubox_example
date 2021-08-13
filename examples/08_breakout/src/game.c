@@ -389,20 +389,18 @@ void DrawWorld()
 	}
 
 	// 패들을 화면에 그린다.
-	//RenderRect(g_paddle_posx, g_paddle_posy, g_paddle_posx + PADDLE_WIDTH, g_paddle_posy + PADDLE_HEIGHT, 255, 255, 255, 1);
-
 	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 6, 0);
 	sp.x = g_paddle_posx;
 	sp.y = g_paddle_posy;
 	sp.pattern = sample.pat + 1 * 8;
-	// green
+	// 녹색
 	sp.attr = 15;
 	spman_alloc_fixed_sprite(&sp);
 
 	sp.x = g_paddle_posx + PADDLE_WIDTH / 2;
 	sp.y = g_paddle_posy;
 	sp.pattern = sample.pat + 1 * 8;
-	// green
+	// 녹색
 	sp.attr = 15;
 	spman_alloc_fixed_sprite(&sp);
 }

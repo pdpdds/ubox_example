@@ -4,7 +4,6 @@
 #include <time.h>
 #include "ubox.h"
 #include "game.h"
-#include "spman.h"
 
 #define WHITESPACE_TILE 129
 
@@ -144,6 +143,9 @@ KeyTable g_key_table = {0};	  // 키 입력을 저장
 
 struct sprite_attr sp;
 extern uint8_t g_gamestate;
+
+char g_collide;
+char g_rotate;
 
 int set_game_end()
 {
@@ -310,28 +312,25 @@ void update_score(int clearline)
 void draw_map()
 {
 	for (int index = 0; index < COLS + 1; index++)
-		RenderTile(index, 0, 1, 0, 77);
+		RenderTile(index, 0,77);
 
 	for (int index = 0; index < COLS + 2; index++)
-		RenderTile(index, ROWS + 1, 1, 0, 77);
+		RenderTile(index, ROWS + 1, 77);
 
 	for (int index = 1; index < ROWS + 1; index++)
-		RenderTile(0, index, 1, 0, 77);
+		RenderTile(0, index, 77);
 
 	for (int index = 0; index < ROWS + 1; index++)
-		RenderTile(COLS + 1, index, 1, 0, 77);
+		RenderTile(COLS + 1, index, 77);
 
 	DrawNextPiece();
 }
 
 void run_game()
 {
-
 	g_gamestate = STATE_IN_GAME;
 
 	InitGame(32 * 8, 21 * 8);
-
-	spman_init();
 
 	ubox_disable_screen();
 
@@ -352,13 +351,9 @@ void run_game()
 
 		ubox_wait();
 
-		spman_update();
-
 		if (g_gamestate == STATE_GAME_OVER || g_gamestate == STATE_GAME_CLEAR)
 			break;
 	}
-
-	spman_hide_all_sprites();
 }
 
 int InRect(int posx, int posy, struct Rect *rect)
@@ -369,8 +364,6 @@ int InRect(int posx, int posy, struct Rect *rect)
 	return 0;
 }
 
-char g_collide;
-char g_rotate;
 void InitGame(int screen_width, int screen_height)
 {
 	g_screen_width = screen_width;
@@ -521,11 +514,11 @@ void DrawBoard()
 
 			if (color != 0)
 			{
-				RenderTile(col + 1, row + 1, 1, 0, 81);
+				RenderTile(col + 1, row + 1, 81);
 			}
 			else
 			{
-				RenderTile(col + 1, row + 1, 1, 0, 85);
+				RenderTile(col + 1, row + 1, 85);
 			}
 		}
 	}
@@ -540,9 +533,9 @@ void DrawNextPiece()
 			int color = g_next_piece.shape[row][col];
 
 			if (color != 0)
-				RenderTile(col + COLS + 3, row + 2, 1, 0, 74);
+				RenderTile(col + COLS + 3, row + 2, 74);
 			else
-				RenderTile(col + COLS + 3, row + 2, 1, 0, 85);
+				RenderTile(col + COLS + 3, row + 2, 85);
 		}
 	}
 }
@@ -560,7 +553,7 @@ void DrawWorld()
 				int color = g_piece.old_shape[row][col];
 
 				if (color != 0)
-					RenderTile(col + g_piece.old_x + 1, row + g_piece.old_y + 1, 1, 0, 85);
+					RenderTile(col + g_piece.old_x + 1, row + g_piece.old_y + 1, 85);
 			}
 		}
 		for (int row = 0; row < 4; row++)
@@ -572,7 +565,7 @@ void DrawWorld()
 
 				if (color != 0)
 				{
-					RenderTile(col + g_piece.x + 1, row + g_piece.y + 1, 1, 0, 74);
+					RenderTile(col + g_piece.x + 1, row + g_piece.y + 1, 74);
 				}
 			}
 		}
@@ -589,7 +582,7 @@ void DrawWorld()
 					int color = g_piece.shape[row][col];
 
 					if (color != 0)
-						RenderTile(col + g_piece.old_x + 1, row + g_piece.old_y + 1, 1, 0, 85);
+						RenderTile(col + g_piece.old_x + 1, row + g_piece.old_y + 1, 85);
 				}
 			}
 			for (int row = 0; row < 4; row++)
@@ -601,7 +594,7 @@ void DrawWorld()
 
 					if (color != 0)
 					{
-						RenderTile(col + g_piece.x + 1, row + g_piece.y + 1, 1, 0, 74);
+						RenderTile(col + g_piece.x + 1, row + g_piece.y + 1, 74);
 					}
 				}
 			}
