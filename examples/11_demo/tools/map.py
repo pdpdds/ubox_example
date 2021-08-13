@@ -304,9 +304,7 @@ def main():
 
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
-    print("/* compressed: %s */" % args.aplib)
-    print("#define WMAPS %d\n" % (mw // args.rw))
-    print("#define MAPS %d\n" % len(out))
+    print("/* compressed: %s */" % args.aplib)    
 
     print("#ifdef LOCAL")
 
@@ -325,7 +323,7 @@ def main():
             args.id, i, len(block))
         data_out += data_out_part + "\n};\n"
 
-    data_out += "const unsigned char * const %s[%d] = { " % (args.id, len(out))
+    data_out += "const unsigned char * %s[%d] = { " % (args.id, len(out))
     data_out += ', '.join(
         ["%s_%d" % (args.id,
                     i) if i not in empty else "(unsigned char *)0" for i in range(len(out))])
@@ -333,7 +331,7 @@ def main():
     print(data_out)
 
     print("#else")
-    print("extern const unsigned char * const %s[%d];\n" % (args.id, len(out)))
+    print("extern const unsigned char * %s[%d];\n" % (args.id, len(out)))
 
     print("#endif // LOCAL")
     print("#endif // _%s_H" % args.id.upper())

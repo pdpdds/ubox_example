@@ -12,6 +12,7 @@
 #include "tiles.h"
 
 uint8_t g_gamestate = STATE_TITLE;
+uint8_t g_stage = 0;
 
 void draw_menu()
 {
@@ -82,13 +83,14 @@ void draw_stage_clear()
     ubox_disable_screen();
 
     put_text(11, 10, "STAGE CLEAR");
-    put_text(10, 11, "PRESS ANT KEY");
+    put_text(10, 11, "PRESS ANY KEY");
 
     ubox_enable_screen();
 
     ubox_wait_for(32);
     
     g_gamestate = STATE_IN_GAME;
+    g_stage++;
 }
 
 
@@ -115,8 +117,7 @@ void main()
 
 redraw_menu:
     draw_menu();
-
-    uint8_t stage = 0;
+    
     while (1)
     {
         ctl = ubox_select_ctl();
@@ -125,7 +126,7 @@ redraw_menu:
             mplayer_play_effect_p(EFX_START, EFX_CHAN_NO, 0);
             ubox_wait_for(16);
 
-            run_game(stage);
+            run_game(g_stage);
 
             if (!lives)
                 draw_game_over();

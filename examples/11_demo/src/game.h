@@ -23,7 +23,7 @@ const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
 
 #define MAX_LIVES 3
 
-#define MAX_ENTITIES 15
+#define MAX_ENTITIES 50
 
 #define DIR_FLAG 128
 
@@ -66,6 +66,7 @@ struct entity
 {
     uint8_t type;
     uint8_t identifier;
+    uint8_t mapid;
     uint8_t x;
     uint8_t y;
     uint8_t extra;
@@ -98,7 +99,7 @@ LOCAL struct entity entities[MAX_ENTITIES];
 
 LOCAL uint8_t control;
 
-LOCAL const uint8_t *cur_map;
+LOCAL const uint8_t** cur_map;
 LOCAL uint8_t cur_map_data[MAP_W * MAP_H];
 
 LOCAL uint8_t lives;

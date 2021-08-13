@@ -7,3 +7,4 @@
 #include "player.h"
 #include "enemy.h"
 #include "map.h"
+#include "map2.h"

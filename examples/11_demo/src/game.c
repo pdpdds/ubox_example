@@ -13,39 +13,77 @@
 #include "game.h"
 
 #include "map.h"
+#include "map2.h"
 #include "player.h"
 #include "enemy.h"
 
 extern uint8_t g_gamestate;
 
-struct entity* find_collide_object(uint8_t x, uint8_t y, int type);
+struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
 
-void init_map_entities()
+uint8_t get_entity_count(const uint8_t *mapData)
 {
-    const uint8_t *m = cur_map;
-    uint8_t typ, last = 0;
-    jewels = 0;
-    spman_init();
+    uint8_t entityCount = 0;
 
-    memset(entities, 0, sizeof(struct entity) * MAX_ENTITIES);
+    const uint8_t *m = (const uint8_t *)(mapData);
 
     m += (uint16_t)(m[0] | m[1] << 8) + 3;
 
     while (*m != 0xff)
     {
-        
-        typ = m[0] & (~DIR_FLAG);
+        entityCount++;
 
-        entities[last].type = typ;
-        entities[last].x = m[1];
-        entities[last].y = m[2];
-        entities[last].identifier = m[3];
-        entities[last].extra = m[4];
-       
-        entities[last].dir = m[0] & DIR_FLAG ? DIR_LEFT : DIR_RIGHT;
+        // 엔터티는 5바이트로 표현됨
+        m += 5;
+    }
 
-        switch (typ)
+    return entityCount;
+}
+
+uint8_t g_maxEntities = 0;
+uint8_t g_cur_map_id = 0;
+void init_map_entities(uint8_t mapCount)
+{
+    uint8_t i = 0;    
+
+    spman_init();
+
+    if (mapCount == 2)
+        cur_map = map2;
+    else
+        cur_map = map;    
+
+    for (i = 0; i < mapCount; i++)
+    {
+        g_maxEntities += get_entity_count(cur_map[i]);
+    }
+
+    uint8_t typ, last = 0;
+    
+    memset(entities, 0, sizeof(struct entity) * MAX_ENTITIES);
+
+    for (i = 0; i < mapCount; i++)
+    {
+        const uint8_t *m = (const uint8_t *)(cur_map[i]);
+
+        m += (uint16_t)(m[0] | m[1] << 8) + 3;
+
+        while (*m != 0xff)
         {
+
+            typ = m[0] & (~DIR_FLAG);
+
+            entities[last].type = typ;
+            entities[last].mapid = i;
+            entities[last].x = m[1];
+            entities[last].y = m[2];
+            entities[last].identifier = m[3];
+            entities[last].extra = m[4];
+            
+            entities[last].dir = m[0] & DIR_FLAG ? DIR_LEFT : DIR_RIGHT;
+
+            switch (typ)
+            {
             case ET_KEY:
                 entities[last].update = update_item;
                 jewels++;
@@ -57,7 +95,7 @@ void init_map_entities()
 
             case ET_EXIT:
                 entities[last].update = update_exit;
-                break;     
+                break;
 
             case ET_PLAYER:
                 // 3 frames x 2 sprites = 6
@@ -72,14 +110,14 @@ void init_map_entities()
                 spman_alloc_pat(PAT_ENEMY_FLIP, enemy_sprite[0], 3, 1);
                 entities[last].update = update_enemy;
                 break;
+            }
+
+            last++;
+
+            // 엔터티는 5바이트로 표현됨
+            m += 5;
         }
-
-        last++;
-
-        // 엔터티는 5바이트로 표현됨
-        m += 5;
     }
-
 }
 
 void draw_map()
@@ -95,27 +133,23 @@ void draw_map()
     ubox_write_vm((uint8_t *)0x1800, MAP_W * MAP_H, cur_map_data);
 
     uint16_t i;
-     for (i = 0, self = entities; i < MAX_ENTITIES && self->type; i++, self++)
-     {
-            if(self->type == ET_KEY)
-                ubox_put_tile(self->x >> 3, self->y >> 3, JEWEL_TILE);
+    struct entity *object;
+    for (i = 0, object = entities; i < g_maxEntities && object->type; i++, object++)
+    {
+        if(g_cur_map_id != object->mapid)
+            continue;
 
-            if(self->type == ET_WARP)
-            {
-                ubox_put_tile((self->x >> 3), (self->y >> 3), WARP_TILE + 2);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), WARP_TILE + 3);
-                ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, WARP_TILE);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, WARP_TILE + 1);
-            }
+        if (object->type == ET_KEY)
+            ubox_put_tile(object->x >> 3, object->y >> 3, JEWEL_TILE);
 
-            /*if(self->type == ET_EXIT)
-            {
-                ubox_put_tile((self->x >> 3), (self->y >> 3), EXIT_TILE + 2);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), EXIT_TILE + 3);
-                ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, EXIT_TILE);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, EXIT_TILE + 1);
-            }*/
-     }
+        if (object->type == ET_WARP)
+        {
+            ubox_put_tile((object->x >> 3), (object->y >> 3), WARP_TILE + 2);
+            ubox_put_tile((object->x >> 3) + 1, (object->y >> 3), WARP_TILE + 3);
+            ubox_put_tile((object->x >> 3), (object->y >> 3) + 1, WARP_TILE);
+            ubox_put_tile((object->x >> 3) + 1, (object->y >> 3) + 1, WARP_TILE + 1);
+        }
+    }
 }
 
 void draw_hud()
@@ -132,7 +166,6 @@ void draw_hud()
             ubox_put_tile(1 + i, 22, WHITESPACE_TILE);
 }
 
-
 // x and y in pixels
 uint8_t is_map_blocked(uint8_t x, uint8_t y)
 {
@@ -143,21 +176,22 @@ uint8_t is_map_jewel(uint8_t x, uint8_t y)
 {
     uint16_t i;
     struct entity *object;
-     for (i = 0, object = entities; i < MAX_ENTITIES; i++, object++)
-     {
-            if(object->type == ET_KEY)
+    for (i = 0, object = entities; i < g_maxEntities; i++, object++)
+    {
+        
+        if (object->type == ET_KEY)
+        {
+            if (((x >> 3) == (object->x >> 3)) && ((y >> 3) == (object->y >> 3)))
             {
-                if( ((x >> 3) == (object->x >> 3)) && ((y >> 3) == (object->y >> 3)) ) 
-                {
-                    ubox_put_tile(object->x >> 3, object->y >> 3, BLANK_TILE);
-                    object->type = ET_UNUSED; 
-                    jewels--;   
-                    return 1;
-                }
+                ubox_put_tile(object->x >> 3, object->y >> 3, BLANK_TILE);
+                object->type = ET_UNUSED;
+                jewels--;
+                return 1;
             }
-     }
+        }
+    }
 
-     return 0;
+    return 0;
 }
 
 // x and y in pixels; always check the bottom tile!
@@ -188,35 +222,32 @@ uint8_t is_map_elevator_up(uint8_t x, uint8_t y)
     return (t == 14 || t == 15);
 }
 
-struct entity* find_object(uint8_t id)
+struct entity *find_object(uint8_t id)
 {
     uint16_t i;
     struct entity *object;
-    for (i = 0, object = entities; i < MAX_ENTITIES; i++, object++)
+    for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
-        if(id == object->identifier)
-        return object;
+        if (id == object->identifier)
+            return object;
     }
 
     return 0;
 }
 
-struct entity* find_collide_object(uint8_t x, uint8_t y, int type)
+struct entity *find_collide_object(uint8_t x, uint8_t y, int type)
 {
     uint16_t i;
     struct entity *object;
 
-    
-    for (i = 0, object = entities; i < MAX_ENTITIES; i++, object++)
+    for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
-        if (object->type == type)
+        if (object->type == type && g_cur_map_id == object->mapid)
         {
             if (x > object->x - 4 && (x + 4) < (object->x + 16) && y == object->y)
             {
                 return object;
             }
-
-            
         }
     }
 
@@ -227,9 +258,7 @@ void update_enemy()
 {
     // check for the player; if alive and not invulnerable!
     // we use small hit boxes
-    if (lives && !invuln
-            && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10
-            && self->y == entities[0].y)
+    if (lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
     {
         // change direction
         self->dir ^= 1;
@@ -287,19 +316,32 @@ void update_enemy()
     spman_alloc_sprite(&sp);
 }
 
+void move_next_map(uint8_t mapId)
+{
+
+    ubox_disable_screen();
+    ubox_fill_screen(WHITESPACE_TILE);    
+
+    ap_uncompress(cur_map_data, cur_map[mapId] + 3);
+
+    draw_map();
+
+    draw_hud();
+
+    ubox_enable_screen();
+}
+
 void update_item()
 {
-   
 }
 
 void update_warp()
 {
-
 }
 
 void update_exit()
 {
-    if(jewels != 0)
+    if (jewels != 0)
         return;
 
     static uint8_t index = 0;
@@ -307,25 +349,24 @@ void update_exit()
     {
         self->delay = 0;
         index++;
-        if(index > 1)
+        if (index > 1)
             index = 0;
 
-         if(index == 1)
-            {
-                ubox_put_tile((self->x >> 3), (self->y >> 3), WARP_TILE + 2);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), WARP_TILE + 3);
-                ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, WARP_TILE);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, WARP_TILE + 1);
-            }
+        if (index == 1)
+        {
+            ubox_put_tile((self->x >> 3), (self->y >> 3), WARP_TILE + 2);
+            ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), WARP_TILE + 3);
+            ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, WARP_TILE);
+            ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, WARP_TILE + 1);
+        }
 
-            else
-            {
-                ubox_put_tile((self->x >> 3), (self->y >> 3), EXIT_TILE + 2);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), EXIT_TILE + 3);
-                ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, EXIT_TILE);
-                ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, EXIT_TILE + 1);
-            }
-        
+        else
+        {
+            ubox_put_tile((self->x >> 3), (self->y >> 3), EXIT_TILE + 2);
+            ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), EXIT_TILE + 3);
+            ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, EXIT_TILE);
+            ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, EXIT_TILE + 1);
+        }
     }
 }
 
@@ -348,8 +389,15 @@ void update_player()
         moved = 1;
 
         // wrap horizontally
-        if (self->x == 255 - 16)
-            self->x = 0;
+        if (self->x == 256 - 16)
+        {
+            g_cur_map_id += 1;
+            self->x = 16;
+            self->mapid = g_cur_map_id;
+
+            move_next_map(g_cur_map_id);
+            
+        }
         // check if not solid, using bottom right
         else if (!is_map_blocked(self->x + 15, self->y + 15))
             self->x += 2;
@@ -362,14 +410,22 @@ void update_player()
 
         // wrap horizontally
         if (self->x == 2)
-            self->x = (uint8_t)(255 - 16);
+        {
+            g_cur_map_id -= 1;
+            self->mapid = g_cur_map_id;
+            self->x = (uint8_t)(256 - 16);
+
+            move_next_map(g_cur_map_id);
+            
+            
+        }
         // check if not solid, using bottom left
         else if (!is_map_blocked(self->x, self->y + 15))
             self->x -= 2;
     }
 
     is_map_jewel(self->x + 8, self->y + 15);
-    
+
     if (control & UBOX_MSX_CTL_FIRE1)
     {
         // use flags to prevent repeat: the player will
@@ -378,32 +434,24 @@ void update_player()
         {
             self->flags = 1;
 
-            struct entity* object = find_collide_object(self->x , self->y, ET_WARP);
+            struct entity *object = find_collide_object(self->x, self->y, ET_WARP);
 
-            if(object)
+            if (object)
             {
                 mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
                 struct entity *next = find_object(object->extra);
 
-                if(next)
+                if (next->mapid != self->mapid)
                 {
-                    self->x = next->x;
-                    self->y = next->y;
+                    g_cur_map_id = next->mapid;                 
+                    self->mapid = g_cur_map_id;
+
+                    move_next_map(next->mapid);                      
                 }
-            }
-            
-            // check elevator down; using bottom middle
-            /*if (is_map_elevator_down(self->x + 8, self->y + 16))
-            {
-                mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
-                self->y += 8 * 4;
-            }
-            // then elevator up; using bottom middle
-            else if (is_map_elevator_up(self->x + 8, self->y + 16))
-            {
-                mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
-                self->y -= 8 * 4;
-            }*/
+
+                self->x = next->x;
+                self->y = next->y;
+            }           
         }
     }
     else
@@ -433,9 +481,9 @@ void update_player()
         }
     }
 
-    struct entity* exitobject = find_collide_object(self->x, self->y, ET_EXIT);
+    struct entity *exitobject = find_collide_object(self->x, self->y, ET_EXIT);
 
-    if(exitobject && jewels == 0)
+    if (exitobject && jewels == 0)
         g_gamestate = STATE_GAME_CLEAR;
 
     // if we are invulnerable, don't draw odd frames
@@ -462,45 +510,43 @@ void update_player()
 void run_game(int stage)
 {
     uint8_t i;
-
-    // init some variables; look at game.h for description
     lives = MAX_LIVES;
     invuln = 0;
     gameover_delay = 0;
+    g_cur_map_id = 0;
+    g_maxEntities = 0;
+    jewels = 0;
 
-    g_gamestate = STATE_IN_GAME;
+    g_gamestate = STATE_IN_GAME;    
 
     ubox_disable_screen();
-
     ubox_fill_screen(WHITESPACE_TILE);
 
-    stage = 0;
-    // we only have one map, select it
-    cur_map = map[stage];
-    // uncompress map data into RAM, we will modify it
-    // map data starts on byte 3 (skip map data size and entities size)
-    ap_uncompress(cur_map_data, cur_map + 3);
+    if (stage == 1)
+        init_map_entities(2);
+    else
+        init_map_entities(1);
 
-    // init entities before drawing
-    init_map_entities();
+    ap_uncompress(cur_map_data, cur_map[g_cur_map_id] + 3);
+
     draw_map();
 
     draw_hud();
 
     ubox_enable_screen();
 
-   
+    mplayer_init(SONG, SONG_IN_GAME);
+
     while (1)
     {
-    
-       // exit the game
+
+        // exit the game
         if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
             break;
 
-        if(g_gamestate == STATE_GAME_CLEAR)
+        if (g_gamestate == STATE_GAME_CLEAR)
             break;
-        
-        
+
         // we are in the gameover delay
         if (gameover_delay)
         {
@@ -516,18 +562,17 @@ void run_game(int stage)
         // - self is a pointer to THIS entity
         // - because we don't create/destroy entities dynamically
         //   when we found one that is unused we are done
-        for (i = 0, self = entities; i < MAX_ENTITIES; i++, self++)
+        for (i = 0, self = entities; i < g_maxEntities; i++, self++)
         {
-            if (self->type)
-                self->update();
+            
+            if (self->type && self->mapid == g_cur_map_id)
+                self->update();            
         }
-
 
         // ensure we wait to our desired update rate
         ubox_wait();
         // update sprites on screen
         spman_update();
-     
     }
 
     // stop the in game music
