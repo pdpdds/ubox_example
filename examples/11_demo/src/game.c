@@ -108,13 +108,13 @@ void draw_map()
                 ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, WARP_TILE + 1);
             }
 
-            if(self->type == ET_EXIT)
+            /*if(self->type == ET_EXIT)
             {
                 ubox_put_tile((self->x >> 3), (self->y >> 3), EXIT_TILE + 2);
                 ubox_put_tile((self->x >> 3) + 1, (self->y >> 3), EXIT_TILE + 3);
                 ubox_put_tile((self->x >> 3), (self->y >> 3) + 1, EXIT_TILE);
                 ubox_put_tile((self->x >> 3) + 1, (self->y >> 3) + 1, EXIT_TILE + 1);
-            }
+            }*/
      }
 }
 
@@ -150,7 +150,8 @@ uint8_t is_map_jewel(uint8_t x, uint8_t y)
                 if( ((x >> 3) == (object->x >> 3)) && ((y >> 3) == (object->y >> 3)) ) 
                 {
                     ubox_put_tile(object->x >> 3, object->y >> 3, BLANK_TILE);
-                    object->type = ET_UNUSED;    
+                    object->type = ET_UNUSED; 
+                    jewels--;   
                     return 1;
                 }
             }
@@ -298,6 +299,9 @@ void update_warp()
 
 void update_exit()
 {
+    if(jewels != 0)
+        return;
+
     static uint8_t index = 0;
     if (self->delay++ == FRAME_WAIT)
     {
@@ -431,7 +435,7 @@ void update_player()
 
     struct entity* exitobject = find_collide_object(self->x, self->y, ET_EXIT);
 
-    if(exitobject)
+    if(exitobject && jewels == 0)
         g_gamestate = STATE_GAME_CLEAR;
 
     // if we are invulnerable, don't draw odd frames
