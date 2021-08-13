@@ -140,7 +140,6 @@ void main()
 
 extern void RenderTile(int x, int y, int x_count, int y_count, int tileNum)
 {
-    
             ubox_put_tile(x, y, 42 + 0);
             ubox_put_tile(x, y + 1, 74 + 0);
 
@@ -150,8 +149,6 @@ extern void RenderTile(int x, int y, int x_count, int y_count, int tileNum)
             ubox_put_tile(x + 2, y, 42 + 2);
             ubox_put_tile(x + 2, y + 1, 74 + 2);
             
-       
-
 }
 
 extern void EraseTile(int x, int y, int x_count, int y_count, int tileNum)
