@@ -1,4 +1,4 @@
-TARGET := 09_socoban
+TARGET := 08_socoban
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer

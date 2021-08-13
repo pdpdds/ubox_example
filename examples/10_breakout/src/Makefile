@@ -1,4 +1,4 @@
-TARGET := 08_breakout
+TARGET := 10_breakout
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer

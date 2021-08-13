@@ -12,7 +12,6 @@
 #define LOCAL
 #include "game.h"
 
-// generated
 #include "map.h"
 #include "player.h"
 #include "enemy.h"
@@ -25,24 +24,16 @@ void init_map_entities()
 {
     const uint8_t *m = cur_map;
     uint8_t typ, last = 0;
-    uint16_t i;
-
-    // init sprite and patterns
+    jewels = 0;
     spman_init();
 
-    // this sets everything to 0, which is useful as
-    // entity ET_UNUSED is 0
     memset(entities, 0, sizeof(struct entity) * MAX_ENTITIES);
 
-    // get to the beginning of the entities:
-    // map size + 3 bytes of header (the map size and the entities size)
     m += (uint16_t)(m[0] | m[1] << 8) + 3;
 
-    // the entity list ends with 255
     while (*m != 0xff)
     {
-        // first byte is type + direction flag on MSB
-        // remove MSB
+        
         typ = m[0] & (~DIR_FLAG);
 
         entities[last].type = typ;
@@ -50,13 +41,14 @@ void init_map_entities()
         entities[last].y = m[2];
         entities[last].identifier = m[3];
         entities[last].extra = m[4];
-        // in the map: param is 1 (int) to look left
+       
         entities[last].dir = m[0] & DIR_FLAG ? DIR_LEFT : DIR_RIGHT;
 
         switch (typ)
         {
             case ET_KEY:
                 entities[last].update = update_item;
+                jewels++;
                 break;
 
             case ET_WARP:
@@ -67,8 +59,6 @@ void init_map_entities()
                 entities[last].update = update_exit;
                 break;     
 
-            // can be only one; always first entity
-            // because our entities are sorted by type!
             case ET_PLAYER:
                 // 3 frames x 2 sprites = 6
                 entities[last].pat = spman_alloc_pat(PAT_PLAYER, player_sprite[0], 6, 0);
@@ -84,18 +74,11 @@ void init_map_entities()
                 break;
         }
 
-        // next entity
         last++;
 
-        // all our entities are 4 bytes
+        // 엔터티는 5바이트로 표현됨
         m += 5;
     }
-
-    // count how many batteries are in the map
-    batteries = 0;
-    for (i = 0; i < MAP_W * MAP_H; ++i)
-        if (cur_map_data[i] == BATTERY_TILE)
-            batteries++;
 
 }
 
@@ -149,55 +132,11 @@ void draw_hud()
             ubox_put_tile(1 + i, 22, WHITESPACE_TILE);
 }
 
-// x and y in pixels
-void erase_battery(uint8_t x, uint8_t y)
-{
-    uint8_t t;
-    int8_t mod;
-
-    // find out the bg tile to use
-
-    // border of the map
-    if ((x >> 3) == 0)
-        mod = 1;
-    else
-        mod = -1;
-
-    switch (cur_map_data[mod + (x >> 3) + (y >> 3) * MAP_W])
-    {
-        case 12:
-            t = 13;
-            break;
-        case 13:
-            t = 12;
-            break;
-        default:
-            // this is next to a wall
-            if (mod == 1)
-                t = 13;
-            else
-                t = 12;
-            break;
-    }
-
-    // change the map data so we don't pick it up again
-    cur_map_data[(x >> 3) + (y >> 3) * MAP_W] = t;
-
-    // erase on the screen
-    ubox_put_tile(x >> 3, y >> 3, t);
-    ubox_put_tile(x >> 3, (y >> 3) - 1, t);
-}
 
 // x and y in pixels
 uint8_t is_map_blocked(uint8_t x, uint8_t y)
 {
     return cur_map_data[(x >> 3) + (y >> 3) * MAP_W] < LAST_SOLID_TILE + 1;
-}
-
-// x and y in pixels
-uint8_t is_map_battery(uint8_t x, uint8_t y)
-{
-    return cur_map_data[(x >> 3) + (y >> 3) * MAP_W] == BATTERY_TILE;
 }
 
 uint8_t is_map_jewel(uint8_t x, uint8_t y)
@@ -425,15 +364,6 @@ void update_player()
             self->x -= 2;
     }
 
-    // are we touching a battery?
-    // use bottom center
-    /*if (is_map_battery(self->x + 8, self->y + 15))
-    {
-        mplayer_play_effect_p(EFX_BATTERY, EFX_CHAN_NO, 0);
-        batteries--;
-        erase_battery(self->x + 8, self->y + 15);
-    }*/
-
     is_map_jewel(self->x + 8, self->y + 15);
     
     if (control & UBOX_MSX_CTL_FIRE1)
@@ -565,10 +495,8 @@ void run_game(int stage)
 
         if(g_gamestate == STATE_GAME_CLEAR)
             break;
-        // game completed!
-       // if (!batteries)
-           // break;
-
+        
+        
         // we are in the gameover delay
         if (gameover_delay)
         {
