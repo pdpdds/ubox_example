@@ -16,6 +16,7 @@
 #include "map2.h"
 #include "map3.h"
 #include "map4.h"
+#include "map5.h"
 #include "player.h"
 #include "enemy.h"
 
@@ -60,6 +61,10 @@ void init_map_entities(uint8_t stage)
     {
         mapCount = 2;
         cur_map = map4;
+    }
+    else if (stage == 5)
+    {
+        cur_map = map5;
     }
     else
         cur_map = map;
@@ -308,16 +313,16 @@ void update_enemy()
 
     }
 
-    /*else if (self->extra == ENEMY_MOVE)
+    else if (self->extra == ENEMY_MOVE)
     {
-        if (lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
+        if (!gameover_delay && lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
         {
             // change direction
             self->dir ^= 1;
 
             // remove one life (is more like "hits")
             lives--;
-            draw_hud();
+          
             invuln = INVUL_TIME;
 
             if (!lives)
@@ -326,9 +331,14 @@ void update_enemy()
                 mplayer_init(SONG, SONG_SILENCE);
                 mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
                 gameover_delay = GAMEOVER_DELAY;
+                g_gamestate = STATE_GAME_OVER;
             }
             else
+            {
                 mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
+                gameover_delay = GAMEOVER_DELAY;
+                 g_gamestate = STATE_GAME_RESET;
+            }
         }
 
         // left or right?
@@ -365,8 +375,8 @@ void update_enemy()
         sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
         // red
         sp.attr = 9;
-        spman_alloc_sprite(&sp);
-    }*/
+        spman_alloc_fixed_sprite(&sp);
+    }
 }
 
 void move_next_map(uint8_t mapId)
@@ -497,17 +507,20 @@ void update_player()
                 mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
                 struct entity *next = find_object(object->extra);
 
-                if (next->mapid != self->mapid)
+                if (next)
                 {
-                    g_cur_map_id = next->mapid;                 
-                    self->mapid = g_cur_map_id;
+                    if (next->mapid != self->mapid)
+                    {
+                        g_cur_map_id = next->mapid;
+                        self->mapid = g_cur_map_id;
 
-                    move_next_map(next->mapid);                      
+                        move_next_map(next->mapid);
+                    }
+
+                    self->x = next->x;
+                    self->y = next->y;
                 }
-
-                self->x = next->x;
-                self->y = next->y;
-            }           
+            }
         }
     }
     else

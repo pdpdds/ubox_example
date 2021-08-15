@@ -1,5 +1,5 @@
 OUTPUT := ../generated
-GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h
+GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h $(OUTPUT)/map5.h
 
 all: $(GENERATED)
 
@@ -23,6 +23,9 @@ $(OUTPUT)/map3.h: map3.json map_conf.json
 	
 $(OUTPUT)/map4.h: map4.json map_conf.json
 	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map4.json map4 > $@	
+
+$(OUTPUT)/map5.h: map5.json map_conf.json
+	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map5.json map5 > $@	
 
 .PHONY: all clean
 clean:
