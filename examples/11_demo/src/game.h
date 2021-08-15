@@ -22,6 +22,7 @@ const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
 #define BLANK_TILE          0
 
 #define MAX_LIVES 3
+#define MAX_LEVEL 5
 
 #define MAX_ENTITIES 50
 
@@ -48,6 +49,7 @@ enum GAME_STATE
     STATE_NO_MAP,
     STATE_GAME_OVER,
     STATE_GAME_CLEAR,
+    STATE_GAME_RESET,
 };
 
 
@@ -60,6 +62,12 @@ enum entity_type
     ET_EXIT,
     ET_KEY,
     ET_WARP,
+};
+
+enum enemy_type
+{
+    ENEMY_STATIC = 0,
+    ENEMY_MOVE,
 };
 
 struct entity

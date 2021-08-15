@@ -14,6 +14,8 @@
 
 #include "map.h"
 #include "map2.h"
+#include "map3.h"
+#include "map4.h"
 #include "player.h"
 #include "enemy.h"
 
@@ -42,16 +44,28 @@ uint8_t get_entity_count(const uint8_t *mapData)
 
 uint8_t g_maxEntities = 0;
 uint8_t g_cur_map_id = 0;
-void init_map_entities(uint8_t mapCount)
+void init_map_entities(uint8_t stage)
 {
     uint8_t i = 0;    
-
+    uint8_t mapCount = 1;
     spman_init();
 
-    if (mapCount == 2)
-        cur_map = map2;
+    if (stage == 1)
+        cur_map = map;
+    else if (stage == 2)
+        cur_map = map2;  
+    else if (stage == 3)
+        cur_map = map3;
+    else if (stage == 4)
+    {
+        mapCount = 2;
+        cur_map = map4;
+    }
     else
-        cur_map = map;    
+        cur_map = map;
+        
+        
+
 
     for (i = 0; i < mapCount; i++)
     {
@@ -120,23 +134,13 @@ void init_map_entities(uint8_t mapCount)
     }
 }
 
-void draw_map()
+void draw_static_object()
 {
-    // draw the map!
-    //
-    //  - is not compressed (which limits how many maps we can store)
-    //  - our map is just the tile numbers
-    //
-    // so we do it in one call by coping our map to the backtround tile map
-    // addr in the VDP VRAM
-    ubox_wait_vsync();
-    ubox_write_vm((uint8_t *)0x1800, MAP_W * MAP_H, cur_map_data);
-
-    uint16_t i;
+    uint8_t i = 0;
     struct entity *object;
-    for (i = 0, object = entities; i < g_maxEntities && object->type; i++, object++)
+    for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
-        if(g_cur_map_id != object->mapid)
+        if(g_cur_map_id != object->mapid || !object->type)
             continue;
 
         if (object->type == ET_KEY)
@@ -150,6 +154,19 @@ void draw_map()
             ubox_put_tile((object->x >> 3) + 1, (object->y >> 3) + 1, WARP_TILE + 1);
         }
     }
+}
+
+void draw_map()
+{
+    // draw the map!
+    //
+    //  - is not compressed (which limits how many maps we can store)
+    //  - our map is just the tile numbers
+    //
+    // so we do it in one call by coping our map to the backtround tile map
+    // addr in the VDP VRAM
+    ubox_wait_vsync();
+    ubox_write_vm((uint8_t *)0x1800, MAP_W * MAP_H, cur_map_data);
 }
 
 void draw_hud()
@@ -256,64 +273,100 @@ struct entity *find_collide_object(uint8_t x, uint8_t y, int type)
 
 void update_enemy()
 {
-    // check for the player; if alive and not invulnerable!
-    // we use small hit boxes
-    if (lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
+    if (self->extra == ENEMY_STATIC)
     {
-        // change direction
-        self->dir ^= 1;
 
-        // remove one life (is more like "hits")
-        lives--;
-        draw_hud();
-        invuln = INVUL_TIME;
-
-        if (!lives)
+        if (!gameover_delay && lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
         {
-            // different sound effects if is game over
-            mplayer_init(SONG, SONG_SILENCE);
-            mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
-            gameover_delay = GAMEOVER_DELAY;
+            lives--;
+
+            invuln = INVUL_TIME;
+
+            if (!lives)
+            {
+                // different sound effects if is game over
+                mplayer_init(SONG, SONG_SILENCE);
+                mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
+                gameover_delay = GAMEOVER_DELAY;
+                g_gamestate = STATE_GAME_OVER;
+            }
+            else
+            {
+                mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
+                gameover_delay = GAMEOVER_DELAY;
+                g_gamestate = STATE_GAME_RESET;
+            }
+        }
+
+        sp.x = self->x;
+        sp.y = self->y - 1;
+
+        sp.pattern = self->pat;
+        sp.attr = 10;
+        spman_alloc_fixed_sprite(&sp);
+
+
+    }
+
+    /*else if (self->extra == ENEMY_MOVE)
+    {
+        if (lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
+        {
+            // change direction
+            self->dir ^= 1;
+
+            // remove one life (is more like "hits")
+            lives--;
+            draw_hud();
+            invuln = INVUL_TIME;
+
+            if (!lives)
+            {
+                // different sound effects if is game over
+                mplayer_init(SONG, SONG_SILENCE);
+                mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
+                gameover_delay = GAMEOVER_DELAY;
+            }
+            else
+                mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
+        }
+
+        // left or right?
+        if (self->dir)
+        {
+            // change direction
+            if (self->x == 2 || is_map_blocked(self->x, self->y + 15))
+                self->dir ^= 1;
+            else
+                self->x -= 1;
         }
         else
-            mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
-    }
+        {
+            // change direction
+            if (self->x == 255 - 16 || is_map_blocked(self->x + 15, self->y + 15))
+                self->dir ^= 1;
+            else
+                self->x += 1;
+        }
 
-    // left or right?
-    if (self->dir)
-    {
-        // change direction
-        if (self->x == 2 || is_map_blocked(self->x, self->y + 15))
-            self->dir ^= 1;
-        else
-            self->x -= 1;
-    }
-    else
-    {
-        // change direction
-        if (self->x == 255 - 16 || is_map_blocked(self->x + 15, self->y + 15))
-            self->dir ^= 1;
-        else
-            self->x += 1;
-    }
+        // update the walking animation
+        if (self->delay++ == FRAME_WAIT)
+        {
+            self->delay = 0;
+            if (++self->frame == WALK_CYCLE)
+                self->frame = 0;
+        }
 
-    // update the walking animation
-    if (self->delay++ == FRAME_WAIT)
-    {
-        self->delay = 0;
-        if (++self->frame == WALK_CYCLE)
-            self->frame = 0;
-    }
-
-    // allocate the sprites
-    sp.x = self->x;
-    // y on the screen starts in 255
-    sp.y = self->y - 1;
-    // find which pattern to show
-    sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
-    // red
-    sp.attr = 9;
-    spman_alloc_sprite(&sp);
+        // allocate the sprites
+        sp.x = self->x;
+        // y on the screen starts in 255
+        sp.y = self->y - 1;
+        // find which pattern to show
+        sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
+        // red
+        sp.attr = 9;
+        spman_alloc_sprite(&sp);
+    }*/
 }
 
 void move_next_map(uint8_t mapId)
@@ -323,9 +376,10 @@ void move_next_map(uint8_t mapId)
     ubox_fill_screen(WHITESPACE_TILE);    
 
     ap_uncompress(cur_map_data, cur_map[mapId] + 3);
-
+    
     draw_map();
-
+    draw_static_object();
+    
     draw_hud();
 
     ubox_enable_screen();
@@ -376,14 +430,16 @@ void update_player()
     uint8_t moved = 0;
 
     // player is dead
-    if (!lives)
-        return;
+    //if (!lives)
+       // return;
 
     // decrease counter if set
     if (invuln)
         invuln--;
 
-    if (control & UBOX_MSX_CTL_RIGHT)
+    if(!gameover_delay)
+    {
+        if (control & UBOX_MSX_CTL_RIGHT)
     {
         self->dir = DIR_RIGHT;
         moved = 1;
@@ -485,6 +541,7 @@ void update_player()
 
     if (exitobject && jewels == 0)
         g_gamestate = STATE_GAME_CLEAR;
+    }     
 
     // if we are invulnerable, don't draw odd frames
     // and we get a nice blinking effect
@@ -510,7 +567,6 @@ void update_player()
 void run_game(int stage)
 {
     uint8_t i;
-    lives = MAX_LIVES;
     invuln = 0;
     gameover_delay = 0;
     g_cur_map_id = 0;
@@ -522,14 +578,13 @@ void run_game(int stage)
     ubox_disable_screen();
     ubox_fill_screen(WHITESPACE_TILE);
 
-    if (stage == 1)
-        init_map_entities(2);
-    else
-        init_map_entities(1);
-
+    init_map_entities(stage);
+  
     ap_uncompress(cur_map_data, cur_map[g_cur_map_id] + 3);
 
     draw_map();
+
+    draw_static_object();
 
     draw_hud();
 
@@ -552,7 +607,9 @@ void run_game(int stage)
         {
             // if finished, exit
             if (--gameover_delay == 0)
+            {
                 break;
+            }
         }
 
         // read the selected control

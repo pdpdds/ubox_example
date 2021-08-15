@@ -8,3 +8,5 @@
 #include "enemy.h"
 #include "map.h"
 #include "map2.h"
+#include "map3.h"
+#include "map4.h"

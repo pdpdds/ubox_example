@@ -3,6 +3,7 @@
         "game.h": "c",
         "string.h": "c",
         "spman.h": "c",
-        "ubox.h": "c"
+        "ubox.h": "c",
+        "map4.h": "c"
     }
 }
