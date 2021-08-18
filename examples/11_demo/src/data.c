@@ -11,3 +11,4 @@
 #include "map3.h"
 #include "map4.h"
 #include "map5.h"
+#include "map6.h"

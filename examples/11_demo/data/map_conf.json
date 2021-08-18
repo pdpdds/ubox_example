@@ -29,6 +29,16 @@
             "bytes": 0,
             "name": "warp",
             "w": 1
+        },
+	{
+            "bytes": 0,
+            "name": "vertical_foothold",
+            "w": 1
+        },
+	{
+            "bytes": 0,
+            "name": "horizon_foothold",
+            "w": 1
         }
     ]
 }

@@ -22,7 +22,7 @@ const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
 #define BLANK_TILE          0
 
 #define MAX_LIVES 3
-#define MAX_LEVEL 6
+#define MAX_LEVEL 7
 
 #define MAX_ENTITIES 50
 
@@ -64,6 +64,14 @@ enum entity_type
     ET_WARP,
 };
 
+enum player_state
+{
+    PS_NORMAL = 0,
+    PS_FALL,
+};
+
+
+
 enum enemy_type
 {
     ENEMY_STATIC = 0,
@@ -84,6 +92,11 @@ struct entity
     uint8_t delay;
     uint8_t frame;
     void (*update)();
+};
+
+struct PLAYER_INFO
+{
+    uint8_t state;
 };
 
 void run_game(int stage);

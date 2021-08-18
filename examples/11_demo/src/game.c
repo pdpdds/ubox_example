@@ -17,10 +17,12 @@
 #include "map3.h"
 #include "map4.h"
 #include "map5.h"
+#include "map6.h"
 #include "player.h"
 #include "enemy.h"
 
 extern uint8_t g_gamestate;
+struct PLAYER_INFO g_player_info;
 
 struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
 
@@ -47,14 +49,14 @@ uint8_t g_maxEntities = 0;
 uint8_t g_cur_map_id = 0;
 void init_map_entities(uint8_t stage)
 {
-    uint8_t i = 0;    
+    uint8_t i = 0;
     uint8_t mapCount = 1;
     spman_init();
 
     if (stage == 1)
         cur_map = map;
     else if (stage == 2)
-        cur_map = map2;  
+        cur_map = map2;
     else if (stage == 3)
         cur_map = map3;
     else if (stage == 4)
@@ -66,11 +68,12 @@ void init_map_entities(uint8_t stage)
     {
         cur_map = map5;
     }
+    else if (stage == 6)
+    {
+        cur_map = map6;
+    }
     else
         cur_map = map;
-        
-        
-
 
     for (i = 0; i < mapCount; i++)
     {
@@ -78,7 +81,7 @@ void init_map_entities(uint8_t stage)
     }
 
     uint8_t typ, last = 0;
-    
+
     memset(entities, 0, sizeof(struct entity) * MAX_ENTITIES);
 
     for (i = 0; i < mapCount; i++)
@@ -98,7 +101,7 @@ void init_map_entities(uint8_t stage)
             entities[last].y = m[2];
             entities[last].identifier = m[3];
             entities[last].extra = m[4];
-            
+
             entities[last].dir = m[0] & DIR_FLAG ? DIR_LEFT : DIR_RIGHT;
 
             switch (typ)
@@ -145,7 +148,7 @@ void draw_static_object()
     struct entity *object;
     for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
-        if(g_cur_map_id != object->mapid || !object->type)
+        if (g_cur_map_id != object->mapid || !object->type)
             continue;
 
         if (object->type == ET_KEY)
@@ -200,7 +203,7 @@ uint8_t is_map_jewel(uint8_t x, uint8_t y)
     struct entity *object;
     for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
-        
+
         if (object->type == ET_KEY)
         {
             if (((x >> 3) == (object->x >> 3)) && ((y >> 3) == (object->y >> 3)))
@@ -309,8 +312,6 @@ void update_enemy()
         sp.pattern = self->pat;
         sp.attr = 10;
         spman_alloc_fixed_sprite(&sp);
-
-
     }
 
     else if (self->extra == ENEMY_MOVE)
@@ -322,7 +323,7 @@ void update_enemy()
 
             // remove one life (is more like "hits")
             lives--;
-          
+
             invuln = INVUL_TIME;
 
             if (!lives)
@@ -337,7 +338,7 @@ void update_enemy()
             {
                 mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
                 gameover_delay = GAMEOVER_DELAY;
-                 g_gamestate = STATE_GAME_RESET;
+                g_gamestate = STATE_GAME_RESET;
             }
         }
 
@@ -383,13 +384,13 @@ void move_next_map(uint8_t mapId)
 {
 
     ubox_disable_screen();
-    ubox_fill_screen(WHITESPACE_TILE);    
+    ubox_fill_screen(WHITESPACE_TILE);
 
     ap_uncompress(cur_map_data, cur_map[mapId] + 3);
-    
+
     draw_map();
     draw_static_object();
-    
+
     draw_hud();
 
     ubox_enable_screen();
@@ -434,27 +435,23 @@ void update_exit()
     }
 }
 
-void update_player()
+uint8_t check_floor(uint8_t x, uint8_t y)
 {
-    // to know if we need to update the walk animation
+    uint8_t t = cur_map_data[(x >> 3) + (y >> 3) * MAP_W];
+    if (t <= LAST_SOLID_TILE)
+        return 1;
+
+    return 0;
+}
+
+uint8_t update_player_move()
+{
     uint8_t moved = 0;
-
-    // player is dead
-    //if (!lives)
-       // return;
-
-    // decrease counter if set
-    if (invuln)
-        invuln--;
-
-    if(!gameover_delay)
-    {
-        if (control & UBOX_MSX_CTL_RIGHT)
+    if (control & UBOX_MSX_CTL_RIGHT)
     {
         self->dir = DIR_RIGHT;
         moved = 1;
 
-        // wrap horizontally
         if (self->x == 256 - 16)
         {
             g_cur_map_id += 1;
@@ -462,8 +459,8 @@ void update_player()
             self->mapid = g_cur_map_id;
 
             move_next_map(g_cur_map_id);
-            
         }
+
         // check if not solid, using bottom right
         else if (!is_map_blocked(self->x + 15, self->y + 15))
             self->x += 2;
@@ -482,8 +479,6 @@ void update_player()
             self->x = (uint8_t)(256 - 16);
 
             move_next_map(g_cur_map_id);
-            
-            
         }
         // check if not solid, using bottom left
         else if (!is_map_blocked(self->x, self->y + 15))
@@ -529,32 +524,85 @@ void update_player()
             self->flags = 0;
     }
 
-    // it moved, or at least pushed against a wall
-    if (moved)
+    if (control & UBOX_MSX_CTL_RIGHT)
     {
-        // update the walking animation
-        if (self->delay++ == FRAME_WAIT)
+        if (!check_floor(self->x + 6, self->y + 16))
         {
-            self->delay = 0;
-            if (++self->frame == WALK_CYCLE)
+            moved = 0;
+            g_player_info.state = PS_FALL;
+        }
+    }
+    if (control & UBOX_MSX_CTL_LEFT)
+    {
+        if (!check_floor(self->x + 10, self->y + 16))
+        {
+            moved = 0;
+            g_player_info.state = PS_FALL;
+        }
+    }
+
+    return moved;
+}
+
+void update_player_fall()
+{
+    self->y += 4;
+
+    if(check_floor(self->x + 6, self->y + 16))
+    {
+        g_player_info.state = PS_NORMAL;
+    }
+}
+
+void update_player()
+{
+    uint8_t moved = 0;
+
+    // player is dead
+    //if (!lives)
+    // return;
+
+    // decrease counter if set
+    if (invuln)
+        invuln--;
+
+    if (!gameover_delay)
+    {
+        if(g_player_info.state == PS_NORMAL)
+        {
+          moved = update_player_move();     
+        }
+        else if(g_player_info.state == PS_FALL)
+        {
+            update_player_fall();
+        }
+            
+        // 플레이어가 움직였다면 애니메이션을 갱신한다.
+        if (moved)
+        {
+            //걷기 애니메이션을 갱신
+            if (self->delay++ == FRAME_WAIT)
+            {
+                self->delay = 0;
+                if (++self->frame == WALK_CYCLE)
+                    self->frame = 0;
+            }
+        }
+        else
+        {
+            //움직이지 않았다면 단순히 서있는 스프라이트를 그린다.
+            if (self->frame)
+            {
                 self->frame = 0;
+                self->delay = 0;
+            }
         }
-    }
-    else
-    {
-        // just stand
-        if (self->frame)
-        {
-            self->frame = 0;
-            self->delay = 0;
-        }
-    }
 
-    struct entity *exitobject = find_collide_object(self->x, self->y, ET_EXIT);
+        struct entity *exitobject = find_collide_object(self->x, self->y, ET_EXIT);
 
-    if (exitobject && jewels == 0)
-        g_gamestate = STATE_GAME_CLEAR;
-    }     
+        if (exitobject && jewels == 0)
+            g_gamestate = STATE_GAME_CLEAR;
+    }
 
     // if we are invulnerable, don't draw odd frames
     // and we get a nice blinking effect
@@ -586,13 +634,14 @@ void run_game(int stage)
     g_maxEntities = 0;
     jewels = 0;
 
-    g_gamestate = STATE_IN_GAME;    
+    g_gamestate = STATE_IN_GAME;
+    g_player_info.state = PS_NORMAL;
 
     ubox_disable_screen();
     ubox_fill_screen(WHITESPACE_TILE);
 
     init_map_entities(stage);
-  
+
     ap_uncompress(cur_map_data, cur_map[g_cur_map_id] + 3);
 
     draw_map();
@@ -608,45 +657,33 @@ void run_game(int stage)
     while (1)
     {
 
-        // exit the game
         if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
             break;
 
         if (g_gamestate == STATE_GAME_CLEAR)
             break;
 
-        // we are in the gameover delay
         if (gameover_delay)
         {
-            // if finished, exit
             if (--gameover_delay == 0)
             {
                 break;
             }
         }
 
-        // read the selected control
         control = ubox_read_ctl(ctl);
 
-        // update all the entities:
-        // - self is a pointer to THIS entity
-        // - because we don't create/destroy entities dynamically
-        //   when we found one that is unused we are done
         for (i = 0, self = entities; i < g_maxEntities; i++, self++)
         {
-            
+
             if (self->type && self->mapid == g_cur_map_id)
-                self->update();            
+                self->update();
         }
 
-        // ensure we wait to our desired update rate
         ubox_wait();
-        // update sprites on screen
         spman_update();
     }
 
-    // stop the in game music
     mplayer_init(SONG, SONG_SILENCE);
-    // hide all the sprites before going back to the menu
     spman_hide_all_sprites();
 }
