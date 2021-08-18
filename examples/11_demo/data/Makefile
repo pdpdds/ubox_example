@@ -1,5 +1,5 @@
 OUTPUT := ../generated
-GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h $(OUTPUT)/map5.h  $(OUTPUT)/map6.h
+GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/foothold.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h $(OUTPUT)/map5.h  $(OUTPUT)/map6.h
 
 all: $(GENERATED)
 
@@ -11,6 +11,9 @@ $(OUTPUT)/player.h: player.png
 
 $(OUTPUT)/enemy.h: enemy.png
 	python3.9 ../../../tools/png2sprites.py -i enemy_sprite $< > $@
+
+$(OUTPUT)/foothold.h: foothold.png
+	python3.9 ../../../tools/png2sprites.py -i foothold $< > $@
 
 $(OUTPUT)/map.h: map.json map_conf.json
 	python3.9 ../tools/map.py --aplib --room-height 21 map.json map > $@

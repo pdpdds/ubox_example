@@ -20,6 +20,7 @@
 #include "map6.h"
 #include "player.h"
 #include "enemy.h"
+#include "foothold.h"
 
 extern uint8_t g_gamestate;
 struct PLAYER_INFO g_player_info;
@@ -47,6 +48,33 @@ uint8_t get_entity_count(const uint8_t *mapData)
 
 uint8_t g_maxEntities = 0;
 uint8_t g_cur_map_id = 0;
+
+void update_foothold()
+{
+
+    if (self->dir)
+    {
+        if (is_map_blocked(self->x, self->y + 7))
+            self->dir ^= 1;
+        else
+            self->x -= 1;
+    }
+    else
+    {
+        if (is_map_blocked(self->x + 15, self->y + 7))
+            self->dir ^= 1;
+        else
+            self->x += 1;
+    }
+
+    sp.x = self->x;
+    sp.y = self->y - 1;
+
+    sp.pattern = self->pat;
+    sp.attr = 10;
+    spman_alloc_fixed_sprite(&sp);
+}
+
 void init_map_entities(uint8_t stage)
 {
     uint8_t i = 0;
@@ -131,6 +159,11 @@ void init_map_entities(uint8_t stage)
                 entities[last].pat = spman_alloc_pat(PAT_ENEMY, enemy_sprite[0], 3, 0);
                 spman_alloc_pat(PAT_ENEMY_FLIP, enemy_sprite[0], 3, 1);
                 entities[last].update = update_enemy;
+                break;
+            case ET_FOOTHOLD:
+                // 3 frames
+                entities[last].pat = spman_alloc_pat(PAT_FOOTHOLD, foothold[0], 3, 0);
+                entities[last].update = update_foothold;
                 break;
             }
 
@@ -278,6 +311,8 @@ struct entity *find_collide_object(uint8_t x, uint8_t y, int type)
 
     return 0;
 }
+
+
 
 void update_enemy()
 {

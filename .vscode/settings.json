@@ -4,6 +4,7 @@
         "string.h": "c",
         "spman.h": "c",
         "ubox.h": "c",
-        "map4.h": "c"
+        "map4.h": "c",
+        "enemy.h": "c"
     }
 }

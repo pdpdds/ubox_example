@@ -40,6 +40,7 @@ enum pattern_type
     PAT_PLAYER_FLIP,
     PAT_ENEMY,
     PAT_ENEMY_FLIP,
+    PAT_FOOTHOLD,
 };
 
 enum GAME_STATE
@@ -62,6 +63,7 @@ enum entity_type
     ET_EXIT,
     ET_KEY,
     ET_WARP,
+    ET_FOOTHOLD,
 };
 
 enum player_state

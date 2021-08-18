@@ -32,12 +32,7 @@
         },
 	{
             "bytes": 0,
-            "name": "vertical_foothold",
-            "w": 1
-        },
-	{
-            "bytes": 0,
-            "name": "horizon_foothold",
+            "name": "foothold",
             "w": 1
         }
     ]
