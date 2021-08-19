@@ -1,13 +1,20 @@
 ../build/data.rel: data.c ../generated/tiles.h ../generated/player.h \
  ../generated/enemy.h ../generated/foothold.h ../generated/map.h \
  ../generated/map2.h ../generated/map3.h ../generated/map4.h \
- ../generated/map5.h ../generated/map6.h
+ ../generated/map5.h ../generated/map6.h ../generated/map7.h \
+ ../generated/map8.h
+../build/enemy_logic.rel: enemy_logic.c enemy_logic.h game.h \
+ ../../../include/spman.h ../../../include/ubox.h \
+ ../../../include/mplayer.h main.h
+../build/foothold_logic.rel: foothold_logic.c game.h ../../../include/spman.h \
+ ../../../include/ubox.h
 ../build/game.rel: game.c ../../../include/ubox.h ../../../include/spman.h \
  ../../../include/ubox.h ../../../include/mplayer.h ../../../include/ap.h \
  helpers.h main.h game.h ../generated/map.h ../generated/map2.h \
  ../generated/map3.h ../generated/map4.h ../generated/map5.h \
- ../generated/map6.h ../generated/player.h ../generated/enemy.h \
- ../generated/foothold.h
+ ../generated/map6.h ../generated/map7.h ../generated/map8.h \
+ ../generated/player.h ../generated/enemy.h ../generated/foothold.h \
+ foothold_logic.h enemy_logic.h
 ../build/helpers.rel: helpers.c ../../../include/ubox.h helpers.h
 ../build/main.rel: main.c ../../../include/ubox.h ../../../include/mplayer.h \
  helpers.h game.h main.h ../generated/tiles.h

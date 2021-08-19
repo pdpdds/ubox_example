@@ -1,5 +1,6 @@
 OUTPUT := ../generated
-GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/foothold.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h $(OUTPUT)/map5.h  $(OUTPUT)/map6.h
+GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/foothold.h $(OUTPUT)/map.h $(OUTPUT)/map2.h  $(OUTPUT)/map3.h  $(OUTPUT)/map4.h $(OUTPUT)/map5.h  $(OUTPUT)/map6.h $(OUTPUT)/map7.h \
+		$(OUTPUT)/map8.h	
 
 all: $(GENERATED)
 
@@ -31,7 +32,13 @@ $(OUTPUT)/map5.h: map5.json map_conf.json
 	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map5.json map5 > $@	
 	
 $(OUTPUT)/map6.h: map6.json map_conf.json
-	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map6.json map6 > $@		
+	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map6.json map6 > $@	
+	
+$(OUTPUT)/map7.h: map7.json map_conf.json
+	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map7.json map7 > $@	
+
+$(OUTPUT)/map8.h: map8.json map_conf.json
+	python3.9 ../tools/map.py --aplib --room-width 32 --room-height 21 map8.json map8 > $@
 
 .PHONY: all clean
 clean:

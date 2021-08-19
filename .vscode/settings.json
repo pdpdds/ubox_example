@@ -5,6 +5,9 @@
         "spman.h": "c",
         "ubox.h": "c",
         "map4.h": "c",
-        "enemy.h": "c"
+        "enemy.h": "c",
+        "player.h": "c",
+        "foothold.h": "c",
+        "stdint.h": "c"
     }
 }

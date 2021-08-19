@@ -3,12 +3,6 @@
 
 #ifndef LOCAL
 #define LOCAL extern
-#else
-
-#define WALK_CYCLE 4
-
-const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
-
 #endif
 
 #define MAP_W 32
@@ -22,7 +16,7 @@ const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
 #define BLANK_TILE          0
 
 #define MAX_LIVES 3
-#define MAX_LEVEL 7
+#define MAX_LEVEL 9
 
 #define MAX_ENTITIES 50
 
@@ -33,6 +27,8 @@ const uint8_t walk_frames[WALK_CYCLE] = { 0, 1, 0, 2 };
 #define FRAME_WAIT 3
 #define INVUL_TIME 64
 #define GAMEOVER_DELAY 72
+
+#define FOOTHOLD_DELAY 36
 
 enum pattern_type
 {
@@ -70,14 +66,7 @@ enum player_state
 {
     PS_NORMAL = 0,
     PS_FALL,
-};
-
-
-
-enum enemy_type
-{
-    ENEMY_STATIC = 0,
-    ENEMY_MOVE,
+    PS_FOOTHOLD,
 };
 
 struct entity
@@ -132,6 +121,12 @@ LOCAL uint8_t gameover_delay;
 
 LOCAL struct sprite_attr sp;
 LOCAL struct entity *self;
+
+#define WALK_CYCLE 4
+extern const uint8_t walk_frames[WALK_CYCLE];
+extern uint8_t g_gamestate;
+extern uint8_t update_player_move();
+extern struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
 
 #ifdef LOCAL
 #undef LOCAL

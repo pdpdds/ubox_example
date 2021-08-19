@@ -18,14 +18,20 @@
 #include "map4.h"
 #include "map5.h"
 #include "map6.h"
+#include "map7.h"
+#include "map8.h"
+
 #include "player.h"
 #include "enemy.h"
 #include "foothold.h"
 
-extern uint8_t g_gamestate;
-struct PLAYER_INFO g_player_info;
+#include "foothold_logic.h"
+#include "enemy_logic.h"
 
-struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
+struct PLAYER_INFO g_player_info;
+const uint8_t walk_frames[WALK_CYCLE] = {0, 1, 0, 2};
+uint8_t g_maxEntities = 0;
+uint8_t g_cur_map_id = 0;
 
 uint8_t get_entity_count(const uint8_t *mapData)
 {
@@ -44,35 +50,6 @@ uint8_t get_entity_count(const uint8_t *mapData)
     }
 
     return entityCount;
-}
-
-uint8_t g_maxEntities = 0;
-uint8_t g_cur_map_id = 0;
-
-void update_foothold()
-{
-
-    if (self->dir)
-    {
-        if (is_map_blocked(self->x, self->y + 7))
-            self->dir ^= 1;
-        else
-            self->x -= 1;
-    }
-    else
-    {
-        if (is_map_blocked(self->x + 15, self->y + 7))
-            self->dir ^= 1;
-        else
-            self->x += 1;
-    }
-
-    sp.x = self->x;
-    sp.y = self->y - 1;
-
-    sp.pattern = self->pat;
-    sp.attr = 10;
-    spman_alloc_fixed_sprite(&sp);
 }
 
 void init_map_entities(uint8_t stage)
@@ -99,6 +76,14 @@ void init_map_entities(uint8_t stage)
     else if (stage == 6)
     {
         cur_map = map6;
+    }
+    else if (stage == 7)
+    {
+        cur_map = map7;
+    }
+    else if (stage == 8)
+    {
+        cur_map = map8;
     }
     else
         cur_map = map;
@@ -312,109 +297,6 @@ struct entity *find_collide_object(uint8_t x, uint8_t y, int type)
     return 0;
 }
 
-
-
-void update_enemy()
-{
-    if (self->extra == ENEMY_STATIC)
-    {
-
-        if (!gameover_delay && lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
-        {
-            lives--;
-
-            invuln = INVUL_TIME;
-
-            if (!lives)
-            {
-                // different sound effects if is game over
-                mplayer_init(SONG, SONG_SILENCE);
-                mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
-                gameover_delay = GAMEOVER_DELAY;
-                g_gamestate = STATE_GAME_OVER;
-            }
-            else
-            {
-                mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
-                gameover_delay = GAMEOVER_DELAY;
-                g_gamestate = STATE_GAME_RESET;
-            }
-        }
-
-        sp.x = self->x;
-        sp.y = self->y - 1;
-
-        sp.pattern = self->pat;
-        sp.attr = 10;
-        spman_alloc_fixed_sprite(&sp);
-    }
-
-    else if (self->extra == ENEMY_MOVE)
-    {
-        if (!gameover_delay && lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y)
-        {
-            // change direction
-            self->dir ^= 1;
-
-            // remove one life (is more like "hits")
-            lives--;
-
-            invuln = INVUL_TIME;
-
-            if (!lives)
-            {
-                // different sound effects if is game over
-                mplayer_init(SONG, SONG_SILENCE);
-                mplayer_play_effect_p(EFX_DEAD, EFX_CHAN_NO, 0);
-                gameover_delay = GAMEOVER_DELAY;
-                g_gamestate = STATE_GAME_OVER;
-            }
-            else
-            {
-                mplayer_play_effect_p(EFX_HIT, EFX_CHAN_NO, 0);
-                gameover_delay = GAMEOVER_DELAY;
-                g_gamestate = STATE_GAME_RESET;
-            }
-        }
-
-        // left or right?
-        if (self->dir)
-        {
-            // change direction
-            if (self->x == 2 || is_map_blocked(self->x, self->y + 15))
-                self->dir ^= 1;
-            else
-                self->x -= 1;
-        }
-        else
-        {
-            // change direction
-            if (self->x == 255 - 16 || is_map_blocked(self->x + 15, self->y + 15))
-                self->dir ^= 1;
-            else
-                self->x += 1;
-        }
-
-        // update the walking animation
-        if (self->delay++ == FRAME_WAIT)
-        {
-            self->delay = 0;
-            if (++self->frame == WALK_CYCLE)
-                self->frame = 0;
-        }
-
-        // allocate the sprites
-        sp.x = self->x;
-        // y on the screen starts in 255
-        sp.y = self->y - 1;
-        // find which pattern to show
-        sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
-        // red
-        sp.attr = 9;
-        spman_alloc_fixed_sprite(&sp);
-    }
-}
-
 void move_next_map(uint8_t mapId)
 {
 
@@ -470,6 +352,25 @@ void update_exit()
     }
 }
 
+struct entity* check_foothold(uint8_t x, uint8_t y)
+{
+    uint16_t i;
+    struct entity *object;
+
+    for (i = 0, object = entities; i < g_maxEntities; i++, object++)
+    {
+        if (object->type == ET_FOOTHOLD && g_cur_map_id == object->mapid)
+        {
+            if ((x >= object->x && (x <= (object->x + 16))) && y == object->y)
+            {
+                return object;
+            }
+        }
+    }
+
+    return 0;
+}
+
 uint8_t check_floor(uint8_t x, uint8_t y)
 {
     uint8_t t = cur_map_data[(x >> 3) + (y >> 3) * MAP_W];
@@ -478,6 +379,7 @@ uint8_t check_floor(uint8_t x, uint8_t y)
 
     return 0;
 }
+
 
 uint8_t update_player_move()
 {
@@ -559,23 +461,6 @@ uint8_t update_player_move()
             self->flags = 0;
     }
 
-    if (control & UBOX_MSX_CTL_RIGHT)
-    {
-        if (!check_floor(self->x + 6, self->y + 16))
-        {
-            moved = 0;
-            g_player_info.state = PS_FALL;
-        }
-    }
-    if (control & UBOX_MSX_CTL_LEFT)
-    {
-        if (!check_floor(self->x + 10, self->y + 16))
-        {
-            moved = 0;
-            g_player_info.state = PS_FALL;
-        }
-    }
-
     return moved;
 }
 
@@ -583,9 +468,80 @@ void update_player_fall()
 {
     self->y += 4;
 
-    if(check_floor(self->x + 6, self->y + 16))
+    if (check_floor(self->x + 6, self->y + 16))
     {
         g_player_info.state = PS_NORMAL;
+    }
+}
+
+void update_player_state(uint8_t moved)
+{
+    if (g_player_info.state == PS_FALL)
+    {
+        if (check_floor(self->x + 4, self->y + 16))
+        {
+            g_player_info.state = PS_NORMAL;
+        }
+        else
+        {
+            struct entity *object = check_foothold(self->x + 4, self->y + 16);
+
+            if (object)
+            {
+                g_player_info.state = PS_FOOTHOLD;
+            }
+        }
+    }
+    else if (g_player_info.state == PS_NORMAL && moved)
+    {
+        uint8_t loc_x = self->x;
+        uint8_t loc_y = self->y + 16;
+
+        if (control & UBOX_MSX_CTL_RIGHT)
+        {
+            loc_x += 4;
+        }
+        else if (control & UBOX_MSX_CTL_LEFT)
+        {
+            loc_x += 12;
+        }
+        else
+        {
+             loc_x += 4;
+        }
+
+        if (!check_floor(loc_x, loc_y))
+        {
+            struct entity *object = check_foothold(self->x + 4, self->y + 16);
+
+            if (object)
+            {
+                g_player_info.state = PS_FOOTHOLD;
+            }
+            else
+            {
+                g_player_info.state = PS_FALL;
+            }
+        }
+    }
+    else if (g_player_info.state == PS_FOOTHOLD && moved)
+    {
+
+        struct entity *object = 0;
+        if (self->dir == 0)
+            object = check_foothold(self->x + 4, self->y + 16);
+        else
+            object = check_foothold(self->x + 12, self->y + 16);
+
+        if (!object)
+        {
+            if (check_floor(self->x + 4, self->y + 16))
+            {
+                g_player_info.state = PS_NORMAL;
+            }
+            else
+                g_player_info.state = PS_FALL;
+        }
     }
 }
 
@@ -603,15 +559,19 @@ void update_player()
 
     if (!gameover_delay)
     {
-        if(g_player_info.state == PS_NORMAL)
+        if (g_player_info.state == PS_NORMAL)
         {
-          moved = update_player_move();     
+            moved = update_player_move();
         }
-        else if(g_player_info.state == PS_FALL)
+        else if (g_player_info.state == PS_FALL)
         {
             update_player_fall();
         }
-            
+        else if (g_player_info.state == PS_FOOTHOLD)
+        {
+            moved = update_player_foothold();
+        }
+
         // 플레이어가 움직였다면 애니메이션을 갱신한다.
         if (moved)
         {
@@ -638,6 +598,8 @@ void update_player()
         if (exitobject && jewels == 0)
             g_gamestate = STATE_GAME_CLEAR;
     }
+
+    update_player_state(moved);
 
     // if we are invulnerable, don't draw odd frames
     // and we get a nice blinking effect
