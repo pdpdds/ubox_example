@@ -8,6 +8,7 @@
         "enemy.h": "c",
         "player.h": "c",
         "foothold.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "map": "c"
     }
 }

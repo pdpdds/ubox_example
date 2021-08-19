@@ -6,6 +6,7 @@ enum enemy_type
 {
     ENEMY_STATIC = 0,
     ENEMY_MOVE,
+    ENEMY_RANGE,
 };
 
 void update_enemy();

@@ -20,6 +20,7 @@
 #include "map6.h"
 #include "map7.h"
 #include "map8.h"
+#include "map9.h"
 
 #include "player.h"
 #include "enemy.h"
@@ -32,6 +33,20 @@ struct PLAYER_INFO g_player_info;
 const uint8_t walk_frames[WALK_CYCLE] = {0, 1, 0, 2};
 uint8_t g_maxEntities = 0;
 uint8_t g_cur_map_id = 0;
+
+unsigned char** g_map[MAX_LEVEL] =
+{
+    map,
+    map2,
+    map3,
+    map4,
+    map5,
+    map6,
+    map7,
+    map8,
+    map9,
+    0,
+};
 
 uint8_t get_entity_count(const uint8_t *mapData)
 {
@@ -58,36 +73,13 @@ void init_map_entities(uint8_t stage)
     uint8_t mapCount = 1;
     spman_init();
 
-    if (stage == 1)
-        cur_map = map;
-    else if (stage == 2)
-        cur_map = map2;
-    else if (stage == 3)
-        cur_map = map3;
-    else if (stage == 4)
+    cur_map = g_map[stage - 1];
+    
+    if (stage == 4)
     {
         mapCount = 2;
-        cur_map = map4;
     }
-    else if (stage == 5)
-    {
-        cur_map = map5;
-    }
-    else if (stage == 6)
-    {
-        cur_map = map6;
-    }
-    else if (stage == 7)
-    {
-        cur_map = map7;
-    }
-    else if (stage == 8)
-    {
-        cur_map = map8;
-    }
-    else
-        cur_map = map;
-
+    
     for (i = 0; i < mapCount; i++)
     {
         g_maxEntities += get_entity_count(cur_map[i]);

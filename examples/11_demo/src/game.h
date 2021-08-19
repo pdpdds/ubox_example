@@ -16,7 +16,7 @@
 #define BLANK_TILE          0
 
 #define MAX_LIVES 3
-#define MAX_LEVEL 9
+#define MAX_LEVEL 50
 
 #define MAX_ENTITIES 50
 
@@ -127,6 +127,7 @@ extern const uint8_t walk_frames[WALK_CYCLE];
 extern uint8_t g_gamestate;
 extern uint8_t update_player_move();
 extern struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
+extern unsigned char** g_map[MAX_LEVEL];
 
 #ifdef LOCAL
 #undef LOCAL
