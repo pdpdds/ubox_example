@@ -126,6 +126,9 @@ def main():
     if mw < args.rw or mw % args.rw:
         parser.error("Map size witdh not multiple of the room size")
 
+    rw_count = mw / args.rw
+    rh_count = mh / args.rh
+	 
     tilewidth = data["tilewidth"]
     tileheight = data["tileheight"]
 
@@ -135,6 +138,7 @@ def main():
     firstgid = def_tileset.get("firstgid")
 
     out = []
+
     for y in range(0, mh, args.rh):
         for x in range(0, mw, args.rw):
             block = []
@@ -305,6 +309,9 @@ def main():
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
     print("/* compressed: %s */" % args.aplib)    
+
+    print("#define %s_RW_COUNT %d" % (args.id.upper(), rw_count))
+    print("#define %s_RH_COUNT %d" % (args.id.upper(), rh_count))
 
     print("#ifdef LOCAL")
 

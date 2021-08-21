@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+from argparse import ArgumentParser
+from collections import defaultdict
+from os import path
+import json
+import os
+import subprocess
+import struct
+import sys
+import tempfile
+import traceback
+
+__version__ = "1.0"
+
+DEF_MAX_LEVEL = 9
+DEF_STR_MAX_LEVEL = "MAX_LEVEL"
+
+
+def main():
+
+    parser = ArgumentParser(description="Map importer",
+                            epilog="Copyright (C) 2020 Juan J Martinez <jjm@usebox.net>",
+                            )
+
+    
+    parser.add_argument("id", help="variable name")
+   
+
+    args = parser.parse_args()
+
+   
+    print("#ifndef _%s_H" % args.id.upper())
+    print("#define _%s_H" % args.id.upper())
+
+    print("#define %s %d" % (DEF_STR_MAX_LEVEL, DEF_MAX_LEVEL))
+    
+    print("#ifdef LOCAL")
+
+    for j in range(1, DEF_MAX_LEVEL + 1):
+        print("#include \"map%d.h\"" % (j) )
+
+    print("unsigned char** g_map[%s + 1] =  {" % (DEF_STR_MAX_LEVEL) )
+    for j in range(1, DEF_MAX_LEVEL + 1):
+        print("   map%d, " % (j) )
+    
+    print("   0,")
+    print("};")
+
+    print("unsigned char g_map_room_count[%s + 1] =  {" % (DEF_STR_MAX_LEVEL) )
+    for j in range(1, DEF_MAX_LEVEL + 1):
+        print("   MAP%d_RW_COUNT, " % (j) )
+    
+    print("   0,")
+    print("};")
+
+
+    print("#else")
+
+    print("extern unsigned char** g_map[%s + 1];" % (DEF_STR_MAX_LEVEL) )
+
+    print("extern unsigned char g_map_room_count[%s + 1];" % (DEF_STR_MAX_LEVEL) )
+
+    print("#endif // LOCAL")
+    print("#endif // _%s_H" % args.id.upper())
+
+
+if __name__ == "__main__":
+    remove_list = []
+
+    try:
+        main()
+    except Exception as ex:
+        print("FATAL: %s\n***" % ex, file=sys.stderr)
+        traceback.print_exc()
+
+        for filename in remove_list:
+            if os.path.exists(filename):
+                os.unlink(filename)
+
+        sys.exit(1)

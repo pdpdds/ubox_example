@@ -9,6 +9,9 @@
         "player.h": "c",
         "foothold.h": "c",
         "stdint.h": "c",
-        "map": "c"
+        "map": "c",
+        "map5.h": "c",
+        "map_summary.h": "c",
+        "map1.h": "c"
     }
 }

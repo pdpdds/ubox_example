@@ -5,6 +5,7 @@
 
 #include "helpers.h"
 #include "game.h"
+#include "map_summary.h"
 
 #define LOCAL
 #include "main.h"
@@ -53,7 +54,7 @@ void draw_menu()
             ubox_wait_for(16);
             g_gamestate = STATE_GAME_RESET;
             lives = MAX_LIVES;
-            g_stage = 9;
+            g_stage = 1;
             break;
         }
 
@@ -117,7 +118,7 @@ void draw_stage_clear()
 
 void draw_stage_reset()
 {
-    if(g_stage >= MAX_LEVEL || g_map[g_stage - 1] == 0)
+    if(g_stage > MAX_LEVEL || g_map[g_stage - 1] == 0)
     {
         g_gamestate = STATE_NO_MAP;
         return;

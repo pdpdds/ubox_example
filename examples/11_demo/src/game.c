@@ -12,15 +12,8 @@
 #define LOCAL
 #include "game.h"
 
-#include "map.h"
-#include "map2.h"
-#include "map3.h"
-#include "map4.h"
-#include "map5.h"
-#include "map6.h"
-#include "map7.h"
-#include "map8.h"
-#include "map9.h"
+#include "map_summary.h"
+
 
 #include "player.h"
 #include "enemy.h"
@@ -34,19 +27,6 @@ const uint8_t walk_frames[WALK_CYCLE] = {0, 1, 0, 2};
 uint8_t g_maxEntities = 0;
 uint8_t g_cur_map_id = 0;
 
-unsigned char** g_map[MAX_LEVEL] =
-{
-    map,
-    map2,
-    map3,
-    map4,
-    map5,
-    map6,
-    map7,
-    map8,
-    map9,
-    0,
-};
 
 uint8_t get_entity_count(const uint8_t *mapData)
 {
@@ -75,10 +55,7 @@ void init_map_entities(uint8_t stage)
 
     cur_map = g_map[stage - 1];
     
-    if (stage == 4)
-    {
-        mapCount = 2;
-    }
+    mapCount = g_map_room_count[stage - 1];
     
     for (i = 0; i < mapCount; i++)
     {
