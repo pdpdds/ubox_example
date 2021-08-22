@@ -51,7 +51,7 @@ void draw_menu()
             ubox_wait_for(16);
             g_gamestate = STATE_GAME_RESET;
             lives = MAX_LIVES;
-            g_stage = 7;
+            g_stage = 10;
             break;
         }
 

@@ -13,7 +13,7 @@ import traceback
 
 __version__ = "1.0"
 
-DEF_MAX_LEVEL = 9
+
 DEF_STR_MAX_LEVEL = "MAX_LEVEL"
 
 
@@ -25,11 +25,13 @@ def main():
 
     
     parser.add_argument("id", help="variable name")
-   
+    parser.add_argument(
+        "--map-count", dest="mc", default=1, type=int,
+        help="map count")
 
     args = parser.parse_args()
-
-   
+    DEF_MAX_LEVEL = args.mc
+    
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
 
