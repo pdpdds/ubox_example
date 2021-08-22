@@ -14,40 +14,43 @@
 
 #include "map_summary.h"
 
-
 #include "player.h"
 #include "enemy.h"
 #include "foothold.h"
 
 #include "foothold_logic.h"
 #include "enemy_logic.h"
+#include "player_logic.h"
 
-struct PLAYER_INFO g_player_info;
+
 const uint8_t walk_frames[WALK_CYCLE] = {0, 1, 0, 2};
 uint8_t g_maxEntities = 0;
-uint8_t g_cur_map_id = 0;
 
 
-uint8_t get_entity_count(const uint8_t *mapData)
+
+static uint8_t get_entity_count(const uint8_t *mapData)
 {
     uint8_t entityCount = 0;
 
     const uint8_t *m = (const uint8_t *)(mapData);
 
+    //map header is 3 bytes. map size 2byte + 0x00 1 byte
     m += (uint16_t)(m[0] | m[1] << 8) + 3;
 
+    //(map pointer + 3 bytes + map_size) indicates entities. 
+    //entity size is 5 bytes. id, type, x, y, type. extra
+    //if *m is 0xff it means map data over.
     while (*m != 0xff)
     {
         entityCount++;
-
-        // 엔터티는 5바이트로 표현됨
+        
         m += 5;
     }
 
     return entityCount;
 }
 
-void init_map_entities(uint8_t stage)
+static void init_map_entities(uint8_t stage)
 {
     uint8_t i = 0;
     uint8_t mapCount = 1;
@@ -123,13 +126,13 @@ void init_map_entities(uint8_t stage)
 
             last++;
 
-            // 엔터티는 5바이트로 표현됨
+            // entity is 5 bytes
             m += 5;
         }
     }
 }
 
-void draw_static_object()
+static void draw_static_object()
 {
     uint8_t i = 0;
     struct entity *object;
@@ -151,20 +154,13 @@ void draw_static_object()
     }
 }
 
-void draw_map()
+static void draw_map()
 {
-    // draw the map!
-    //
-    //  - is not compressed (which limits how many maps we can store)
-    //  - our map is just the tile numbers
-    //
-    // so we do it in one call by coping our map to the backtround tile map
-    // addr in the VDP VRAM
     ubox_wait_vsync();
     ubox_write_vm((uint8_t *)0x1800, MAP_W * MAP_H, cur_map_data);
 }
 
-void draw_hud()
+static void draw_hud()
 {
     uint8_t i;
 
@@ -204,34 +200,6 @@ uint8_t is_map_jewel(uint8_t x, uint8_t y)
     }
 
     return 0;
-}
-
-// x and y in pixels; always check the bottom tile!
-uint8_t is_map_elevator_down(uint8_t x, uint8_t y)
-{
-    uint8_t t = cur_map_data[(x >> 3) + (y >> 3) * MAP_W];
-
-    // first check the elevator platform comparing tiles
-    if (t != 9 && t != 10)
-        return 0;
-
-    // then check the elevator tube comparing tiles
-    t = cur_map_data[(x >> 3) + ((y >> 3) - 1) * MAP_W];
-    return (t != 14 && t != 15);
-}
-
-// x and y in pixels; always check the bottom tile!
-uint8_t is_map_elevator_up(uint8_t x, uint8_t y)
-{
-    uint8_t t = cur_map_data[(x >> 3) + (y >> 3) * MAP_W];
-
-    // first check the elevator platform comparing tiles
-    if (t != 9 && t != 10)
-        return 0;
-
-    // then check the elevator tube comparing tiles
-    t = cur_map_data[(x >> 3) + ((y >> 3) - 1) * MAP_W];
-    return (t == 14 || t == 15);
 }
 
 struct entity *find_object(uint8_t id)
@@ -350,246 +318,6 @@ uint8_t check_floor(uint8_t x, uint8_t y)
 }
 
 
-uint8_t update_player_move()
-{
-    uint8_t moved = 0;
-    if (control & UBOX_MSX_CTL_RIGHT)
-    {
-        self->dir = DIR_RIGHT;
-        moved = 1;
-
-        if (self->x == 256 - 16)
-        {
-            g_cur_map_id += 1;
-            self->x = 16;
-            self->mapid = g_cur_map_id;
-
-            move_next_map(g_cur_map_id);
-        }
-
-        // check if not solid, using bottom right
-        else if (!is_map_blocked(self->x + 15, self->y + 15))
-            self->x += 2;
-    }
-
-    if (control & UBOX_MSX_CTL_LEFT)
-    {
-        self->dir = DIR_LEFT;
-        moved = 1;
-
-        // wrap horizontally
-        if (self->x == 2)
-        {
-            g_cur_map_id -= 1;
-            self->mapid = g_cur_map_id;
-            self->x = (uint8_t)(256 - 16);
-
-            move_next_map(g_cur_map_id);
-        }
-        // check if not solid, using bottom left
-        else if (!is_map_blocked(self->x, self->y + 15))
-            self->x -= 2;
-    }
-
-    is_map_jewel(self->x + 8, self->y + 15);
-
-    if (control & UBOX_MSX_CTL_FIRE1)
-    {
-        // use flags to prevent repeat: the player will
-        // have to release fire to use the elevator again
-        if (!self->flags)
-        {
-            self->flags = 1;
-
-            struct entity *object = find_collide_object(self->x, self->y, ET_WARP);
-
-            if (object)
-            {
-                mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
-                struct entity *next = find_object(object->extra);
-
-                if (next)
-                {
-                    if (next->mapid != self->mapid)
-                    {
-                        g_cur_map_id = next->mapid;
-                        self->mapid = g_cur_map_id;
-
-                        move_next_map(next->mapid);
-                    }
-
-                    self->x = next->x;
-                    self->y = next->y;
-                }
-            }
-        }
-    }
-    else
-    {
-        if (self->flags)
-            self->flags = 0;
-    }
-
-    return moved;
-}
-
-void update_player_fall()
-{
-    self->y += 4;
-
-    if (check_floor(self->x + 6, self->y + 16))
-    {
-        g_player_info.state = PS_NORMAL;
-    }
-}
-
-void update_player_state(uint8_t moved)
-{
-    if (g_player_info.state == PS_FALL)
-    {
-        if (check_floor(self->x + 4, self->y + 16))
-        {
-            g_player_info.state = PS_NORMAL;
-        }
-        else
-        {
-            struct entity *object = check_foothold(self->x + 4, self->y + 16);
-
-            if (object)
-            {
-                g_player_info.state = PS_FOOTHOLD;
-            }
-        }
-    }
-    else if (g_player_info.state == PS_NORMAL && moved)
-    {
-        uint8_t loc_x = self->x;
-        uint8_t loc_y = self->y + 16;
-
-        if (control & UBOX_MSX_CTL_RIGHT)
-        {
-            loc_x += 4;
-        }
-        else if (control & UBOX_MSX_CTL_LEFT)
-        {
-            loc_x += 12;
-        }
-        else
-        {
-             loc_x += 4;
-        }
-
-        if (!check_floor(loc_x, loc_y))
-        {
-            struct entity *object = check_foothold(self->x + 4, self->y + 16);
-
-            if (object)
-            {
-                g_player_info.state = PS_FOOTHOLD;
-            }
-            else
-            {
-                g_player_info.state = PS_FALL;
-            }
-        }
-    }
-    else if (g_player_info.state == PS_FOOTHOLD && moved)
-    {
-
-        struct entity *object = 0;
-        if (self->dir == 0)
-            object = check_foothold(self->x + 4, self->y + 16);
-        else
-            object = check_foothold(self->x + 12, self->y + 16);
-
-        if (!object)
-        {
-            if (check_floor(self->x + 4, self->y + 16))
-            {
-                g_player_info.state = PS_NORMAL;
-            }
-            else
-                g_player_info.state = PS_FALL;
-        }
-    }
-}
-
-void update_player()
-{
-    uint8_t moved = 0;
-
-    // player is dead
-    //if (!lives)
-    // return;
-
-    // decrease counter if set
-    if (invuln)
-        invuln--;
-
-    if (!gameover_delay)
-    {
-        if (g_player_info.state == PS_NORMAL)
-        {
-            moved = update_player_move();
-        }
-        else if (g_player_info.state == PS_FALL)
-        {
-            update_player_fall();
-        }
-        else if (g_player_info.state == PS_FOOTHOLD)
-        {
-            moved = update_player_foothold();
-        }
-
-        // 플레이어가 움직였다면 애니메이션을 갱신한다.
-        if (moved)
-        {
-            //걷기 애니메이션을 갱신
-            if (self->delay++ == FRAME_WAIT)
-            {
-                self->delay = 0;
-                if (++self->frame == WALK_CYCLE)
-                    self->frame = 0;
-            }
-        }
-        else
-        {
-            //움직이지 않았다면 단순히 서있는 스프라이트를 그린다.
-            if (self->frame)
-            {
-                self->frame = 0;
-                self->delay = 0;
-            }
-        }
-
-        struct entity *exitobject = find_collide_object(self->x, self->y, ET_EXIT);
-
-        if (exitobject && jewels == 0)
-            g_gamestate = STATE_GAME_CLEAR;
-    }
-
-    update_player_state(moved);
-
-    // if we are invulnerable, don't draw odd frames
-    // and we get a nice blinking effect
-    if (invuln & 1)
-        return;
-
-    // allocate the player sprites; fixed so they never flicker
-    sp.x = self->x;
-    // y on the screen starts in 255
-    sp.y = self->y - 1;
-    // find which pattern to show
-    sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 8;
-    // green
-    sp.attr = 12;
-    spman_alloc_fixed_sprite(&sp);
-    // second one is 4 patterns away (16x16 sprites)
-    sp.pattern += 4;
-    // white
-    sp.attr = 15;
-    spman_alloc_fixed_sprite(&sp);
-}
 
 void run_game(int stage)
 {

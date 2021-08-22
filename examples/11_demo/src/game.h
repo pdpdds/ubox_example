@@ -91,20 +91,15 @@ struct PLAYER_INFO
 
 void run_game(int stage);
 
-void update_player();
+
 void update_enemy();
 void update_item();
 void update_warp();
 void update_exit();
 
-void draw_map();
-void draw_hud();
-
-void erase_battery(uint8_t x, uint8_t y);
 
 uint8_t is_map_blocked(uint8_t x, uint8_t y);
-uint8_t is_map_elevator_up(uint8_t x, uint8_t y);
-uint8_t is_map_elevator_down(uint8_t x, uint8_t y);
+
 
 LOCAL struct entity entities[MAX_ENTITIES];
 
@@ -117,15 +112,26 @@ LOCAL uint8_t lives;
 LOCAL uint8_t invuln;
 LOCAL uint8_t jewels;
 LOCAL uint8_t gameover_delay;
+LOCAL uint8_t g_gamestate;
+LOCAL uint8_t g_cur_map_id;
+LOCAL uint8_t g_stage;
+LOCAL struct PLAYER_INFO g_player_info;
 
 LOCAL struct sprite_attr sp;
 LOCAL struct entity *self;
 
 #define WALK_CYCLE 4
 extern const uint8_t walk_frames[WALK_CYCLE];
-extern uint8_t g_gamestate;
+
+
 extern uint8_t update_player_move();
 extern struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
+extern void move_next_map(uint8_t mapId);
+extern uint8_t is_map_blocked(uint8_t x, uint8_t y);
+extern uint8_t is_map_jewel(uint8_t x, uint8_t y);
+extern uint8_t check_floor(uint8_t x, uint8_t y);
+extern struct entity *find_object(uint8_t id);
+extern struct entity* check_foothold(uint8_t x, uint8_t y);
 
 #ifdef LOCAL
 #undef LOCAL

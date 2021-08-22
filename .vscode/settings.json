@@ -12,6 +12,7 @@
         "map": "c",
         "map5.h": "c",
         "map_summary.h": "c",
-        "map1.h": "c"
+        "map1.h": "c",
+        "enemy_logic.h": "c"
     }
 }

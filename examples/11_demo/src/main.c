@@ -13,9 +13,6 @@
 #include "tiles.h"
 #include <stdio.h>
 
-uint8_t g_gamestate = STATE_TITLE;
-uint8_t g_stage = 1;
-
 void draw_menu()
 {
     uint8_t i;
@@ -54,7 +51,7 @@ void draw_menu()
             ubox_wait_for(16);
             g_gamestate = STATE_GAME_RESET;
             lives = MAX_LIVES;
-            g_stage = 1;
+            g_stage = 7;
             break;
         }
 
@@ -160,6 +157,7 @@ void main()
     ubox_set_user_isr(mplayer_play);
 
     g_gamestate = STATE_TITLE;
+    g_stage = 1;
 
     while (1)
     {
