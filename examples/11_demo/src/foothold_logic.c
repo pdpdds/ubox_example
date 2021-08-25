@@ -56,10 +56,13 @@ void update_foothold()
         }
     }
 
-    sp.x = self->x;
-    sp.y = self->y - 1;
+    if (g_cur_map_id == self->mapid)
+    {
+        sp.x = self->x;
+        sp.y = self->y - 1;
 
-    sp.pattern = self->pat;
-    sp.attr = 10;
-    spman_alloc_fixed_sprite(&sp);
+        sp.pattern = self->pat;
+        sp.attr = 10;
+        spman_alloc_fixed_sprite(&sp);
+    }
 }

@@ -5,7 +5,6 @@
 #include <mplayer.h>
 #include "main.h"
 
-
 static uint8_t is_intersect_player()
 {
     return !gameover_delay && lives && !invuln && entities[0].x + 6 < self->x + 10 && self->x + 6 < entities[0].x + 10 && self->y == entities[0].y;
@@ -36,12 +35,15 @@ void update_enemy()
             }
         }
 
-        sp.x = self->x;
-        sp.y = self->y - 1;
+        if (g_cur_map_id == self->mapid)
+        {
+            sp.x = self->x;
+            sp.y = self->y - 1;
 
-        sp.pattern = self->pat;
-        sp.attr = 10;
-        spman_alloc_fixed_sprite(&sp);
+            sp.pattern = self->pat;
+            sp.attr = 10;
+            spman_alloc_fixed_sprite(&sp);
+        }
     }
     else if (self->extra == ENEMY_RANGE)
     {
@@ -85,9 +87,13 @@ void update_enemy()
             self->dir = dir;
             if (self->dir)
             {
-                if (self->x == 2 || is_map_blocked(self->x, self->y + 15))
-                    self->dir ^= 1;
-                else
+
+                if (self->x == 2)
+                {
+                    self->x = (uint8_t)(255 - 16);
+                    self->mapid--;
+                }
+                else if (!is_map_blocked(self->x, self->y + 15))
                 {
                     self->x -= 1;
                     moved = 1;
@@ -95,9 +101,12 @@ void update_enemy()
             }
             else
             {
-                if (self->x == 255 - 16 || is_map_blocked(self->x + 15, self->y + 15))
-                    self->dir ^= 1;
-                else
+                if (self->x == 255 - 16)
+                {
+                    self->x = 2;
+                    self->mapid++;
+                }
+                else if (!is_map_blocked(self->x + 15, self->y + 15))
                 {
                     self->x += 1;
                     moved = 1;
@@ -120,11 +129,15 @@ void update_enemy()
             self->frame = 0;
         }
 
-        sp.x = self->x;
-        sp.y = self->y - 1;
-        sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
-        sp.attr = 11;
-        spman_alloc_fixed_sprite(&sp);
+        if (g_cur_map_id == self->mapid)
+        {
+
+            sp.x = self->x;
+            sp.y = self->y - 1;
+            sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
+            sp.attr = 11;
+            spman_alloc_fixed_sprite(&sp);
+        }
     }
     else if (self->extra == ENEMY_MOVE)
     {
@@ -151,7 +164,6 @@ void update_enemy()
             }
         }
 
-
         if (self->dir)
         {
             if (self->x == 2 || is_map_blocked(self->x, self->y + 15))
@@ -174,11 +186,14 @@ void update_enemy()
                 self->frame = 0;
         }
 
-        sp.x = self->x;
-        sp.y = self->y - 1;
+        if (g_cur_map_id == self->mapid)
+        {
+            sp.x = self->x;
+            sp.y = self->y - 1;
 
-        sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
-        sp.attr = 9;
-        spman_alloc_fixed_sprite(&sp);
+            sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 4;
+            sp.attr = 9;
+            spman_alloc_fixed_sprite(&sp);
+        }
     }
 }
