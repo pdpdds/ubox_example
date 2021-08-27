@@ -24,7 +24,7 @@ def main():
     
     parser.add_argument("id", help="variable name")
     parser.add_argument(
-        "--map-count", dest="mc", default=1, type=int,
+        "--map-count", dest="mc", default=0, type=int,
         help="map count")
 
     args = parser.parse_args()
@@ -36,8 +36,10 @@ def main():
         if os.path.isfile(mapjson) == 0:
             break 
         DEF_MAX_LEVEL+=1;
+
+    if args.mc != 0:
+        DEF_MAX_LEVEL = mc
  
-    
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
 
