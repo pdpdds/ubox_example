@@ -13,9 +13,7 @@ import traceback
 
 __version__ = "1.0"
 
-
 DEF_STR_MAX_LEVEL = "MAX_LEVEL"
-
 
 def main():
 
@@ -30,7 +28,15 @@ def main():
         help="map count")
 
     args = parser.parse_args()
-    DEF_MAX_LEVEL = args.mc
+    DEF_MAX_LEVEL = 0
+
+    for j in range(1, 100):
+        mapname = "map%d" % (j)
+        mapjson = "map%d.json" % (j)
+        if os.path.isfile(mapjson) == 0:
+            break 
+        DEF_MAX_LEVEL+=1;
+ 
     
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
@@ -39,8 +45,7 @@ def main():
     
     print("#ifdef LOCAL")
 
-    for j in range(1, DEF_MAX_LEVEL + 1):
-        print("#include \"map%d.h\"" % (j) )
+    print("#include \"map.h\"")
 
     print("unsigned char** g_map[%s + 1] =  {" % (DEF_STR_MAX_LEVEL) )
     for j in range(1, DEF_MAX_LEVEL + 1):

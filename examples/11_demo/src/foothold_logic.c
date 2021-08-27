@@ -1,30 +1,10 @@
 #include <stdint.h>
 #include "game.h"
+#include "game_util.h"
 #include <spman.h>
 
-uint8_t update_player_foothold()
-{
-    uint8_t moved = update_player_move();
 
-    struct entity *object = find_collide_object(self->x + 8, self->y + 16, ET_FOOTHOLD);
-
-    if (object)
-    {
-        if (object->delay == 0)
-        {
-
-            if ((!object->dir) && !is_map_blocked(self->x + 12, self->y + 15))
-            {
-                self->x += 1;
-            }
-            else if (object->dir && !is_map_blocked(self->x + 4, self->y + 15))
-                self->x -= 1;
-        }
-    }
-
-    return moved;
-}
-
+#define FOOTHOLD_DELAY 36
 
 void update_foothold()
 {
@@ -56,7 +36,7 @@ void update_foothold()
         }
     }
 
-    if (g_cur_map_id == self->mapid)
+    if (g_cur_room_id == self->roomId)
     {
         sp.x = self->x;
         sp.y = self->y - 1;

@@ -1,9 +1,12 @@
 #include "player_logic.h"
 #include "game.h"
+#include "game_util.h"
 #include <spman.h>
 #include <mplayer.h>
 #include "main.h"
 #include "foothold_logic.h"
+
+uint8_t update_player_foothold();
 
 uint8_t update_player_move()
 {
@@ -15,11 +18,11 @@ uint8_t update_player_move()
 
         if (self->x == 256 - 16)
         {
-            g_cur_map_id += 1;
-            self->x = 16;
-            self->mapid = g_cur_map_id;
+            g_cur_room_id += 1;
+            self->x = 2;
+            self->roomId = g_cur_room_id;
 
-            move_next_map(g_cur_map_id);
+            move_next_room(g_cur_room_id);
         }
         else if (!is_map_blocked(self->x + 15, self->y + 15))
             self->x += 2;
@@ -32,11 +35,11 @@ uint8_t update_player_move()
 
         if (self->x == 2)
         {
-            g_cur_map_id -= 1;
-            self->mapid = g_cur_map_id;
+            g_cur_room_id -= 1;
+            self->roomId = g_cur_room_id;
             self->x = (uint8_t)(256 - 16);
 
-            move_next_map(g_cur_map_id);
+            move_next_room(g_cur_room_id);
         }
         else if (!is_map_blocked(self->x, self->y + 15))
             self->x -= 2;
@@ -60,12 +63,12 @@ uint8_t update_player_move()
 
                 if (next)
                 {
-                    if (next->mapid != self->mapid)
+                    if (next->roomId != self->roomId)
                     {
-                        g_cur_map_id = next->mapid;
-                        self->mapid = g_cur_map_id;
+                        g_cur_room_id = next->roomId;
+                        self->roomId = g_cur_room_id;
 
-                        move_next_map(next->mapid);
+                        move_next_room(next->roomId);
                     }
 
                     self->x = next->x;
@@ -228,4 +231,27 @@ void update_player()
     sp.pattern += 4;
     sp.attr = 15;
     spman_alloc_fixed_sprite(&sp);
+}
+
+uint8_t update_player_foothold()
+{
+    uint8_t moved = update_player_move();
+
+    struct entity *object = find_collide_object(self->x + 8, self->y + 16, ET_FOOTHOLD);
+
+    if (object)
+    {
+        if (object->delay == 0)
+        {
+
+            if ((!object->dir) && !is_map_blocked(self->x + 12, self->y + 15))
+            {
+                self->x += 1;
+            }
+            else if (object->dir && !is_map_blocked(self->x + 4, self->y + 15))
+                self->x -= 1;
+        }
+    }
+
+    return moved;
 }

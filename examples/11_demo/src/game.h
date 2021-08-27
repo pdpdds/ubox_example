@@ -18,6 +18,7 @@
 #define MAX_LIVES 3
 
 #define MAX_ENTITIES 50
+#define MAX_ROOM_COUNT 5
 
 #define DIR_FLAG 128
 
@@ -26,8 +27,6 @@
 #define FRAME_WAIT 3
 #define INVUL_TIME 64
 #define GAMEOVER_DELAY 72
-
-#define FOOTHOLD_DELAY 36
 
 enum pattern_type
 {
@@ -72,7 +71,7 @@ struct entity
 {
     uint8_t type;
     uint8_t identifier;
-    uint8_t mapid;
+    uint8_t roomId;
     uint8_t x;
     uint8_t y;
     uint8_t extra;
@@ -92,30 +91,22 @@ struct PLAYER_INFO
 void run_game(int stage);
 
 
-void update_enemy();
-void update_item();
-void update_warp();
-void update_exit();
-
-
-uint8_t is_map_blocked(uint8_t x, uint8_t y);
-
-
 LOCAL struct entity entities[MAX_ENTITIES];
 
 LOCAL uint8_t control;
 
 LOCAL const uint8_t** cur_map;
-LOCAL uint8_t cur_map_data[MAP_W * MAP_H];
+extern uint8_t cur_map_data[MAX_ROOM_COUNT][MAP_W * MAP_H];
 
 LOCAL uint8_t lives;
 LOCAL uint8_t invuln;
 LOCAL uint8_t jewels;
 LOCAL uint8_t gameover_delay;
 LOCAL uint8_t g_gamestate;
-LOCAL uint8_t g_cur_map_id;
+LOCAL uint8_t g_cur_room_id;
 LOCAL uint8_t g_stage;
 LOCAL struct PLAYER_INFO g_player_info;
+LOCAL uint8_t g_maxEntities;
 
 LOCAL struct sprite_attr sp;
 LOCAL struct entity *self;
@@ -124,14 +115,8 @@ LOCAL struct entity *self;
 extern const uint8_t walk_frames[WALK_CYCLE];
 
 
-extern uint8_t update_player_move();
-extern struct entity *find_collide_object(uint8_t x, uint8_t y, int type);
-extern void move_next_map(uint8_t mapId);
-extern uint8_t is_map_blocked(uint8_t x, uint8_t y);
-extern uint8_t is_map_jewel(uint8_t x, uint8_t y);
-extern uint8_t check_floor(uint8_t x, uint8_t y);
-extern struct entity *find_object(uint8_t id);
-extern struct entity* check_foothold(uint8_t x, uint8_t y);
+extern void move_next_room(uint8_t roomId);
+
 
 #ifdef LOCAL
 #undef LOCAL
