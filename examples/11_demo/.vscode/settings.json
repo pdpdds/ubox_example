@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "game_util.h": "c",
-        "map_summary.h": "c"
-    }
-}

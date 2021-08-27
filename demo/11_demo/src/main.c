@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 
 #include "ubox.h"
@@ -6,12 +7,13 @@
 #include "helpers.h"
 #include "game.h"
 #include "map_summary.h"
+#include "tiles.h"
 
 #define LOCAL
 #include "main.h"
 
-#include "tiles.h"
-#include <stdio.h>
+
+
 
 void draw_menu()
 {

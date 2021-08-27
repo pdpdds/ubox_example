@@ -14,6 +14,7 @@ import traceback
 __version__ = "1.0"
 
 DEF_STR_MAX_LEVEL = "MAX_LEVEL"
+MAX_LEVEL = 100
 
 def main():
 
@@ -28,36 +29,36 @@ def main():
         help="map count")
 
     args = parser.parse_args()
-    DEF_MAX_LEVEL = 0
+    LEVEL_COUNT = 0
 
-    for j in range(1, 100):
+    for j in range(1, MAX_LEVEL):
         mapname = "map%d" % (j)
         mapjson = "map%d.json" % (j)
         if os.path.isfile(mapjson) == 0:
             break 
-        DEF_MAX_LEVEL+=1;
+        LEVEL_COUNT+=1;
 
     if args.mc != 0:
-        DEF_MAX_LEVEL = mc
+        LEVEL_COUNT = mc
  
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
 
-    print("#define %s %d" % (DEF_STR_MAX_LEVEL, DEF_MAX_LEVEL))
+    print("#define %s %d" % (DEF_STR_MAX_LEVEL, LEVEL_COUNT))
     
     print("#ifdef LOCAL")
 
     print("#include \"map.h\"")
 
     print("unsigned char** g_map[%s + 1] =  {" % (DEF_STR_MAX_LEVEL) )
-    for j in range(1, DEF_MAX_LEVEL + 1):
+    for j in range(1, LEVEL_COUNT + 1):
         print("   map%d, " % (j) )
     
     print("   0,")
     print("};")
 
     print("unsigned char g_map_room_count[%s + 1] =  {" % (DEF_STR_MAX_LEVEL) )
-    for j in range(1, DEF_MAX_LEVEL + 1):
+    for j in range(1, LEVEL_COUNT + 1):
         print("   MAP%d_RW_COUNT, " % (j) )
     
     print("   0,")

@@ -15,9 +15,11 @@ import os.path
 
 __version__ = "1.0"
 
+MAX_LEVEL = 100
+
 
 def main():
-    for j in range(1, 100):
+    for j in range(1, MAX_LEVEL):
         mapname = "map%d" % (j)
         mapjson = "map%d.json" % (j)
         if os.path.isfile(mapjson) == 0:

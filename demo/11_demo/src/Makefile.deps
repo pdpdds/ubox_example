@@ -17,7 +17,7 @@
 ../build/helpers.rel: helpers.c ../../../include/ubox.h helpers.h
 ../build/item_logic.rel: item_logic.c item_logic.h game_util.h
 ../build/main.rel: main.c ../../../include/ubox.h ../../../include/mplayer.h \
- helpers.h game.h ../generated/map_summary.h main.h ../generated/tiles.h
+ helpers.h game.h ../generated/map_summary.h ../generated/tiles.h main.h
 ../build/player_logic.rel: player_logic.c player_logic.h game.h game_util.h \
  ../../../include/spman.h ../../../include/ubox.h \
  ../../../include/mplayer.h main.h foothold_logic.h
