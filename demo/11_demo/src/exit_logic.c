@@ -6,9 +6,12 @@
 
 void update_exit()
 {
-    if (jewels != 0 && self->roomId != g_cur_room_id)
+    if (jewels != 0)
         return;
 
+    if (self->roomId != g_cur_room_id)
+        return;
+        
     static uint8_t index = 0;
     if (self->delay++ == FRAME_WAIT)
     {
