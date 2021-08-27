@@ -8,6 +8,23 @@
 
 uint8_t update_player_foothold();
 
+uint8_t check_player_floor()
+{
+    return check_floor(self->x + 4, self->y + 16) || check_floor(self->x + 12, self->y + 16);
+}
+
+struct entity* check_player_foothold()
+{
+    struct entity *object = check_foothold(self->x + 4, self->y + 16);
+
+    if (object == 0)
+    {
+        object = check_foothold(self->x + 12, self->y + 16);
+    }
+
+    return object;
+}
+
 uint8_t update_player_move()
 {
     uint8_t moved = 0;
@@ -49,7 +66,7 @@ uint8_t update_player_move()
 
     if (control & UBOX_MSX_CTL_FIRE1)
     {
-        
+
         if (!self->flags)
         {
             self->flags = 1;
@@ -90,53 +107,36 @@ void update_player_fall()
 {
     self->y += 4;
 
-    if (check_floor(self->x + 6, self->y + 16))
+    if(check_player_floor())
     {
         g_player_info.state = PS_NORMAL;
     }
 }
 
+
 void update_player_state(uint8_t moved)
 {
     if (g_player_info.state == PS_FALL)
     {
-        if (check_floor(self->x + 4, self->y + 16))
+        if (check_player_floor())
         {
             g_player_info.state = PS_NORMAL;
         }
-        else
+        else if (check_player_foothold())
         {
-            struct entity *object = check_foothold(self->x + 4, self->y + 16);
 
-            if (object)
-            {
-                g_player_info.state = PS_FOOTHOLD;
-            }
+            g_player_info.state = PS_FOOTHOLD;
         }
     }
+
     else if (g_player_info.state == PS_NORMAL && moved)
     {
         uint8_t loc_x = self->x;
         uint8_t loc_y = self->y + 16;
 
-        if (control & UBOX_MSX_CTL_RIGHT)
+        if(!check_player_floor())
         {
-            loc_x += 4;
-        }
-        else if (control & UBOX_MSX_CTL_LEFT)
-        {
-            loc_x += 12;
-        }
-        else
-        {
-             loc_x += 4;
-        }
-
-        if (!check_floor(loc_x, loc_y))
-        {
-            struct entity *object = check_foothold(self->x + 4, self->y + 16);
-
-            if (object)
+            if(check_player_foothold())
             {
                 g_player_info.state = PS_FOOTHOLD;
             }
@@ -148,16 +148,11 @@ void update_player_state(uint8_t moved)
     }
     else if (g_player_info.state == PS_FOOTHOLD && moved)
     {
-
-        struct entity *object = 0;
-        if (self->dir == 0)
-            object = check_foothold(self->x + 4, self->y + 16);
-        else
-            object = check_foothold(self->x + 12, self->y + 16);
-
+        struct entity *object = check_player_foothold();
+        
         if (!object)
         {
-            if (check_floor(self->x + 4, self->y + 16))
+            if (check_player_floor())
             {
                 g_player_info.state = PS_NORMAL;
             }
@@ -223,11 +218,11 @@ void update_player()
 
     sp.x = self->x;
     sp.y = self->y - 1;
- 
+
     sp.pattern = self->pat + (walk_frames[self->frame] + self->dir * 3) * 8;
     sp.attr = 12;
     spman_alloc_fixed_sprite(&sp);
-   
+
     sp.pattern += 4;
     sp.attr = 15;
     spman_alloc_fixed_sprite(&sp);
@@ -237,7 +232,7 @@ uint8_t update_player_foothold()
 {
     uint8_t moved = update_player_move();
 
-    struct entity *object = find_collide_object(self->x + 8, self->y + 16, ET_FOOTHOLD);
+    struct entity *object = check_player_foothold();
 
     if (object)
     {

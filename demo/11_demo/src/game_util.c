@@ -75,7 +75,7 @@ uint8_t is_map_jewel(uint8_t x, uint8_t y)
     for (i = 0, object = entities; i < g_maxEntities; i++, object++)
     {
 
-        if (object->type == ET_KEY)
+        if (object->type == ET_KEY && object->roomId == g_cur_room_id)
         {
             if (((x >> 3) == (object->x >> 3)) && ((y >> 3) == (object->y >> 3)))
             {

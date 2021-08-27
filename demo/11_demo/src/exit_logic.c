@@ -6,7 +6,7 @@
 
 void update_exit()
 {
-    if (jewels != 0)
+    if (jewels != 0 && self->roomId != g_cur_room_id)
         return;
 
     static uint8_t index = 0;
