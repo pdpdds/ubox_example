@@ -4,7 +4,7 @@ ubox msx library was created by Juan J. Martinez
 
 [ubox MSX lib](https://www.usebox.net/jjm/ubox-msx-lib/)
 
-    GREEN, a demo for ubox MSX lib
+    ubox MSX lib
     Copyright (C) 2020-2021 by Juan J. Martinez <jjm@usebox.net>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,9 @@ ubox msx library was created by Juan J. Martinez
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
+    
+    
+## example games 
 
 <img src="./img/breakout.png">
 
