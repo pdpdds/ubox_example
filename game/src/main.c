@@ -94,9 +94,9 @@ void main()
     ubox_disable_screen();
 
     // upload our tileset
-    ubox_set_tiles(tiles);
+    ubox_set_tiles((uint8_t*)tiles);
     // and the colour information
-    ubox_set_tiles_colors(tiles_colors);
+    ubox_set_tiles_colors((uint8_t*)tiles_colors);
 
     // clear the screen
     ubox_fill_screen(WHITESPACE_TILE);

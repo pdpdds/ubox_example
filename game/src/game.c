@@ -4,7 +4,12 @@
 #include "ubox.h"
 #include "spman.h"
 #include "mplayer.h"
+
+#ifdef WIN32
+#include "expand.h"
+#else
 #include "ap.h"
+#endif
 
 #include "helpers.h"
 #include "main.h"
@@ -53,15 +58,15 @@ void init_map_entities()
             // because our entities are sorted by type!
             case ET_PLAYER:
                 // 3 frames x 2 sprites = 6
-                entities[last].pat = spman_alloc_pat(PAT_PLAYER, player_sprite[0], 6, 0);
-                spman_alloc_pat(PAT_PLAYER_FLIP, player_sprite[0], 6, 1);
+                entities[last].pat = spman_alloc_pat(PAT_PLAYER, (uint8_t*)player_sprite[0], 6, 0);
+                spman_alloc_pat(PAT_PLAYER_FLIP, (uint8_t*)player_sprite[0], 6, 1);
                 entities[last].update = update_player;
                 break;
 
             case ET_ENEMY:
                 // 3 frames
-                entities[last].pat = spman_alloc_pat(PAT_ENEMY, enemy_sprite[0], 3, 0);
-                spman_alloc_pat(PAT_ENEMY_FLIP, enemy_sprite[0], 3, 1);
+                entities[last].pat = spman_alloc_pat(PAT_ENEMY, (uint8_t*)enemy_sprite[0], 3, 0);
+                spman_alloc_pat(PAT_ENEMY_FLIP, (uint8_t*)enemy_sprite[0], 3, 1);
                 entities[last].update = update_enemy;
                 break;
         }
@@ -369,6 +374,19 @@ void update_player()
     spman_alloc_fixed_sprite(&sp);
 }
 
+size_t GetMapDataSize(const uint8_t* map)
+{
+    size_t count = 1;
+
+    while (*map != 0xff)
+    {
+        count++;
+        map++;
+    }
+
+    return count;
+}
+
 void run_game()
 {
     uint8_t i;
@@ -384,14 +402,20 @@ void run_game()
 
     // we only have one map, select it
     cur_map = map[0];
+
+#ifdef WIN32
+    size_t n = GetMapDataSize(cur_map);
+    apultra_decompress(cur_map + 3, cur_map_data, n - 3, 672, 0, 0);
+#else
     // uncompress map data into RAM, we will modify it
     // map data starts on byte 3 (skip map data size and entities size)
     ap_uncompress(cur_map_data, cur_map + 3);
+#endif
 
     // init entities before drawing
     init_map_entities();
-    draw_map();
 
+    draw_map();
     draw_hud();
 
     ubox_enable_screen();
@@ -431,6 +455,11 @@ void run_game()
         ubox_wait();
         // update sprites on screen
         spman_update();
+
+#ifdef WIN32
+        draw_map();
+        draw_hud();
+#endif
     }
 
     // stop the in game music

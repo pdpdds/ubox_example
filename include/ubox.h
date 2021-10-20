@@ -26,6 +26,10 @@
 
 #include <stdint.h>
 
+#ifdef WIN32
+#define __z88dk_fastcall
+#endif
+
 // @Screen and VDP functions
 //
 // These functions are not necessarily MSX 1 specific, but only MSX 1
@@ -172,11 +176,15 @@ uint8_t ubox_get_vsync_freq();
  * // code to run after the int
  * ```
  */
+#ifdef WIN32
+#define ubox_wait_vsync()
+#else
 #define ubox_wait_vsync() do { \
     __asm; \
     halt \
     __endasm; \
 } while(0)
+#endif
 // *INDENT-ON*
 
 // @Tile functions

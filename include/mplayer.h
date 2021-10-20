@@ -30,6 +30,10 @@
 
 #include <stdint.h>
 
+#ifdef WIN32
+#define __z88dk_fastcall
+#endif
+
 // @Initialization
 
 /**
