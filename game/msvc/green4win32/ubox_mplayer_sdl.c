@@ -1,14 +1,46 @@
 #include "mplayer.h"
+#include "SDL2/SDL_mixer.h"
+#include "main.h"
 
 uint8_t SONG[] = { 0,0,0,0,0 };
 uint8_t EFFECTS[] = { 0,0,0,0,0 };
 
+Mix_Music* ingame = 0; 
+Mix_Music* gameover = 0;
+
 void mplayer_init(uint8_t* song, uint8_t sub_song)
 {
-	/*
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) 
+	{
 		printf("SDL_mixer could not be initialized.\n");	
-	}*/
+	}
+
+	if (SONG_IN_GAME == sub_song)
+	{
+		if(!ingame)
+			ingame = Mix_LoadMUS("ingame.wav");
+
+		if (Mix_PlayMusic(ingame, 1) == -1)
+		{
+			return;
+		}
+	}
+	else if (SONG_GAME_OVER == sub_song)
+	{
+		if (!gameover)
+			gameover = Mix_LoadMUS("gameover.wav");
+
+		if (Mix_PlayMusic(gameover, 0) == -1)
+		{
+			return;
+		}
+	}
+	else if (SONG_SILENCE == sub_song)
+	{
+		Mix_HaltMusic();
+	}
+
+
 }
 
 void mplayer_init_effects(uint8_t* effects)
