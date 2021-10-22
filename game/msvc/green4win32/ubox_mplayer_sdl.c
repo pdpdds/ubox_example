@@ -20,7 +20,7 @@ void mplayer_init(uint8_t* song, uint8_t sub_song)
 		if(!ingame)
 			ingame = Mix_LoadMUS("ingame.wav");
 
-		if (Mix_PlayMusic(ingame, 1) == -1)
+		if (Mix_PlayMusic(ingame, -1) == -1)
 		{
 			return;
 		}

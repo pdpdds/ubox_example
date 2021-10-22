@@ -78,7 +78,12 @@ void draw_game_over()
     ubox_wait_for(128);
 }
 
+#ifdef WIN32
+#include <SDL2/SDL.h>
+int main(int argc, char** argv)
+#else
 void main()
+#endif
 {
     //  PAL: 50/2 = 25 FPS
     // NTSC: 60/2 = 30 FPS
