@@ -59,3 +59,4 @@ generated
 *.rel
 *.bak
 VS2017/.vs
+VS2017/Debug
