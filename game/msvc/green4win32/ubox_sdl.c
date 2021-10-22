@@ -138,11 +138,14 @@ void ubox_set_tiles(uint8_t* tiles)
 
 				uint8_t color = (tile_color >> 4);
 			
+				uint8_t color2 = (tile_color << 4);
+				color2 = color2 >> 4;
+
 				for (uint8_t t = 0; t < 8; t++)
 				{
-
 					uint8_t mask = 1 << (7 - t);
 					int index = ((i * 8 * 8 * 32) + (k) * 8 * 32 + (j * 8 + t)) * 3;
+
 
 					if (tile_pixels & mask)
 					{
@@ -152,9 +155,9 @@ void ubox_set_tiles(uint8_t* tiles)
 					}
 					else
 					{
-						g_tiles_rgb[index] = 0;
-						g_tiles_rgb[index + 1] = 0;
-						g_tiles_rgb[index + 2] = 0;
+						g_tiles_rgb[index] = sprite_pallete[color2].r;
+						g_tiles_rgb[index + 1] = sprite_pallete[color2].g;
+						g_tiles_rgb[index + 2] = sprite_pallete[color2].b;
 					}
 				}
 			}
