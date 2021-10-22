@@ -11,7 +11,11 @@ uint32_t screen_width = 640;
 uint32_t screen_height = 480;
 
 uint32_t map_width = 32;
-uint32_t map_height = (21);
+uint32_t map_height = 21;
+
+int32_t g__tick_interval = 73;
+
+extern SDL_Color sprite_pallete[16];
 
 void ubox_set_mode(uint8_t mode) 
 {
@@ -88,13 +92,10 @@ uint8_t ubox_get_vsync_freq()
 }
 
 
-void ubox_set_tiles(uint8_t* tiles)
-{
-	const char* tilename = "tiles.png";
+void load_png(const char* filename)
+{	
 	if (g_renderer == 0)
 		return;
-
-	SDL_SetRenderDrawColor(g_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 	//Initialize PNG loading
 	int imgFlags = IMG_INIT_PNG;
@@ -104,7 +105,7 @@ void ubox_set_tiles(uint8_t* tiles)
 		return;
 	}
 
-	SDL_Surface* surface = IMG_Load(tilename);
+	SDL_Surface* surface = IMG_Load(filename);
 
 	if (surface == 0)
 		return;
@@ -114,11 +115,88 @@ void ubox_set_tiles(uint8_t* tiles)
 	if (g_tile_texture == 0)
 		return;
 
-	SDL_FreeSurface(surface);	
+	SDL_FreeSurface(surface);
+}
+
+extern const unsigned char tiles_colors[2048];
+
+char g_tiles_rgb[2048 * 8 * 3];
+
+void ubox_set_tiles(uint8_t* tiles)
+{
+#if 1
+	load_png("tiles.png");
+#else
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			for (int k = 0; k < 8; k++)
+			{
+				uint8_t tile_pixels = tiles[(i * 8 * 32) + (j * 8) + k];
+				uint8_t tile_color = tiles_colors[(i * 8 * 32) + (j * 8) + k];
+
+				uint8_t color = (tile_color >> 4);
+
+
+				if (color == 0)
+				{
+					int gh = 0;
+				}
+								
+				for (int t = 0; t < 8; t++)
+				{
+
+					uint8_t mask = 1 << (7 - t);
+					int index = ((i * 8 * 8 * 32) + (k) * 8 * 32 + (j * 8 + t)) * 3;					
+
+					if (tile_pixels & mask)
+					{
+						
+						g_tiles_rgb[index] = sprite_pallete[color].r;
+						g_tiles_rgb[index + 1] = sprite_pallete[color].g;
+						g_tiles_rgb[index + 2] = sprite_pallete[color].b;						
+					}					
+					else
+					{
+						g_tiles_rgb[index] = 0;
+						g_tiles_rgb[index + 1] = 0;
+						g_tiles_rgb[index + 2] = 0;
+					}
+				}
+			}
+		}
+
+	}
+	
+
+	uint32_t rmask = 0x000000ff;
+	uint32_t gmask = 0x0000ff00;
+	uint32_t bmask = 0x00ff0000;
+	uint32_t amask = 0xff000000;
+
+	SDL_Surface* surface = SDL_CreateRGBSurfaceFrom((void*)g_tiles_rgb, 256, 64, 24, 3 * 256,
+		rmask, gmask, bmask, amask);
+
+	if (surface == NULL) {
+		SDL_Log("Creating surface failed: %s", SDL_GetError());		
+		exit(1);
+	}
+
+	g_tile_texture = SDL_CreateTextureFromSurface(g_renderer, surface);
+
+	if (g_tile_texture == 0)
+		return;
+
+	SDL_FreeSurface(surface);
+
+#endif
+
 }
 
 void ubox_set_tiles_colors(uint8_t* colors)
 {
+
 }
 
 void ubox_put_tile(uint8_t x, uint8_t y, uint8_t tile)
@@ -153,8 +231,6 @@ void ubox_fill_screen(uint8_t tile)
 {
 
 }
-
-int32_t g__tick_interval = 73;
 
 void ubox_init_isr(uint8_t wait_ticks)
 {
