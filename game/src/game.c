@@ -146,6 +146,7 @@ void erase_battery(uint8_t x, uint8_t y)
 
     // change the map data so we don't pick it up again
     cur_map_data[(x >> 3) + (y >> 3) * MAP_W] = t;
+    cur_map_data[(x >> 3) + ((y >> 3) - 1) * MAP_W] = t;
 
     // erase on the screen
     ubox_put_tile(x >> 3, y >> 3, t);

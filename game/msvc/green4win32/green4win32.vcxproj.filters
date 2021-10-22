@@ -27,7 +27,7 @@
     <ClCompile Include="ubox_sdl.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ubox_spman_sdl.c">
+    <ClCompile Include="ubox_spman_sdl.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ubox_mplayer_sdl.c">

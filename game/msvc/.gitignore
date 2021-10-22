@@ -60,3 +60,4 @@ generated
 *.bak
 Debug
 .vs
+Release
