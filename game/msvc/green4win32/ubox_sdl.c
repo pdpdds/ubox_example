@@ -367,7 +367,6 @@ uint8_t ubox_select_ctl()
 				case SDLK_SPACE: return UBOX_MSX_CTL_CURSOR;
 				case SDLK_m: return UBOX_MSX_CTL_CURSOR;
 				case SDLK_ESCAPE: exit(0);
-
 				}
 				exit_loop = 1;
 				break;
