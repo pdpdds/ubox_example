@@ -148,6 +148,7 @@ redraw_menu:
 
             goto redraw_menu;
         }
+
         ubox_wait();
     }
 }

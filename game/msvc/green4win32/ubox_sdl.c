@@ -353,8 +353,8 @@ uint8_t ubox_select_ctl()
 	read_key_7 = 0;
 
 	SDL_Event event;
-	char exit = 0;
-	while (!exit)
+	char exit_loop = 0;
+	while (!exit_loop)
 	{
 		while (SDL_PollEvent(&event))
 		{
@@ -366,13 +366,14 @@ uint8_t ubox_select_ctl()
 				{
 				case SDLK_SPACE: return UBOX_MSX_CTL_CURSOR;
 				case SDLK_m: return UBOX_MSX_CTL_CURSOR;
+				case SDLK_ESCAPE: exit(0);
 
 				}
-				exit = 1;
+				exit_loop = 1;
 				break;
 			}
 
-			if (exit)
+			if (exit_loop)
 				break;
 		}
 	}
