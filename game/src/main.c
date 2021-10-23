@@ -30,7 +30,12 @@ void draw_menu()
 
     put_text(11, 11, "PRESS FIRE");
 
+#ifdef WIN32
+    put_text(4, 2, "UBOX MSX LIB WIN32 DEMO!");
+    put_text(11, 18, "JUHANG PARK");
+#else
     put_text(7, 2, "UBOX MSX LIB DEMO!");
+#endif
     put_text(4, 16, "CODE, GRAPHICS AND SOUND");
     put_text(8, 17, "JUAN J. MARTINEZ");
     // 037 is ASCII 31 in octal, our Copyright sign
