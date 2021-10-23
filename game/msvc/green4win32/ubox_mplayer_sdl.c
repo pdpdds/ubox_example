@@ -5,8 +5,8 @@
 uint8_t SONG[] = { 0,0,0,0,0 };
 uint8_t EFFECTS[] = { 0,0,0,0,0 };
 
-Mix_Music* ingame = 0; 
-Mix_Music* gameover = 0;
+Mix_Chunk* ingame = 0;
+Mix_Chunk* gameover = 0;
 
 void mplayer_init(uint8_t* song, uint8_t sub_song)
 {
@@ -18,9 +18,9 @@ void mplayer_init(uint8_t* song, uint8_t sub_song)
 	if (SONG_IN_GAME == sub_song)
 	{
 		if(!ingame)
-			ingame = Mix_LoadMUS("ingame.wav");
+			ingame = Mix_LoadWAV("ingame.wav");
 
-		if (Mix_PlayMusic(ingame, -1) == -1)
+		if (Mix_PlayChannel(-1, ingame, -1) == -1)
 		{
 			return;
 		}
@@ -28,16 +28,16 @@ void mplayer_init(uint8_t* song, uint8_t sub_song)
 	else if (SONG_GAME_OVER == sub_song)
 	{
 		if (!gameover)
-			gameover = Mix_LoadMUS("gameover.wav");
+			gameover = Mix_LoadWAV("gameover.wav");
 
-		if (Mix_PlayMusic(gameover, 0) == -1)
+		if (Mix_PlayChannel(-1, gameover, 0) == -1)
 		{
 			return;
 		}
 	}
 	else if (SONG_SILENCE == sub_song)
 	{
-		Mix_HaltMusic();
+		Mix_HaltChannel(-1);
 	}
 
 
