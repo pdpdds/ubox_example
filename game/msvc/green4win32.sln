@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "green4win32", "green4win32\
 		{3F30FEE8-63C5-4D39-A175-EDD7EA93E9B8} = {3F30FEE8-63C5-4D39-A175-EDD7EA93E9B8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apultra", "apultra\VS2017\apultra.vcxproj", "{3F30FEE8-63C5-4D39-A175-EDD7EA93E9B8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apultra", "apultra\apultra.vcxproj", "{3F30FEE8-63C5-4D39-A175-EDD7EA93E9B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

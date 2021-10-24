@@ -404,7 +404,7 @@ void run_game()
     // we only have one map, select it
     cur_map = map[0];
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__ANDROID__)
     size_t n = GetMapDataSize(cur_map);
     apultra_decompress(cur_map + 3, cur_map_data, n - 3, 672, 0, 0);
 #else
@@ -457,7 +457,7 @@ void run_game()
         // update sprites on screen
         spman_update();
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__ANDROID__)
         draw_map();
         draw_hud();
 #endif

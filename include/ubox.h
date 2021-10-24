@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 
-#ifdef WIN32
+#if defined(WIN32) || (__ANDROID__)
 #define __z88dk_fastcall
 #endif
 
@@ -176,7 +176,7 @@ uint8_t ubox_get_vsync_freq();
  * // code to run after the int
  * ```
  */
-#ifdef WIN32
+#if defined(WIN32) || (__ANDROID__)
 #define ubox_wait_vsync()
 #else
 #define ubox_wait_vsync() do { \
@@ -552,6 +552,9 @@ uint8_t ubox_read_ctl(uint8_t control) __z88dk_fastcall;
 #define UBOX_MSX_CTL_CURSOR  0
 #define UBOX_MSX_CTL_PORT1   1
 #define UBOX_MSX_CTL_PORT2   2
+#if defined(__ANDROID__) || defined(WIN32)
+#define UBOX_MSX_CTL_EXIT    0xfe
+#endif
 #define UBOX_MSX_CTL_NONE    0xff
 
 #define UBOX_MSX_CTL_UP      1
