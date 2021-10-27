@@ -74,7 +74,7 @@ int apultra_build_suffix_array(apultra_compressor *pCompressor, const unsigned c
    int *Phi = PLCP;
    int nCurLen = 0;
 
-   /* Compute the permuted LCP first (Kärkkäinen method) */
+   /* Compute the permuted LCP first (K?kk?nen method) */
    Phi[intervals[0]] = -1;
    for (i = 1; i < nInWindowSize; i++)
       Phi[intervals[i]] = (unsigned int)intervals[i - 1];

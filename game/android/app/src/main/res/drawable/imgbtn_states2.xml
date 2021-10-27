@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/green_pushed"
+        android:state_selected="true"/>
+
+    <item android:state_pressed="true"
+        android:drawable="@drawable/green_pushed" />
+
+    <item android:drawable="@drawable/green_unpushed"
+        android:state_pressed="false"/>
+</selector>

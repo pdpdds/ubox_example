@@ -30,7 +30,7 @@
 
 #include <stdint.h>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__ANDROID__)
 #define __z88dk_fastcall
 #endif
 
