@@ -39,9 +39,9 @@ uint32_t sum(uint32_t a, uint32_t b)
     return a + b;
 }
 
-uint8_t echo_function(uint8_t a)
+void echo_function(uint8_t a)
 {
-    return a;
+    uint8_t b = a;
 }
 
 
@@ -78,8 +78,8 @@ void main()
 
     result = sum(a, b);
 
-    uint8_t c = 8;
-    uint8_t d = echo_function(c);
+    
+    echo_function(8);
 
     while (1)
     {	
