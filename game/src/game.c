@@ -5,11 +5,7 @@
 #include "spman.h"
 #include "mplayer.h"
 
-#ifdef WIN32
-#include "expand.h"
-#else
 #include "ap.h"
-#endif
 
 #include "helpers.h"
 #include "main.h"
@@ -375,19 +371,6 @@ void update_player()
     spman_alloc_fixed_sprite(&sp);
 }
 
-size_t GetMapDataSize(const uint8_t* map)
-{
-    size_t count = 1;
-
-    while (*map != 0xff)
-    {
-        count++;
-        map++;
-    }
-
-    return count;
-}
-
 void run_game()
 {
     uint8_t i;
@@ -404,14 +387,10 @@ void run_game()
     // we only have one map, select it
     cur_map = map[0];
 
-#if defined(WIN32) || defined(__ANDROID__)
-    size_t n = GetMapDataSize(cur_map);
-    apultra_decompress(cur_map + 3, cur_map_data, n - 3, 672, 0, 0);
-#else
     // uncompress map data into RAM, we will modify it
     // map data starts on byte 3 (skip map data size and entities size)
     ap_uncompress(cur_map_data, cur_map + 3);
-#endif
+
 
     // init entities before drawing
     init_map_entities();

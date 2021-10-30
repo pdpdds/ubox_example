@@ -477,3 +477,25 @@ uint8_t ubox_read_keys(uint8_t row)
 	read_key();
 	return read_key_7;
 }
+
+
+size_t GetMapDataSize(const uint8_t* map)
+{
+	size_t count = 1;
+
+	while (*map != 0xff)
+	{
+		count++;
+		map++;
+	}
+
+	return count;
+}
+
+#include "expand.h"
+
+void ap_uncompress(const uint8_t* dst, const uint8_t* src)
+{
+	size_t n = GetMapDataSize(src - 3);
+	apultra_decompress(src, dst, n - 3, 672, 0, 0);
+}
