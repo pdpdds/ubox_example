@@ -6,6 +6,6 @@
 .DS_Store
 /build
 /captures
-/.idea/
+/.idea
 /jni
 /libs
