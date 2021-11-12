@@ -14,5 +14,5 @@
 void put_text(uint8_t x, uint8_t y, const uint8_t *text)
 {
     while (*text)
-        ubox_put_tile(x++, y, *text++ + 128 - 31);
+        ubox_put_tile(x++, y, *text++ + 192 - 31);
 }

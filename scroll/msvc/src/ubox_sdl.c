@@ -187,7 +187,7 @@ char g_tiles_rgb[2048 * 8 * 4];
 
 void ubox_set_tiles(uint8_t* tiles)
 {
-#if 0
+#if 1
 	load_png("tiles.png");
 #else
 	for (int i = 0; i < 8; i++)

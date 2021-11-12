@@ -7,7 +7,7 @@
 #define LOCAL extern
 #endif
 
-#define WHITESPACE_TILE 129
+#define WHITESPACE_TILE 159
 
 // sub-songs matching our Arkos song
 // configure the song to use MSX AY

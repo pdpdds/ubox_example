@@ -18,6 +18,8 @@
 #include "player.h"
 #include "enemy.h"
 
+uint8_t next_background[MAP_W * MAP_H];
+
 void init_map_entities()
 {
     const uint8_t *m = cur_map;
@@ -371,6 +373,66 @@ void update_player()
     spman_alloc_fixed_sprite(&sp);
 }
 
+uint8_t next_map_data[MAP_W * MAP_H];
+
+void update_map()
+{
+    static uint8_t tickcount = 10;
+    tickcount--;
+    static int start_idx = 0;
+
+    
+   
+    if (tickcount == 0)
+    {   
+       
+        for (int h = 0; h < 21; h++)
+        {
+            int w = 0;
+            for (w = 0; w < 32 - start_idx; w++)
+            {
+                next_background[h * MAP_W + w] =  cur_map_data[h * MAP_W + w + start_idx];
+            }
+
+            int j = 0;
+            for (w = 32 - start_idx; w < 32; w++)
+            {
+                next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + j];
+                j++;
+            }
+        }
+
+        /*for (int h = 15; h < 21; h++)
+        {
+            int w = 0;
+            for (w = 0; w < 32 - start_idx; w++)
+            {
+                ubox_put_tile(w, h, cur_map_data[h * MAP_W + w + start_idx]);
+            }
+
+            int j = 0;
+            for (w = 32 - start_idx; w < 32; w++)
+            {
+                ubox_put_tile(w, h, cur_map_data[h * MAP_W + j]);
+                j++;
+            }
+        }*/
+        ubox_wait_vsync();
+        ubox_write_vm((uint8_t*)0x1800, MAP_W * MAP_H, next_background);
+
+
+        start_idx++;
+
+        if (start_idx == 32)
+            start_idx = 0;
+
+        tickcount = 10;
+    }
+
+    
+
+}
+
 void run_game()
 {
     uint8_t i;
@@ -390,12 +452,12 @@ void run_game()
     // uncompress map data into RAM, we will modify it
     // map data starts on byte 3 (skip map data size and entities size)
     ap_uncompress(cur_map_data, cur_map + 3);
-
+    memcpy(next_background, cur_map_data, MAP_H * MAP_W);
 
     // init entities before drawing
     init_map_entities();
 
-    draw_map();
+    //draw_map();
     draw_hud();
 
     ubox_enable_screen();
@@ -410,8 +472,8 @@ void run_game()
             break;
 
         // game completed!
-        if (!batteries)
-            break;
+        //if (!batteries)
+         //   break;
 
         // we are in the gameover delay
         if (gameover_delay)
@@ -431,14 +493,17 @@ void run_game()
         for (i = 0, self = entities; i < MAX_ENTITIES && self->type; i++, self++)
             self->update();
 
+        update_map();
+
         // ensure we wait to our desired update rate
         ubox_wait();
         // update sprites on screen
         spman_update();
 
 #if defined(WIN32) || defined(__ANDROID__)
-        draw_map();
-        draw_hud();
+
+        //draw_map();
+        //draw_hud();
 #endif
     }
 
