@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="generated">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="common\include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{1167c595-c6a0-47e5-a79a-30b96d709d6e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\data.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\helpers.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ubox_mplayer_sdl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ubox_sdl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ubox_spman_sdl.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\game.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\main.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\ap.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\mplayer.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\spman.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\ubox.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\enemy.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\map.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\player.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\tiles.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\helpers.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

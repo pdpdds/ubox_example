@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <com.erz.joysticklibrary.JoyStick
+        android:id="@+id/joy1"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="bottom|left" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/c_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|right"
+
+            android:layout_marginBottom="10dip"
+            android:background="@drawable/imgbtn_states"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="15dp" />
+
+
+        <Button
+            android:id="@+id/b_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="10dip"
+            android:layout_toLeftOf="@+id/c_button"
+            android:background="@drawable/imgbtn_states2"
+
+            android:minHeight="0dp"
+
+            android:minWidth="0dp"
+            android:padding="15dp"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/a_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="10dip"
+            android:layout_toLeftOf="@+id/b_button"
+            android:background="@drawable/imgbtn_states3"
+
+            android:minHeight="0dp"
+
+            android:minWidth="0dp"
+            android:padding="15dp"
+            android:textColor="@color/white" />
+
+
+        />
+        <!--<Button
+            android:id ="@+id/space_button"
+            android:layout_toLeftOf = "@+id/shift_button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:text="S"
+            android:textColor="@color/white"
+            android:background="@drawable/boarder"
+            android:padding="15dp"
+            android:layout_marginBottom="10dip"
+            android:layout_gravity="bottom|right"/>
+        />-->
+    </RelativeLayout>
+
+</LinearLayout>
