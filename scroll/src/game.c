@@ -255,6 +255,8 @@ void update_enemy()
     spman_alloc_sprite(&sp);
 }
 
+int mapxoff = 0, mapyoff = 0; //오프스크린을 위한 x, y 좌표
+
 void update_player()
 {
     // to know if we need to update the walk animation
@@ -375,58 +377,76 @@ void update_player()
 
 uint8_t next_map_data[MAP_W * MAP_H];
 
+#define MAP_UPDATE_COUNT 10
+
 void update_map()
 {
-    static uint8_t tickcount = 10;
+    static uint8_t tickcount = MAP_UPDATE_COUNT;
     tickcount--;
-    static int start_idx = 0;
+    static uint8_t start_idx = 0;
 
-    
+#if defined(WIN32)
+    for (int h = 0; h < MAP_H; h++)
+    {
+        int w = 0;
+        for (w = 0; w < MAP_W - start_idx; w++)
+        {
+            next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + w + start_idx];
+        }
+
+        int j = 0;
+        for (w = MAP_W - start_idx; w < MAP_W; w++)
+        {
+            next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + j];
+            j++;
+        }
+    }
+
+    for (int h = 15; h < MAP_H; h++)
+    {
+        int w = 0;
+        for (w = 0; w < MAP_W - start_idx; w++)
+        {
+            ubox_put_tile(w, h, cur_map_data[h * MAP_W + w + start_idx]);
+        }
+
+        int j = 0;
+        for (w = MAP_W - start_idx; w < MAP_W; w++)
+        {
+            ubox_put_tile(w, h, cur_map_data[h * MAP_W + j]);
+            j++;
+        }
+    }
+#endif
    
     if (tickcount == 0)
     {   
        
-        for (int h = 0; h < 21; h++)
-        {
-            int w = 0;
-            for (w = 0; w < 32 - start_idx; w++)
-            {
-                next_background[h * MAP_W + w] =  cur_map_data[h * MAP_W + w + start_idx];
-            }
+#if !defined(WIN32)     
+        ubox_wait_vsync();
 
-            int j = 0;
-            for (w = 32 - start_idx; w < 32; w++)
+        if (start_idx == 0)
+        {
+            ubox_write_vm((uint8_t*)(0x1800), MAP_W * MAP_H, cur_map_data);
+        }
+        else {
+            for (int a = 15; a < MAP_H; a++)
             {
-                next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + j];
-                j++;
+
+                ubox_write_vm((uint8_t*)(0x1800 + a * MAP_W), (MAP_W - start_idx), next_background + a * MAP_W + start_idx);
+                ubox_write_vm((uint8_t*)(0x1800 + ((a + 1) * MAP_W - start_idx)), start_idx, next_background + a * MAP_W);
+
+
             }
         }
-
-        /*for (int h = 15; h < 21; h++)
-        {
-            int w = 0;
-            for (w = 0; w < 32 - start_idx; w++)
-            {
-                ubox_put_tile(w, h, cur_map_data[h * MAP_W + w + start_idx]);
-            }
-
-            int j = 0;
-            for (w = 32 - start_idx; w < 32; w++)
-            {
-                ubox_put_tile(w, h, cur_map_data[h * MAP_W + j]);
-                j++;
-            }
-        }*/
-        ubox_wait_vsync();
-        ubox_write_vm((uint8_t*)0x1800, MAP_W * MAP_H, next_background);
-
+#endif
 
         start_idx++;
 
-        if (start_idx == 32)
+        if (start_idx == MAP_W)
             start_idx = 0;
 
-        tickcount = 10;
+        tickcount = MAP_UPDATE_COUNT;
     }
 
     
@@ -490,11 +510,12 @@ void run_game()
         // - self is a pointer to THIS entity
         // - because we don't create/destroy entities dynamically
         //   when we found one that is unused we are done
+        update_map();
+        
         for (i = 0, self = entities; i < MAX_ENTITIES && self->type; i++, self++)
             self->update();
 
-        update_map();
-
+        
         // ensure we wait to our desired update rate
         ubox_wait();
         // update sprites on screen
