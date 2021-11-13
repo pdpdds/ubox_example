@@ -384,45 +384,10 @@ void update_map()
     static uint8_t tickcount = MAP_UPDATE_COUNT;
     tickcount--;
     static uint8_t start_idx = 0;
-
-#if defined(WIN32)
-    for (int h = 0; h < MAP_H; h++)
-    {
-        int w = 0;
-        for (w = 0; w < MAP_W - start_idx; w++)
-        {
-            next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + w + start_idx];
-        }
-
-        int j = 0;
-        for (w = MAP_W - start_idx; w < MAP_W; w++)
-        {
-            next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + j];
-            j++;
-        }
-    }
-
-    for (int h = 15; h < MAP_H; h++)
-    {
-        int w = 0;
-        for (w = 0; w < MAP_W - start_idx; w++)
-        {
-            ubox_put_tile(w, h, cur_map_data[h * MAP_W + w + start_idx]);
-        }
-
-        int j = 0;
-        for (w = MAP_W - start_idx; w < MAP_W; w++)
-        {
-            ubox_put_tile(w, h, cur_map_data[h * MAP_W + j]);
-            j++;
-        }
-    }
-#endif
    
     if (tickcount == 0)
     {   
-       
-#if !defined(WIN32)     
+          
         ubox_wait_vsync();
 
         if (start_idx == 0)
@@ -439,7 +404,6 @@ void update_map()
 
             }
         }
-#endif
 
         start_idx++;
 
@@ -447,6 +411,42 @@ void update_map()
             start_idx = 0;
 
         tickcount = MAP_UPDATE_COUNT;
+    }
+    else
+    {
+#if defined(WIN32)
+        for (int h = 0; h < MAP_H; h++)
+        {
+            int w = 0;
+            for (w = 0; w < MAP_W - start_idx; w++)
+            {
+                next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + w + start_idx];
+            }
+
+            int j = 0;
+            for (w = MAP_W - start_idx; w < MAP_W; w++)
+            {
+                next_background[h * MAP_W + w] = cur_map_data[h * MAP_W + j];
+                j++;
+            }
+        }
+
+        for (int h = 15; h < MAP_H; h++)
+        {
+            int w = 0;
+            for (w = 0; w < MAP_W - start_idx; w++)
+            {
+                ubox_put_tile(w, h, cur_map_data[h * MAP_W + w + start_idx]);
+            }
+
+            int j = 0;
+            for (w = MAP_W - start_idx; w < MAP_W; w++)
+            {
+                ubox_put_tile(w, h, cur_map_data[h * MAP_W + j]);
+                j++;
+            }
+        }
+#endif
     }
 
     
