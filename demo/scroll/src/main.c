@@ -30,7 +30,15 @@ void draw_menu()
 
     put_text(11, 11, "PRESS FIRE");
 
+#if defined(WIN32)
+    put_text(4, 2, "UBOX MSX LIB WIN32 DEMO!");
+    put_text(11, 18, "JUHANG PARK");
+#elif  defined(__ANDROID__)
+    put_text(3, 2, "UBOX MSX LIB ANDROID DEMO!");
+    put_text(11, 18, "JUHANG PARK");
+#else
     put_text(7, 2, "UBOX MSX LIB DEMO!");
+#endif
     put_text(4, 16, "CODE, GRAPHICS AND SOUND");
     put_text(8, 17, "JUAN J. MARTINEZ");
     // 037 is ASCII 31 in octal, our Copyright sign
@@ -78,7 +86,15 @@ void draw_game_over()
     ubox_wait_for(128);
 }
 
+#if defined(WIN32)
+#include <SDL2/SDL.h>
+int main(int argc, char** argv)
+#elif defined(__ANDROID__)
+#include <SDL.h>
+int SDL_main(int argc, char** argv)
+#else
 void main()
+#endif
 {
     //  PAL: 50/2 = 25 FPS
     // NTSC: 60/2 = 30 FPS
@@ -94,9 +110,9 @@ void main()
     ubox_disable_screen();
 
     // upload our tileset
-    ubox_set_tiles(tiles);
+    ubox_set_tiles((uint8_t*)tiles);
     // and the colour information
-    ubox_set_tiles_colors(tiles_colors);
+    ubox_set_tiles_colors((uint8_t*)tiles_colors);
 
     // clear the screen
     ubox_fill_screen(WHITESPACE_TILE);
@@ -125,6 +141,11 @@ redraw_menu:
         ctl = ubox_select_ctl();
         if (ctl != UBOX_MSX_CTL_NONE)
         {
+#if defined(__ANDROID__) || defined(WIN32)
+            if (ctl == UBOX_MSX_CTL_EXIT)
+                break;
+#endif
+
             mplayer_play_effect_p(EFX_START, EFX_CHAN_NO, 0);
             ubox_wait_for(16);
 
@@ -138,6 +159,10 @@ redraw_menu:
 
             goto redraw_menu;
         }
+
         ubox_wait();
     }
+#if defined(__ANDROID__) || defined(WIN32)
+    return 0;
+#endif
 }

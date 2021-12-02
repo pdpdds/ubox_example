@@ -8,9 +8,6 @@ game: bin libs
 	make -C tools
 	make -C game
 
-scroll: bin libs
-	make -C tools
-	make -C scroll
 
 docs:
 	make -C docs
@@ -30,14 +27,13 @@ ap:
 bin/apultra: bin
 	make -C tools ../bin/apultra
 
-.PHONY: clean cleanall docs libs game scroll
+.PHONY: clean cleanall docs libs game
 clean:
 	make -C src/ubox clean
 	make -C src/spman clean
 	make -C src/mplayer clean
 	make -C src/ap clean
 	make -C game clean
-	make -C scroll clean
 
 lib:
 	mkdir -p ./lib
