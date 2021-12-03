@@ -1,6 +1,6 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
-; Version 4.0.0 #11528 (MINGW64)
+; Version 4.0.0 #11528 (Linux)
 ;--------------------------------------------------------
 	.module spman
 	.optsdcc -mz80

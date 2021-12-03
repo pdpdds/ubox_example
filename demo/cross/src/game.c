@@ -4,6 +4,7 @@
 #include "ubox.h"
 #include "spman.h"
 #include "mplayer.h"
+
 #include "ap.h"
 
 #include "helpers.h"
@@ -53,15 +54,15 @@ void init_map_entities()
             // because our entities are sorted by type!
             case ET_PLAYER:
                 // 3 frames x 2 sprites = 6
-                entities[last].pat = spman_alloc_pat(PAT_PLAYER, player_sprite[0], 6, 0);
-                spman_alloc_pat(PAT_PLAYER_FLIP, player_sprite[0], 6, 1);
+                entities[last].pat = spman_alloc_pat(PAT_PLAYER, (uint8_t*)player_sprite[0], 6, 0);
+                spman_alloc_pat(PAT_PLAYER_FLIP, (uint8_t*)player_sprite[0], 6, 1);
                 entities[last].update = update_player;
                 break;
 
             case ET_ENEMY:
                 // 3 frames
-                entities[last].pat = spman_alloc_pat(PAT_ENEMY, enemy_sprite[0], 3, 0);
-                spman_alloc_pat(PAT_ENEMY_FLIP, enemy_sprite[0], 3, 1);
+                entities[last].pat = spman_alloc_pat(PAT_ENEMY, (uint8_t*)enemy_sprite[0], 3, 0);
+                spman_alloc_pat(PAT_ENEMY_FLIP, (uint8_t*)enemy_sprite[0], 3, 1);
                 entities[last].update = update_enemy;
                 break;
         }
@@ -141,6 +142,7 @@ void erase_battery(uint8_t x, uint8_t y)
 
     // change the map data so we don't pick it up again
     cur_map_data[(x >> 3) + (y >> 3) * MAP_W] = t;
+    cur_map_data[(x >> 3) + ((y >> 3) - 1) * MAP_W] = t;
 
     // erase on the screen
     ubox_put_tile(x >> 3, y >> 3, t);
@@ -384,14 +386,16 @@ void run_game()
 
     // we only have one map, select it
     cur_map = map[0];
+
     // uncompress map data into RAM, we will modify it
     // map data starts on byte 3 (skip map data size and entities size)
     ap_uncompress(cur_map_data, cur_map + 3);
 
+
     // init entities before drawing
     init_map_entities();
-    draw_map();
 
+    draw_map();
     draw_hud();
 
     ubox_enable_screen();
@@ -431,6 +435,11 @@ void run_game()
         ubox_wait();
         // update sprites on screen
         spman_update();
+
+#if defined(WIN32) || defined(__ANDROID__)
+        draw_map();
+        draw_hud();
+#endif
     }
 
     // stop the in game music
