@@ -13,14 +13,14 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
         ubox_put_tile(x++, y, *text++ + 128 - 31);
 }
 
+uint8_t g_x = 0;
 void _putchar(char character)
 {
-	ubox_put_tile(0, 0, character + 128 - 31);	
+	ubox_put_tile(g_x++, 0, character + 128 - 31);	
 }
 
 char buffer[10];
 
-int tick = 0;
 int counter = 0;
 
 int g_count = 0;
@@ -29,7 +29,6 @@ int g_count = 0;
 void my_isr()
 {
   
-     ++tick;
 	 ++counter;
 	 
 	 if(counter >= 30)
@@ -63,6 +62,8 @@ void main()
 	ubox_set_user_isr(my_isr);
 	
 	int temp_counter = 0;
+
+	printf("04 CLIBRARY\n");
 
     while (1)
     {			

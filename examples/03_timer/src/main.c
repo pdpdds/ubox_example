@@ -16,16 +16,11 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
 
 char buffer[10];
 
-int tick = 0;
-int counter = 0;
-
 int g_count = 0;
-
 
 void my_isr()
 {
-  
-     ++tick;
+	static int counter = 0;
 	 ++counter;
 	 
 	 if(counter >= 30)

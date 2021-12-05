@@ -1,4 +1,4 @@
-TARGET := 03_timer
+TARGET := 04_clibrary
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer
