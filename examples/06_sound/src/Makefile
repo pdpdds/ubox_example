@@ -1,4 +1,4 @@
-TARGET := 06_effect
+TARGET := 06_sound
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer

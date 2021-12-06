@@ -1,4 +1,4 @@
-TARGET := 05_sound
+TARGET := 05_music
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer
