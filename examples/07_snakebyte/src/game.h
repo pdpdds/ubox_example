@@ -1,6 +1,12 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#define WHITESPACE_TILE  129
+#define BLACK_TILE 	     85
+#define GREEN_TILE 	     74
+#define YELLOW_TILE      77
+#define WHITE_TILE 	     81
+
 enum GAME_STATE
 {
     STATE_TITLE = 0,
@@ -9,10 +15,5 @@ enum GAME_STATE
 };
 
 void run_game();
-void InitGame(int screen_width, int screen_height);
-void DrawWorld();
-void GenerateNewFrog();
-
-extern void RenderTile(int x, int y, int tileNum);
 
 #endif
