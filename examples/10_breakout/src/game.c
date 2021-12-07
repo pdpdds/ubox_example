@@ -265,7 +265,7 @@ void ProcessBall()
 					result = InRect(g_ball.x, g_ball.y - g_ball.radius, &rect);
 				}
 
-				if (result == 1)
+				if (result)
 				{
 					g_ball.vel_y *= -1;
 					g_bricks[x][y] = 0;
