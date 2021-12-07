@@ -4,7 +4,6 @@
 #include "spman.h"
 #include "util.h"
 
-
 #define BRICKS_X_COUNT 10
 #define BRICKS_Y_COUNT 5
 
@@ -78,7 +77,7 @@ void InitGame(int screen_width, int screen_height);
 void ProcessLogic(int mouse_posx);
 void CheckGameEnd();
 void DrawWorld();
-void UpdateBall() ;
+void ProcessBall() ;
 
 void draw_map()
 {
@@ -89,7 +88,7 @@ void draw_map()
 		{
 			if (g_bricks[x][y] != 0)
 			{
-				RenderTiles(x * 3, y * 2, 3, 2, 7);
+				RenderBlock(x * 3, y * 2);
 			}
 		}
 	}
@@ -172,7 +171,7 @@ void ResetBall()
 
 
 
-void UpdatePaddle(int paddle_posx)
+void ProcessInput(int paddle_posx)
 {
 	if (ubox_read_keys(8) == UBOX_MSX_KEY_LEFT)
 			g_paddle_posx -= 4;
@@ -188,36 +187,20 @@ void UpdatePaddle(int paddle_posx)
 		g_paddle_posx = 0;
 }
 
-//공이 패들에 맞는 위치와 패들의 이동속도를 사용해서 공의 속도를 갱신하자
-//지금은 구현하지 않음
+//공이 패들에 맞은 부위에 따라 속도를 다르게 설정
 void RandomBallSpeed()
 {
 	if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 4))
-	{
-
 		g_ball.vel_x = -3;
-	
-	}
 	else if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 2))
-	{
-		
-			g_ball.vel_x = -2;
-		
-			
-	}
+		g_ball.vel_x = -2;
 	else if (g_ball.x < g_paddle_posx + (PADDLE_WIDTH / 2) + (PADDLE_WIDTH / 4))
-	{
-		
-			g_ball.vel_x = 2;
-	}
+		g_ball.vel_x = 2;
 	else
-	{
-		
-			g_ball.vel_x = 3;
-	}
+		g_ball.vel_x = 3;
 }
 
-void UpdateBall()
+void ProcessBall()
 {
 	//패들과 공의 충돌체크
 	//공이 아래로 내려가는 경우에만 패들과 충돌할 수 있다.
@@ -317,12 +300,10 @@ void InitGame(int screen_width, int screen_height)
 
 void ProcessLogic(int mouse_posx)
 {
-	UpdatePaddle(mouse_posx);
-	UpdateBall();
+	ProcessInput(mouse_posx);
+	ProcessBall();
 	CheckGameEnd();
 }
-
-
 
 void DrawWorld()
 {
@@ -334,27 +315,23 @@ void DrawWorld()
 			if (g_bricks_dirty_map[x][y] == 1)
 			{
 				g_bricks_dirty_map[x][y] = 0;
-				EraseTiles(x * 3, y * 2, 3, 2, 110);
+				EraseTiles(x * 3, y * 2, 3, 2, BLACK_TILE);
 			}
 		}
 	}
 
-	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 6, 0);
+	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 3, 0);
 
-	if (g_gamestate == STATE_IN_GAME)
-	{
-		//공을 화면에 그린다
-		//RenderCircle(g_ball.x, g_ball.y, 4, 255, 255, 0);
-		sp.x = g_ball.x - 8;
-		sp.y = g_ball.y - 8;
-		sp.pattern = sample.pat + 0 * 8;
-		// green
-		sp.attr = 13;
-		spman_alloc_fixed_sprite(&sp);
-	}
+	//공을 화면에 그린다
+	sp.x = g_ball.x - 8;
+	sp.y = g_ball.y - 8;
+	sp.pattern = sample.pat + 0 * 8;
+	// green
+	sp.attr = 13;
+	spman_alloc_fixed_sprite(&sp);
 
 	// 패들을 화면에 그린다.
-	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 6, 0);
+	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 3, 0);
 	sp.x = g_paddle_posx;
 	sp.y = g_paddle_posy;
 	sp.pattern = sample.pat + 1 * 8;

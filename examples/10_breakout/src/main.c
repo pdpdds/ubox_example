@@ -51,7 +51,7 @@ void draw_end_game()
     {
          ctl = ubox_select_ctl();
         
-        if (ctl == UBOX_MSX_CTL_NONE)
+        if (ctl != UBOX_MSX_CTL_NONE)
             break;
         
         ubox_wait();

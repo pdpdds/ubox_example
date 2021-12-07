@@ -14,7 +14,6 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
 
 void RenderTile(int x, int y, int tileNum)
 {
-
     ubox_put_tile(x, y, tileNum);
 }
 
@@ -57,7 +56,7 @@ int InRect(int posx, int posy, struct Rect *rect)
 }
 
 
-void RenderTiles(int x, int y, int x_count, int y_count, int tileNum)
+void RenderBlock(int x, int y)
 {
             ubox_put_tile(x, y, 42 + 0);
             ubox_put_tile(x, y + 1, 74 + 0);
