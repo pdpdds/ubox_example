@@ -110,21 +110,21 @@ void InitGame()
 	g_next_input_step = now() + input_step_time;
 }
 
-SnakeNode *MoveBody(SnakeNode *player, int xPos, int yPos)
+SnakeNode* MoveBody(SnakeNode *node, int xPos, int yPos) 
 {
-	if (player->next == NULL)
+    if (node->next == NULL) 
 	{
-		g_objMap[player->y][player->x] = NOTHING;
-	}
-	else
+        g_objMap[node->y][ node->x] = NOTHING;
+    }
+    else 
 	{
-		player->next = MoveBody(player->next, player->x, player->y);
-	}
-	player->x = xPos;
-	player->y = yPos;
-
-	return player;
+        node->next = MoveBody(node->next, node->x, node->y);
+    }
+    node->x = xPos;
+    node->y = yPos;
+    return node;
 }
+
 
 void GenerateNewFrog()
 {
@@ -183,19 +183,15 @@ void ProcessLogic(SnakeNode *player)
 		{
 		case UBOX_MSX_KEY_LEFT:
 			player->dir = LEFT;
-			x_offset = -1;
 			break;
 		case UBOX_MSX_KEY_RIGHT:
 			player->dir = RIGHT;
-			x_offset = 1;
 			break;
 		case UBOX_MSX_KEY_UP:
 			player->dir = UP;
-			y_offset = -1;
 			break;
 		case UBOX_MSX_KEY_DOWN:
 			player->dir = DOWN;
-			y_offset = 1;
 			break;
 		}
 
@@ -216,10 +212,8 @@ void ProcessLogic(SnakeNode *player)
 		}
 
 		if (now() > g_next_step)
-		{
-			char result = CheckWall(player);
-
-			if(result == 1)
+		{		
+			if(CheckWall(player))
 			{
 				g_gamestate = STATE_GAME_OVER;
 				return;
@@ -239,14 +233,14 @@ void ProcessLogic(SnakeNode *player)
 				{
 					tail = tail->next;
 				}
-				int newNodex = tail->x;
-				int newNodey = tail->y;
+				int new_node_x = tail->x;
+				int new_node_y = tail->y;
 
-				player = MoveBody(player, next_pos_x, next_pos_y);
+				MoveBody(player, next_pos_x, next_pos_y);
 				
 				SnakeNode *newNode = malloc(sizeof(SnakeNode));
-				newNode->x = newNodex;
-				newNode->y = newNodey;
+				newNode->x = new_node_x;
+				newNode->y = new_node_y;
 
 				newNode->dir = tail->dir;
 				newNode->next = NULL;
@@ -258,7 +252,7 @@ void ProcessLogic(SnakeNode *player)
 				g_gamestate = STATE_GAME_OVER;
 				break;
 			default:
-				player = MoveBody(player, next_pos_x, next_pos_y);
+				MoveBody(player, next_pos_x, next_pos_y);
 				break;
 			}
 

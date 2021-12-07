@@ -1,39 +1,12 @@
-#include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
-#include <time.h>
 #include "ubox.h"
 #include "game.h"
-
-#define WHITESPACE_TILE 129
+#include "util.h"
+#include <string.h>
 
 #define GAME_WIDTH 256
 #define GAME_HEIGHT 128
 
-extern int now();
-
-void randomize(void)
-{
-	srand((unsigned)time(NULL));
-	for (int i = 0; i < (rand() % RAND_MAX); i++)
-		(rand() % RAND_MAX);
-}
-
-void srandom(unsigned int seed)
-{
-	srand(seed);
-}
-
-int g_screen_width = 0;
-int g_screen_height = 0;
-
-struct Rect
-{
-	uint8_t x1;
-	uint8_t y1;
-	uint8_t x2;
-	uint8_t y2;
-};
 
 //140 * 196 화면 생성
 //타일크기 8
@@ -125,6 +98,9 @@ int input_step_time = 4; //입력 수용 오프셋
 
 long g_next_step = 0;		//조각 이동가능한 시간. 현재시간이 이 값을 넘으면 조각을 이동시킨다.
 long g_next_input_step = 0; //입력받을 수 있는 시간. 현재시간이 이 값을 넘지 못하면 입력을 받을 수 없다.
+char g_collide;
+char g_rotate;
+
 Piece g_piece = {{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
 				 {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
 				 (COLS / 2 - 2),
@@ -141,19 +117,21 @@ int g_score = 0;			  //획득점수
 int g_map[ROWS * COLS] = {0}; //타일공간 최초에는 모두 0으로 설정한다.
 KeyTable g_key_table = {0};	  // 키 입력을 저장
 
-struct sprite_attr sp;
 extern uint8_t g_gamestate;
 
-char g_collide;
-char g_rotate;
+void InitGame();
+void ProcessLogic();
+char CheckGameEnd();
+void DrawWorld();
+void DrawBoard();
+void DrawNextPiece() ;
 
-int set_game_end()
+void SetGameEnd()
 {
 	g_gamestate = STATE_GAME_OVER;
-	return 0;
 }
 
-int rotate(Piece *piece)
+int Rotate(Piece *piece)
 {
 	Piece tmp;
 	memcpy(&tmp, piece, sizeof(tmp));
@@ -173,7 +151,7 @@ int rotate(Piece *piece)
 }
 
 //1 충돌, 0 충돌하지 않음
-int colliding(const int *map, const Piece *piece)
+char IsColliding(const int *map, const Piece *piece)
 {
 	for (int row = 0; row < 4; row++)
 	{
@@ -214,24 +192,24 @@ int place_piece_on_map(int *map, Piece *piece)
 
 void get_piece(Piece *piece)
 {
-
 	piece->id = rand() % 7;
 	memcpy(piece->shape, shapes[piece->id], sizeof(piece->shape));
 }
 
-void drop_line(int *map, int n)
+void DropLine(int *map, int n)
 {
 	for (int row = n; row > 0; row--)
 	{
 		if (row == ROWS)
 			continue;
+
 		memcpy(&map[row * COLS], &map[(row - 1) * COLS], sizeof(int) * COLS);
 	}
 }
 
 //타일이 전부 채워진 줄을 검색해서
 //보드에서 제거한다.
-int clear_lines(int *map)
+int ClearLines(int *map)
 {
 	int n_lines = 0;
 	for (int row = 0; row < ROWS; row++)
@@ -246,7 +224,7 @@ int clear_lines(int *map)
 		}
 		if (result)
 		{
-			drop_line(map, row);
+			DropLine(map, row);
 			n_lines++;
 		}
 	}
@@ -262,7 +240,7 @@ int step(int *map, Piece *piece, int *cleared_lines)
 {
 	//조각을 y축으로 1칸 이동
 	piece->y += 1;
-	if (!colliding(map, piece))
+	if (!IsColliding(map, piece))
 	{
 		//충돌없음
 		return COLLIDE_NO;
@@ -270,7 +248,7 @@ int step(int *map, Piece *piece, int *cleared_lines)
 
 	piece->y -= 1;
 	place_piece_on_map(map, piece);
-	*cleared_lines = clear_lines(map);
+	*cleared_lines = ClearLines(map);
 
 	memcpy(piece, &g_next_piece, sizeof(Piece));
 	piece->x = (COLS / 2 - 2);
@@ -281,7 +259,7 @@ int step(int *map, Piece *piece, int *cleared_lines)
 	get_piece(&g_next_piece);
 
 	//새로운 조각이 맵과 충돌한다면 보드가 타일로 가득찼다는 의미임
-	if (colliding(map, piece))
+	if (IsColliding(map, piece))
 	{
 		return COLLIDE_GAME_OVER;
 	}
@@ -289,9 +267,8 @@ int step(int *map, Piece *piece, int *cleared_lines)
 }
 
 //한번에 없앤 라인수에 따른 점수 갱신
-void update_score(int clearline)
+void UpdateScore(int clearline)
 {
-
 	switch (clearline)
 	{
 	case 1:
@@ -309,7 +286,7 @@ void update_score(int clearline)
 	}
 }
 
-void draw_map()
+void DrawBackground()
 {
 	for (int index = 0; index < COLS + 1; index++)
 		RenderTile(index, 0,77);
@@ -330,13 +307,11 @@ void run_game()
 {
 	g_gamestate = STATE_IN_GAME;
 
-	InitGame(32 * 8, 21 * 8);
+	InitGame();
 
 	ubox_disable_screen();
-
 	ubox_fill_screen(WHITESPACE_TILE);
-
-	draw_map();
+	DrawBackground();
 
 	ubox_enable_screen();
 
@@ -356,26 +331,18 @@ void run_game()
 	}
 }
 
-int InRect(int posx, int posy, struct Rect *rect)
+void InitState()
 {
-	if (posx >= rect->x1 && posx < rect->x2 && posy >= rect->y1 && posy < rect->y2)
-		return 1;
-
-	return 0;
-}
-
-void InitGame(int screen_width, int screen_height)
-{
-	g_screen_width = screen_width;
-	g_screen_height = screen_height;
-
 	g_collide = 0;
 	g_rotate = 0;
+}
+
+void InitGame()
+{
 
 	memset(g_map, 0, ROWS * COLS * sizeof(int));
 
-	srandom((unsigned int)time(NULL));
-	randomize();
+	srand(now());
 
 	g_next_step = now() + step_time;
 	g_next_input_step = now() + input_step_time;
@@ -390,10 +357,12 @@ void InitGame(int screen_width, int screen_height)
 	g_piece.old_y = 0;
 }
 
-void ProcessInput()
+void ProcessLogic()
 {
 	if (g_gamestate != STATE_IN_GAME)
 		return;
+
+	InitState();	
 
 	//키 입력을 받을 수 있는 시간인가
 	if (now() > g_next_input_step)
@@ -412,7 +381,7 @@ void ProcessInput()
 		if (g_key_table.right)
 		{
 			g_piece.x += 1;
-			if (colliding(g_map, &g_piece))
+			if (IsColliding(g_map, &g_piece))
 			{
 				g_piece.x -= 1;
 			}
@@ -423,7 +392,7 @@ void ProcessInput()
 		if (g_key_table.left)
 		{
 			g_piece.x -= 1;
-			if (colliding(g_map, &g_piece))
+			if (IsColliding(g_map, &g_piece))
 			{
 				g_piece.x += 1;
 			}
@@ -433,10 +402,10 @@ void ProcessInput()
 		{
 			Piece tempPiece;
 			memcpy(&tempPiece, &g_piece, sizeof(Piece));
-			rotate(&g_piece);
+			Rotate(&g_piece);
 
 			//회전시킨 조작이 보드와 충돌한다면 조각 배열을 원상태로 돌린다.
-			if (colliding(g_map, &g_piece))
+			if (IsColliding(g_map, &g_piece))
 			{
 				memcpy(&g_piece, &tempPiece, sizeof(Piece));
 			}
@@ -494,18 +463,17 @@ void ProcessInput()
 
 	if (step_result == COLLIDE_GAME_OVER) //조각 이동결과 게임을 더 이상 진행할 수 없으면 게임상태를 변경한다.
 	{
-		set_game_end();
+		SetGameEnd();
 		return;
 	}
 
 	if (clear_lines > 0) //없앤줄이 있으면 줄수에 따라 점수를 갱신한다.
-		update_score(clear_lines);
+		UpdateScore(clear_lines);
 }
 
 //보드를 그린다
 void DrawBoard()
 {
-
 	for (int row = 0; row < ROWS; row++)
 	{
 		for (int col = 0; col < COLS; col++)
@@ -544,8 +512,7 @@ void DrawWorld()
 {
 	if (g_rotate)
 	{
-		g_rotate = 0;
-
+		
 		for (int row = 0; row < 4; row++)
 		{
 			for (int col = 0; col < 4; col++)
@@ -609,11 +576,4 @@ void DrawWorld()
 		DrawBoard();
 		DrawNextPiece();
 	}
-
-	g_collide = 0;
-}
-
-void ProcessLogic()
-{
-	ProcessInput();
 }

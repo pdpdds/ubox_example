@@ -18,7 +18,6 @@ void DrawWorld();
 void UpdateBall() ;
 
 
-extern void RenderTile(int x, int y, int x_count, int y_count, int tileNum);
-extern void EraseTile(int x, int y, int x_count, int y_count, int tileNum);
+
 
 #endif

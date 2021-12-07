@@ -1,49 +1,31 @@
-#include <stdint.h>
 #include "ubox.h"
 #include "game.h"
-
-#define WHITESPACE_TILE 129
+#include "util.h"
 
 #define SOCOBAN_MAX_WIDTH 20
 #define SOCOBAN_MAX_HEIGHT 20
 
-#define GAME_WIDTH 256
-#define GAME_HEIGHT 128
-
-
-enum enumSpaceProperty
+enum eSpaceProperty
 {
-	ENUM_SPACE_EMPTY,
-	ENUM_SPACE_BLOCK,
-	ENUM_SPACE_BOX_POINT,
-	ENUM_SPACE_BOX,
-	ENUM_SPACE_ENEMY,
-};
-
-int g_screen_width = 0;
-int g_screen_height = 0;
-
-struct Rect
-{
-	uint8_t x1;
-	uint8_t y1;
-	uint8_t x2;
-	uint8_t y2;
+	SPACE_EMPTY,
+	SPACE_BLOCK,
+	SPACE_BOX_POINT,
+	SPACE_BOX,
 };
 
 struct PlayerInfo
 {
 	uint8_t x;
 	uint8_t y;
-	uint8_t old_x;
-	uint8_t old_y;
+	uint8_t prev_x;
+	uint8_t prev_y;
 };
 
 struct MapInfo
 {
 	uint8_t stageNum;
-	uint8_t BoxCount;
-	unsigned char pMapPointer[SOCOBAN_MAX_WIDTH][SOCOBAN_MAX_HEIGHT];
+	uint8_t boxCount;
+	unsigned char mapData[SOCOBAN_MAX_WIDTH][SOCOBAN_MAX_HEIGHT];
 	unsigned char boxInfo[SOCOBAN_MAX_WIDTH][SOCOBAN_MAX_HEIGHT];
 };
 
@@ -157,40 +139,40 @@ const unsigned char g_map5[SOCOBAN_MAX_WIDTH][SOCOBAN_MAX_HEIGHT] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
+const unsigned char (*g_stages[MAX_STAGE_NUM])[SOCOBAN_MAX_WIDTH][SOCOBAN_MAX_HEIGHT] = {
+	&g_map1,
+	&g_map2,
+	&g_map3,
+	&g_map4,
+	&g_map5,
+};	
+
 struct MapInfo g_mapInfo = {0, 0};
 struct PlayerInfo g_playerInfo;
-char g_bLevelReset = 0;
-
-struct sprite_attr sp;
 extern uint8_t g_gamestate;
 
-void draw_map()
-{
-	DrawBoard();
-	DrawWall();
-}
+void InitGame();
+void ProcessLogic();
+void DrawMap();
+void DrawBoard();
 
 void run_game()
 {
-
 	g_gamestate = STATE_IN_GAME;
 
-	if (g_mapInfo.stageNum >= 5)
+	if (g_mapInfo.stageNum >= MAX_STAGE_NUM)
 	{
 		g_gamestate = STATE_NO_MAP;
 		g_mapInfo.stageNum = 0;
 		return;
 	}
 
-	InitGame(32 * 8, 21 * 8);
+	InitGame();
 
 	ubox_disable_screen();
-
 	ubox_fill_screen(WHITESPACE_TILE);
-
+	DrawBoard();
 	ubox_enable_screen();
-
-	draw_map();
 
 	while (1)
 	{
@@ -199,134 +181,114 @@ void run_game()
 
 		ProcessLogic();
 
-		DrawWorld();
+		DrawMap();
 
 		ubox_wait();
 
-		if (g_gamestate == STATE_GAME_OVER || g_gamestate == STATE_GAME_CLEAR)
+		if (g_gamestate == STATE_GAME_OVER || 
+		    g_gamestate == STATE_GAME_CLEAR ||
+			g_gamestate == STATE_GAME_RESET)
 			break;
-
-		if (g_bLevelReset == 0)
-			run_game();
 	}
 }
 
 void DrawBoard()
 {
-	ubox_disable_screen();
+	for (int index = 0; index < SOCOBAN_MAX_WIDTH; index++)
+		RenderTile(index, 0, GREEN_TILE);
 
 	for (int index = 0; index < SOCOBAN_MAX_WIDTH; index++)
-		RenderTile(index, 0, 74);
-
-	for (int index = 0; index < SOCOBAN_MAX_WIDTH; index++)
-		RenderTile(index, SOCOBAN_MAX_HEIGHT - 1, 74);
+		RenderTile(index, SOCOBAN_MAX_HEIGHT - 1, GREEN_TILE);
 
 	for (int index = 1; index < SOCOBAN_MAX_HEIGHT - 1; index++)
-		RenderTile(0, index, 74);
+		RenderTile(0, index, GREEN_TILE);
 
 	for (int index = 0; index < SOCOBAN_MAX_HEIGHT - 1; index++)
-		RenderTile(SOCOBAN_MAX_WIDTH - 1, index, 74);
-
-	ubox_enable_screen();
+		RenderTile(SOCOBAN_MAX_WIDTH - 1, index, GREEN_TILE);
 }
 
-void InitGame(int screen_width, int screen_height)
+void SetupPlayerPosition()
 {
-	g_screen_width = screen_width;
-	g_screen_height = screen_height;
+	g_playerInfo.x = 7;
+	g_playerInfo.y = 11;
 
-	for (int x = 0; x < SOCOBAN_MAX_WIDTH; x++)
+	if (g_mapInfo.stageNum == 3 || 
+	    g_mapInfo.stageNum == 4)
 	{
-		for (int y = 0; y < SOCOBAN_MAX_HEIGHT; y++)
-		{
-
-			if (g_mapInfo.stageNum == 0)
-				g_mapInfo.pMapPointer[x][y] = g_map1[x][y];
-
-			else if (g_mapInfo.stageNum == 1)
-				g_mapInfo.pMapPointer[x][y] = g_map2[x][y];
-
-			else if (g_mapInfo.stageNum == 2)
-				g_mapInfo.pMapPointer[x][y] = g_map3[x][y];
-			else if (g_mapInfo.stageNum == 3)
-				g_mapInfo.pMapPointer[x][y] = g_map4[x][y];
-			else if (g_mapInfo.stageNum == 4)
-				g_mapInfo.pMapPointer[x][y] = g_map5[x][y];
-		}
+		g_playerInfo.x = 7;
+		g_playerInfo.y = 9;
 	}
-
-	if (0 == g_bLevelReset)
-	{
-		if (g_mapInfo.stageNum == 3 || g_mapInfo.stageNum == 4)
-		{
-			g_playerInfo.x = 7;
-			g_playerInfo.y = 9;
-		}
-		else
-		{
-			g_playerInfo.x = 7;
-			g_playerInfo.y = 11;
 	
-		}
-		
-		g_playerInfo.old_x = 0;
-		g_playerInfo.old_y = 0;
+	g_playerInfo.prev_x = 0;
+	g_playerInfo.prev_y = 0;
+}
 
-		g_bLevelReset = 1;
-
-		for (int y = 0; y < SOCOBAN_MAX_HEIGHT; y++)
+void SetupWorld()
+{
+	for (int y = 0; y < SOCOBAN_MAX_HEIGHT; y++)
+	{
+		for (int x = 0; x < SOCOBAN_MAX_WIDTH; x++)
 		{
-			for (int x = 0; x < SOCOBAN_MAX_WIDTH; x++)
+			if (g_mapInfo.mapData[y][x] == SPACE_BOX)
 			{
-				if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX)
-				{
-					g_mapInfo.boxInfo[y][x] = g_mapInfo.pMapPointer[y][x];
-					g_mapInfo.BoxCount++;
-				}
-				else
-				{
-					g_mapInfo.boxInfo[y][x] = ENUM_SPACE_EMPTY;
-				}
+				g_mapInfo.boxInfo[y][x] = g_mapInfo.mapData[y][x];
+				g_mapInfo.boxCount++;
+			}
+			else
+			{
+				g_mapInfo.boxInfo[y][x] = SPACE_EMPTY;
 			}
 		}
 	}
 }
 
-char IsCanGo(const char iX, const char iY)
+void InitGame()
 {
-	if (g_mapInfo.pMapPointer[g_playerInfo.y][g_playerInfo.x] == ENUM_SPACE_BLOCK)
+	for (int x = 0; x < SOCOBAN_MAX_WIDTH; x++)
+		for (int y = 0; y < SOCOBAN_MAX_HEIGHT; y++)
+			g_mapInfo.mapData[x][y] = (*g_stages[g_mapInfo.stageNum])[x][y];
+
+	SetupPlayerPosition();
+	
+	SetupWorld();
+}
+
+char IsCanGo(const char xdir, const char ydir)
+{
+	uint8_t xPos = g_playerInfo.x;
+	uint8_t yPos = g_playerInfo.y;
+
+	if (g_mapInfo.mapData[yPos][xPos] == SPACE_BLOCK)
 		return 0;
 
-	if (g_mapInfo.boxInfo[g_playerInfo.y][g_playerInfo.x] == ENUM_SPACE_BOX)
+	if (g_mapInfo.boxInfo[yPos][xPos] == SPACE_BOX)
 	{
-		if (g_mapInfo.pMapPointer[g_playerInfo.y + iY][g_playerInfo.x + iX] == ENUM_SPACE_BLOCK ||
-			g_mapInfo.boxInfo[g_playerInfo.y + iY][g_playerInfo.x + iX] == ENUM_SPACE_BOX)
-		{
+		if (g_mapInfo.mapData[yPos + ydir][xPos + xdir] == SPACE_BLOCK ||
+			g_mapInfo.boxInfo[yPos + ydir][xPos + xdir] == SPACE_BOX)
 			return 0;
-		}
 
-		g_mapInfo.boxInfo[g_playerInfo.y][g_playerInfo.x] = ENUM_SPACE_EMPTY;
-		g_mapInfo.boxInfo[g_playerInfo.y + iY][g_playerInfo.x + iX] = ENUM_SPACE_BOX;
+		g_mapInfo.boxInfo[yPos][xPos] = SPACE_EMPTY;
+		g_mapInfo.boxInfo[yPos + ydir][xPos + xdir] = SPACE_BOX;
 	}
 
 	return 1;
 }
 
-char ProcessDirective(char iX, char iY)
+char ProcessMove(char xdir, char ydir)
 {
-	if (iX == 0 && iY == 0)
+	if (xdir == 0 && ydir == 0)
 		return 0;
 
-	g_playerInfo.old_x = g_playerInfo.x;
-	g_playerInfo.old_y = g_playerInfo.y;
+	g_playerInfo.prev_x = g_playerInfo.x;
+	g_playerInfo.prev_y = g_playerInfo.y;
 
-	g_playerInfo.x += iX;
-	g_playerInfo.y += iY;
+	g_playerInfo.x += xdir;
+	g_playerInfo.y += ydir;
 
-	if (IsCanGo(iX, iY) == 0)
+	if (IsCanGo(xdir, ydir) == 0)
 	{
-		g_playerInfo.x -= iX;
-		g_playerInfo.y -= iY;
+		g_playerInfo.x -= xdir;
+		g_playerInfo.y -= ydir;
 		return 0;
 	}
 
@@ -336,21 +298,20 @@ char ProcessDirective(char iX, char iY)
 void ProcessInput()
 {
 	if (ubox_read_keys(8) == UBOX_MSX_KEY_LEFT)
-		ProcessDirective(-1, 0);
+		ProcessMove(-1, 0);
 
 	if (ubox_read_keys(8) == UBOX_MSX_KEY_RIGHT)
-		ProcessDirective(1, 0);
+		ProcessMove(1, 0);
 
 	if (ubox_read_keys(8) == UBOX_MSX_KEY_UP)
-		ProcessDirective(0, -1);
+		ProcessMove(0, -1);
 
 	if (ubox_read_keys(8) == UBOX_MSX_KEY_DOWN)
-		ProcessDirective(0, 1);
+		ProcessMove(0, 1);
 
 	if (ubox_read_keys(4) == UBOX_MSX_KEY_P)
 	{
-		g_mapInfo.BoxCount = 0;
-		g_bLevelReset = 0;
+		g_gamestate = STATE_GAME_RESET;
 	}
 }
 
@@ -361,89 +322,63 @@ void UpdateGameStatus()
 	for (int y = 0; y < SOCOBAN_MAX_HEIGHT; y++)
 		for (int x = 0; x < SOCOBAN_MAX_WIDTH; x++)
 		{
-			if (g_mapInfo.boxInfo[y][x] == ENUM_SPACE_BOX && g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX_POINT)
+			if (g_mapInfo.boxInfo[y][x] == SPACE_BOX && g_mapInfo.mapData[y][x] == SPACE_BOX_POINT)
 				iCurrentExactBoxCount++;
 		}
-	if (iCurrentExactBoxCount == g_mapInfo.BoxCount)
+
+	if (iCurrentExactBoxCount == g_mapInfo.boxCount)
 	{
 		g_mapInfo.stageNum++;
-		g_mapInfo.BoxCount = 0;
-		g_bLevelReset = 0;
+		g_mapInfo.boxCount = 0;
 		g_gamestate = STATE_GAME_CLEAR;
 	}
 }
 
-void DrawWall()
+void DrawObject()
 {
-	ubox_disable_screen();
-
 	for (int y = 1; y < SOCOBAN_MAX_HEIGHT - 1; y++)
 	{
 		for (int x = 1; x < SOCOBAN_MAX_WIDTH - 1; x++)
 		{
-			if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BLOCK)
-			{
-				RenderTile(x, y, 77);
-			}
-			else if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX_POINT)
-			{
-				RenderTile(x, y, 81);
-			}
-		}
-	}
+			if (g_mapInfo.mapData[y][x] == SPACE_BLOCK)
+				RenderTile(x, y, YELLOW_TILE);
 
-	ubox_enable_screen();
-}
+			if (g_mapInfo.mapData[y][x] == SPACE_BOX_POINT)
+				if(g_mapInfo.boxInfo[y][x] != g_mapInfo.mapData[y][x])
+					RenderTile(x, y, WHITE_TILE);	
 
-void DrawBox()
-{
-
-	for (int y = 1; y < SOCOBAN_MAX_HEIGHT - 1; y++)
-	{
-		for (int x = 1; x < SOCOBAN_MAX_WIDTH - 1; x++)
-		{
-			if (g_mapInfo.pMapPointer[y][x] == ENUM_SPACE_BOX_POINT && g_mapInfo.boxInfo[y][x] != g_mapInfo.pMapPointer[y][x])
-			{
-				RenderTile(x, y, 81);
-			}
-
-			if (g_mapInfo.boxInfo[y][x] == ENUM_SPACE_BOX)
-			{
-				RenderTile(x, y, 79);
-			}
+			if (g_mapInfo.boxInfo[y][x] == SPACE_BOX)
+				RenderTile(x, y, GREEN_TILE);
 		}
 	}
 }
 
 void DrawPlayer()
 {
-	RenderTile(g_playerInfo.x, g_playerInfo.y, 128);
+	RenderTile(g_playerInfo.x, g_playerInfo.y, RED_TILE);
 
-	if (g_playerInfo.old_x == 0 && g_playerInfo.old_y == 0)
+	if (g_playerInfo.prev_x == 0 && g_playerInfo.prev_y == 0)
 		return;
 
-	if (g_mapInfo.pMapPointer[g_playerInfo.old_y][g_playerInfo.old_x] != ENUM_SPACE_BOX_POINT)
-		RenderTile(g_playerInfo.old_x, g_playerInfo.old_y, 85);
+	if (g_mapInfo.mapData[g_playerInfo.prev_y][g_playerInfo.prev_x] != SPACE_BOX_POINT)
+		RenderTile(g_playerInfo.prev_x, g_playerInfo.prev_y, BLACK_TILE);
 }
 
-void DrawWorld()
+void DrawMap()
 {
-	if (g_playerInfo.old_x != g_playerInfo.x || g_playerInfo.old_y != g_playerInfo.y)
+	if (g_playerInfo.prev_x != g_playerInfo.x || g_playerInfo.prev_y != g_playerInfo.y)
 	{
-		DrawBox();
-
+		DrawObject();
 		DrawPlayer();
 
-		g_playerInfo.old_x = g_playerInfo.x;
-		g_playerInfo.old_y = g_playerInfo.y;
+		g_playerInfo.prev_x = g_playerInfo.x;
+		g_playerInfo.prev_y = g_playerInfo.y;
 	}
 }
 
 void ProcessLogic()
 {
 	ProcessInput();
-
 	UpdateGameStatus();
-
-	DrawWorld();
+	DrawMap();
 }

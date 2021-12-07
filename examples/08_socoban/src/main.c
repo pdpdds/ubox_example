@@ -1,23 +1,16 @@
-#include <stdint.h>
 #include "ubox.h"
-#include "mplayer.h"
 #include "game.h"
+#include "util.h"
 
 #define LOCAL
 #include "tiles.h"
 
-#define WHITESPACE_TILE 129
 uint8_t ctl;
 
 uint8_t g_gamestate = STATE_TITLE;
 
-void put_text(uint8_t x, uint8_t y, const uint8_t *text)
-{
-    while (*text)
-        ubox_put_tile(x++, y, *text++ + 128 - 31);
-}
 
-void draw_menu()
+void draw_title()
 {
     uint8_t i;
 
@@ -104,7 +97,6 @@ void draw_stage_clear()
 
 void main()
 {
-
     ubox_init_isr(2);
 
     ubox_set_mode(2);
@@ -119,11 +111,10 @@ void main()
     ubox_enable_screen();
     ubox_wvdp(1, 0xe2);
 
-    draw_menu();
+    draw_title();
 
     while (1)
     {
-
         switch (g_gamestate)
         {
         case STATE_GAME_OVER:
@@ -136,10 +127,11 @@ void main()
             draw_stage_clear();
             break;
         case STATE_IN_GAME:
+        case STATE_GAME_RESET:
             run_game();
             break;
         case STATE_TITLE:
-            draw_menu();
+            draw_title();
             break;
         }
 
@@ -147,13 +139,3 @@ void main()
     }
 }
 
-extern void RenderTile(int x, int y, int tileNum)
-{
-
-    ubox_put_tile(x, y, tileNum);
-}
-
-extern void EraseTile(int x, int y, int tileNum)
-{
-    ubox_put_tile(x, y, tileNum);
-}

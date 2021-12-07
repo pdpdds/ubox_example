@@ -2,8 +2,8 @@
 #include "ubox.h"
 #include "game.h"
 #include "spman.h"
+#include "util.h"
 
-#define WHITESPACE_TILE 129
 
 #define BRICKS_X_COUNT 10
 #define BRICKS_Y_COUNT 5
@@ -36,14 +36,6 @@ struct entity
 	uint8_t delay;
 	uint8_t frame;
 	void (*update)();
-};
-
-struct Rect
-{
-	uint8_t x1;
-	uint8_t y1;
-	uint8_t x2;
-	uint8_t y2;
 };
 
 struct entity sample;
@@ -92,7 +84,7 @@ void draw_map()
 		{
 			if (g_bricks[x][y] != 0)
 			{
-				RenderTile(x * 3, y * 2, 3, 2, 7);
+				RenderTiles(x * 3, y * 2, 3, 2, 7);
 			}
 		}
 	}
@@ -173,13 +165,7 @@ void ResetBall()
 	g_ball.radius = 4;
 }
 
-int InRect(int posx, int posy, struct Rect* rect)
-{
-	if (posx >= rect->x1 && posx < rect->x2 && posy >= rect->y1 && posy < rect->y2)
-		return 1;
 
-	return 0;
-}
 
 void UpdatePaddle(int paddle_posx)
 {

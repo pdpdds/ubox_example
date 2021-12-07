@@ -11,14 +11,5 @@ enum GAME_STATE
 };
 
 void run_game();
-void InitGame(int screen_width, int screen_height);
-void ProcessLogic();
-char CheckGameEnd();
-void DrawWorld();
-void DrawBoard();
-void DrawNextPiece() ;
-
-extern void RenderTile(int x, int y, int tileNum);
-extern void EraseTile(int x, int y, int tileNum);
 
 #endif

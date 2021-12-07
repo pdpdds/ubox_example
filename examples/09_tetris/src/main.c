@@ -1,36 +1,11 @@
-#include <stdint.h>
 #include "ubox.h"
 #include "game.h"
-
-#define LOCAL
-#include "tiles.h"
-
-#define WHITESPACE_TILE 129
-uint8_t ctl;
+#include "util.h"
 
 uint8_t g_gamestate = STATE_TITLE;
+uint8_t ctl;
 
-void put_text(uint8_t x, uint8_t y, const uint8_t *text)
-{
-    while (*text)
-        ubox_put_tile(x++, y, *text++ + 128 - 31);
-}
-
-volatile long g_tick_count = 0; //틱 카운트
-
-int now()
-{
-	return g_tick_count;
-}
-
-void my_isr()
-{
-  
-   g_tick_count++;
-}
-
-
-void draw_menu()
+void draw_title()
 {
     uint8_t i;
 
@@ -116,36 +91,14 @@ void draw_stage_clear()
     g_gamestate = STATE_IN_GAME;
 }
 
-
-void InitEnvironnmet()
-{
-    ubox_init_isr(2);
-
-    ubox_set_mode(2);
-    ubox_set_colors(1, 1, 1);
-
-    ubox_disable_screen();
-
-    ubox_set_tiles(tiles);
-    ubox_set_tiles_colors(tiles_colors);
-
-    ubox_fill_screen(WHITESPACE_TILE);
-
-    ubox_enable_screen();
-
-	ubox_set_user_isr(my_isr);
-    ubox_wvdp(1, 0xe2);
-}
-
 void main()
 {
     InitEnvironnmet();
 
-    draw_menu();
+    draw_title();
 
     while (1)
     {
-
         switch (g_gamestate)
         {
         case STATE_GAME_OVER:
@@ -161,20 +114,10 @@ void main()
             run_game();
             break;
         case STATE_TITLE:
-            draw_menu();
+            draw_title();
             break;
         }
 
         ubox_wait();
     }
-}
-
-extern void RenderTile(int x, int y, int tileNum)
-{
-    ubox_put_tile(x, y, tileNum);
-}
-
-extern void EraseTile(int x, int y, int tileNum)
-{
-    ubox_put_tile(x, y, tileNum);
 }
