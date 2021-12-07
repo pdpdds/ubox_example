@@ -11,13 +11,5 @@ enum GAME_STATE
 
 
 void run_game();
-void InitGame(int screen_width, int screen_height);
-void ProcessLogic(int mouse_posx);
-char CheckGameEnd();
-void DrawWorld();
-void UpdateBall() ;
-
-
-
 
 #endif

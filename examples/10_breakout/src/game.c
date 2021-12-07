@@ -51,6 +51,7 @@ int g_paddle_posy = 0;
 char g_bricks[BRICKS_X_COUNT][BRICKS_Y_COUNT];
 char g_bricks_dirty_map[BRICKS_X_COUNT][BRICKS_Y_COUNT];
 extern uint8_t g_gamestate;
+struct sprite_attr sp;
 
 const unsigned char breakout_sprite[3][32] = {
 {
@@ -73,7 +74,11 @@ const unsigned char breakout_sprite[3][32] = {
 }
 };
 
-struct sprite_attr sp;
+void InitGame(int screen_width, int screen_height);
+void ProcessLogic(int mouse_posx);
+void CheckGameEnd();
+void DrawWorld();
+void UpdateBall() ;
 
 void draw_map()
 {
@@ -286,17 +291,16 @@ void UpdateBall()
 			}
 		}
 	}
+}
+
+void CheckGameEnd()
+{
+	if (GetBrickCount() == 0)
+		g_gamestate = STATE_GAME_CLEAR;
 
 	// 공이 바닥으로 내려가면 업데이트를 멈추고 대기상태로 만든다.
 	if (g_ball.y >= g_screen_height)
-	{
 		g_gamestate = STATE_GAME_OVER;
-	}
-
-	if(CheckGameEnd())
-	{
-		g_gamestate = STATE_GAME_CLEAR;
-	}
 }
 
 void InitGame(int screen_width, int screen_height)
@@ -314,36 +318,11 @@ void InitGame(int screen_width, int screen_height)
 void ProcessLogic(int mouse_posx)
 {
 	UpdatePaddle(mouse_posx);
-
-	switch (g_gamestate)
-	{
-	case STATE_IN_GAME:
-	{
-		UpdateBall();
-	}
-	break;
-	/*case GAME_WAIT:
-	{
-		if (0)
-		{
-
-			ResetBall();
-			g_gamestate = GAME_PLAY;
-		}
-	}*/
-	break;
-	}
+	UpdateBall();
+	CheckGameEnd();
 }
 
-char CheckGameEnd()
-{
-	if (GetBrickCount() == 0)
-	{
-		return 1;
-	}
 
-	return 0;
-}
 
 void DrawWorld()
 {
@@ -355,7 +334,7 @@ void DrawWorld()
 			if (g_bricks_dirty_map[x][y] == 1)
 			{
 				g_bricks_dirty_map[x][y] = 0;
-				EraseTile(x * 3, y * 2, 3, 2, 110);
+				EraseTiles(x * 3, y * 2, 3, 2, 110);
 			}
 		}
 	}

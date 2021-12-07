@@ -70,7 +70,7 @@ void RenderTiles(int x, int y, int x_count, int y_count, int tileNum)
             
 }
 
-void EraseTile(int x, int y, int x_count, int y_count, int tileNum)
+void EraseTiles(int x, int y, int x_count, int y_count, int tileNum)
 {
    
     for(int i = 0; i < y_count; i++)
