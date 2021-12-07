@@ -58,3 +58,4 @@ generated
 *.sym
 *.rel
 *.bak
+.vscode
