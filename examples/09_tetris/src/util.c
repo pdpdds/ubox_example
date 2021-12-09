@@ -12,10 +12,19 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
         ubox_put_tile(x++, y, *text++ + 128 - 31);
 }
 
-void RenderTile(int x, int y, int tileNum)
+void RenderTile(uint8_t x, uint8_t y, uint8_t tileNum)
 {
 
     ubox_put_tile(x, y, tileNum);
+}
+
+void RenderTiles(int x, int y, int x_count, int y_count, int tileNum)
+{
+   
+    for(int i = 0; i < y_count; i++)
+        for(int j = 0; j < x_count; j++)
+            ubox_put_tile(x + j, y + i, tileNum);
+
 }
 
 void InitEnvironnmet()
