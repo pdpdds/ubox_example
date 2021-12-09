@@ -5,9 +5,7 @@ enum GAME_STATE
 {
     STATE_TITLE = 0,
     STATE_IN_GAME,
-    STATE_NO_MAP,
     STATE_GAME_OVER,
-    STATE_GAME_CLEAR,
 };
 
 void run_game();

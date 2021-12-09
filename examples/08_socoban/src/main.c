@@ -117,9 +117,6 @@ void main()
     {
         switch (g_gamestate)
         {
-        case STATE_GAME_OVER:
-            draw_game_over();
-            break;
         case STATE_NO_MAP:
             draw_end_game();
             break;

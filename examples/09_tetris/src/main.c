@@ -33,29 +33,6 @@ void draw_title()
     g_gamestate = STATE_IN_GAME;
 }
 
-void draw_end_game()
-{
-    ubox_disable_screen();
-
-    ubox_fill_screen(WHITESPACE_TILE);
-
-    put_text(3, 9, "GAME ALL CLEAR!");
-
-    put_text(3, 12, "(PRESS ESC)");
-
-    ubox_enable_screen();
-
-    while (1)
-    {
-        if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
-            break;
-        
-        ubox_wait();
-    }
-
-    g_gamestate = STATE_TITLE;
-}
-
 void draw_game_over()
 {
     ubox_disable_screen();
@@ -74,23 +51,6 @@ void draw_game_over()
 
 }       
 
-void draw_stage_clear()
-{
-    ubox_disable_screen();
-
-    put_text(11, 10, "STAGE CLEAR");
-
-    ubox_enable_screen();
-
-    ubox_wait_for(128);
-
-    ubox_disable_screen();
-    ubox_fill_screen(WHITESPACE_TILE);
-    ubox_enable_screen();
-
-    g_gamestate = STATE_IN_GAME;
-}
-
 void main()
 {
     InitEnvironnmet();
@@ -103,12 +63,6 @@ void main()
         {
         case STATE_GAME_OVER:
             draw_game_over();
-            break;
-        case STATE_NO_MAP:
-            draw_end_game();
-            break; 
-        case STATE_GAME_CLEAR:
-            draw_stage_clear();
             break;
         case STATE_IN_GAME:
             run_game();

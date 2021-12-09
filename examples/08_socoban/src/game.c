@@ -185,8 +185,7 @@ void run_game()
 
 		ubox_wait();
 
-		if (g_gamestate == STATE_GAME_OVER || 
-		    g_gamestate == STATE_GAME_CLEAR ||
+		if (g_gamestate == STATE_GAME_CLEAR ||
 			g_gamestate == STATE_GAME_RESET)
 			break;
 	}
@@ -266,9 +265,6 @@ char IsCanGo(const char xdir, const char ydir)
 		if (g_mapInfo.mapData[yPos + ydir][xPos + xdir] == SPACE_BLOCK ||
 			g_mapInfo.boxInfo[yPos + ydir][xPos + xdir] == SPACE_BOX)
 			return 0;
-
-		g_mapInfo.boxInfo[yPos][xPos] = SPACE_EMPTY;
-		g_mapInfo.boxInfo[yPos + ydir][xPos + xdir] = SPACE_BOX;
 	}
 
 	return 1;
@@ -285,11 +281,20 @@ char ProcessMove(char xdir, char ydir)
 	g_playerInfo.x += xdir;
 	g_playerInfo.y += ydir;
 
-	if (IsCanGo(xdir, ydir) == 0)
+	if (!IsCanGo(xdir, ydir))
 	{
 		g_playerInfo.x -= xdir;
 		g_playerInfo.y -= ydir;
 		return 0;
+	}
+
+	uint8_t xPos = g_playerInfo.x;
+	uint8_t yPos = g_playerInfo.y;
+	
+	if (g_mapInfo.boxInfo[yPos][xPos] == SPACE_BOX) 
+	{
+		g_mapInfo.boxInfo[yPos][xPos] = SPACE_EMPTY;
+		g_mapInfo.boxInfo[yPos + ydir][xPos + xdir] = SPACE_BOX;
 	}
 
 	return 1;
