@@ -24,20 +24,9 @@ struct BallInfo
 	uint8_t radius;
 };
 
-struct entity
-{
-	uint8_t type;
-	uint8_t x;
-	uint8_t y;
-	uint8_t dir;
-	uint8_t pat;
-	uint8_t flags;
-	uint8_t delay;
-	uint8_t frame;
-	void (*update)();
-};
 
-struct entity sample;
+uint8_t g_pat_base = 0;		
+
 
 struct BallInfo g_ball;
 
@@ -98,10 +87,12 @@ void run_game()
 {
 	g_gamestate = STATE_IN_GAME;
 
-	InitGame(32 * 8, 21 * 8);
-
 	spman_init();
 
+	InitGame(32 * 8, 21 * 8);
+	
+	g_pat_base = spman_alloc_pat(0, breakout_sprite[0], 3, 0);
+	
 	ubox_disable_screen();
 
 	ubox_fill_screen(WHITESPACE_TILE);
@@ -296,6 +287,8 @@ void InitGame(int screen_width, int screen_height)
 
 	ResetStage();
 	ResetBall();
+
+	
 }
 
 void ProcessLogic(int mouse_posx)
@@ -318,31 +311,28 @@ void DrawWorld()
 				EraseTiles(x * 3, y * 2, 3, 2, BLACK_TILE);
 			}
 		}
-	}
-
-	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 3, 0);
+	}	
 
 	//공을 화면에 그린다
 	sp.x = g_ball.x - 8;
 	sp.y = g_ball.y - 8;
-	sp.pattern = sample.pat + 0 * 8;
+	sp.pattern = g_pat_base + 0 * 8;
 	// green
 	sp.attr = 13;
-	spman_alloc_fixed_sprite(&sp);
+	spman_alloc_sprite(&sp);
 
-	// 패들을 화면에 그린다.
-	sample.pat = spman_alloc_pat(0, breakout_sprite[0], 3, 0);
+	// 패들을 화면에 그린다.	
 	sp.x = g_paddle_posx;
 	sp.y = g_paddle_posy;
-	sp.pattern = sample.pat + 1 * 8;
+	sp.pattern = g_pat_base + 1 * 8;
 	// 녹색
 	sp.attr = 15;
-	spman_alloc_fixed_sprite(&sp);
+	spman_alloc_sprite(&sp);
 
 	sp.x = g_paddle_posx + PADDLE_WIDTH / 2;
 	sp.y = g_paddle_posy;
-	sp.pattern = sample.pat + 1 * 8;
+	sp.pattern = g_pat_base + 1 * 8;
 	// 녹색
-	sp.attr = 15;
-	spman_alloc_fixed_sprite(&sp);
+	sp.attr = 11;
+	spman_alloc_sprite(&sp);
 }
