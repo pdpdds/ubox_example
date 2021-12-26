@@ -18,6 +18,12 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
         ubox_put_tile(x++, y, *text++ + 128 - 31);
 }
 
+void HALT()
+{
+    while(1) {
+        __asm__ ("halt"); 
+    };
+}
 
 void UBOX_FATAL(const char* message, int line_number)
 {
@@ -32,6 +38,7 @@ void UBOX_FATAL(const char* message, int line_number)
 
     sprintf(error_message, "%s %d %s", fileName, line_number, message);
     put_text(0, 0, error_message);
+    //HALT();
 }
 
 void main()
@@ -47,6 +54,8 @@ void main()
 
     ubox_set_tiles(tiles);
     ubox_set_tiles_colors(tiles_colors);
+
+    ubox_enable_screen();
   
     ubox_fill_screen(WHITESPACE_TILE);
 	
@@ -55,11 +64,8 @@ void main()
     if(data == 0)
     {  
         UBOX_FATAL("DATA IS NULL", __LINE__);
+        UBOX_FATAL("NOT PRINTED!!", __LINE__);
     }
-
-		
-    ubox_enable_screen();
-
 
     while (1)
     {	
