@@ -6,7 +6,21 @@
 #include <SDL_image.h>
 #endif
 
+#ifdef SKYOS32
+#include <vector.h>
+
+void* operator new[](size_t size, const char* name, int flags, unsigned debugFlags, const char* file, int line)
+{
+    return new uint8_t[size];
+}
+
+void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+    return new uint8_t[size];
+}
+#else
 #include <vector>
+#endif
 
 extern "C" SDL_Renderer * g_renderer;
 
@@ -33,8 +47,6 @@ extern "C" SDL_Color sprite_pallete[16] =
     {238, 238, 238, 0},
 };
 
-#include <vector>
-
 
 const char max_pattern = 64;
 
@@ -46,7 +58,11 @@ struct pattern_info
     uint8_t image_per_sprite;
 };
 
+#ifdef SKYOS32
+eastl::vector<pattern_info> g_pattern_info;
+#else
 std::vector<pattern_info> g_pattern_info;
+#endif
 
 extern "C" void spman_init()
 {

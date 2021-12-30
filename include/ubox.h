@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 
-#if defined(WIN32) || (__ANDROID__)
+#if defined(WIN32) || (__ANDROID__) || defined(SKYOS32)
 #define __z88dk_fastcall
 #endif
 
@@ -176,7 +176,7 @@ uint8_t ubox_get_vsync_freq();
  * // code to run after the int
  * ```
  */
-#if defined(WIN32) || (__ANDROID__)
+#if defined(WIN32) || (__ANDROID__) || defined(SKYOS32)
 #define ubox_wait_vsync()
 #else
 #define ubox_wait_vsync() do { \
