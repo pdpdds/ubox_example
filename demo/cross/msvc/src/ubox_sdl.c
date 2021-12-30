@@ -72,8 +72,10 @@ void ubox_set_mode(uint8_t mode)
 {
 #if defined(__ANDROID__)
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
-#else
+#elif defined(WIN32)
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+#else
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 #endif
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
@@ -95,9 +97,11 @@ void ubox_set_mode(uint8_t mode)
 
 #if defined(__ANDROID__)
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
-#else
+#elif defined(WIN32)
 	set_icon();
 	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+#else
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
 #endif
 
 	if (g_renderer == NULL)

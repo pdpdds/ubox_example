@@ -436,7 +436,7 @@ void run_game()
         // update sprites on screen
         spman_update();
 
-#if defined(WIN32) || defined(__ANDROID__)
+#if defined(WIN32) || defined(__ANDROID__) || defined(SKYOS32)
         draw_map();
         draw_hud();
 #endif

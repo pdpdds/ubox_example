@@ -89,6 +89,9 @@ void draw_game_over()
 #if defined(WIN32)
 #include <SDL2/SDL.h>
 int main(int argc, char** argv)
+#elif defined(SKYOS32)
+#include <SDL.h>
+int main(int argc, char** argv)
 #elif defined(__ANDROID__)
 #include <SDL.h>
 int SDL_main(int argc, char** argv)
