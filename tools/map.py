@@ -32,12 +32,14 @@ Expected layers: Map and Entities
 
 
 def apultra_compress(data):
-    with tempfile.NamedTemporaryFile() as fd:
+    with tempfile.NamedTemporaryFile(delete=False) as fd:
         fd.write(bytearray(data))
         fd.flush()
 
         ap_name = fd.name + ".ap"
         subprocess.call(["apultra", "-v", fd.name, ap_name], stdout=sys.stderr)
+        fd.close()
+        os.unlink(fd.name)
 
     with open(ap_name, "rb") as fd:
         out = fd.read()
