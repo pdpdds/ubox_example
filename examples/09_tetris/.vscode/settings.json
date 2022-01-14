@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "ubox.h": "c",
+        "string.h": "c"
+    }
+}
