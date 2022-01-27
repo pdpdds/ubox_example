@@ -1,0 +1,119 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: green - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\juhan\AppData\Local\Temp\RSP790B.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /I "../src" /I "../../../tools\apultra\src\libdivsufsort\include" /I "./" /I "./generated" /I "../../../include" /I ".\thirdparty\SDL-1.2.15\include" /I ".\thirdparty\SDLimage-1.2.12" /I "../../../tools\apultra\src" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "HXWIN32" /FR"Release/" /Fp"Release/green.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\data.c"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\helpers.c"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_mplayer_sdl.c"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_spman_sdl.cpp"
+"C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c"
+]
+Creating command line "cl.exe @C:\Users\juhan\AppData\Local\Temp\RSP790B.tmp" 
+Creating temporary file "C:\Users\juhan\AppData\Local\Temp\RSP790C.tmp" with contents
+[
+sdl.lib sdlimage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/green.pdb" /machine:I386 /out:"Release/green.exe" /libpath:"./thirdparty\SDL-1.2.15\lib\x86" /libpath:"./thirdparty\SDL_image-1.2.12\lib\x86" 
+.\Release\data.obj
+.\Release\helpers.obj
+.\Release\main.obj
+.\Release\ubox_mplayer_sdl.obj
+.\Release\ubox_sdl.obj
+.\Release\ubox_spman_sdl.obj
+.\Release\game.obj
+]
+Creating command line "link.exe @C:\Users\juhan\AppData\Local\Temp\RSP790C.tmp"
+<h3>Output Window</h3>
+Compiling...
+data.c
+helpers.c
+main.c
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\helpers.c(17) : warning C4761: integral size mismatch in argument; conversion supplied
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(33) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(34) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(35) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(36) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(37) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(38) : warning C4142: benign redefinition of type
+ubox_mplayer_sdl.c
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(26) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(26) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(27) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(27) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(28) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\src\main.c(28) : warning C4761: integral size mismatch in argument; conversion supplied
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(33) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(34) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(35) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(36) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(37) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(38) : warning C4142: benign redefinition of type
+ubox_sdl.c
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(33) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(34) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(35) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(36) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(37) : warning C4142: benign redefinition of type
+.\thirdparty\SDL-1.2.15\include\SDL_config_win32.h(38) : warning C4142: benign redefinition of type
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(361) : warning C4244: 'initializing' : conversion from 'float ' to 'unsigned int ', possible loss of data
+ubox_spman_sdl.cpp
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(154) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(154) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(154) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(155) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(155) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(155) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(156) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(156) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(156) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(157) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(157) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(157) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(159) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(159) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(159) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(160) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(160) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(160) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\ubox_sdl.c(175) : warning C4761: integral size mismatch in argument; conversion supplied
+game.c
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(23) : warning C4013: 'ubox_render' undefined; assuming extern returning int
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(116) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(118) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(157) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(157) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(158) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(158) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(232) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(240) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(240) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(292) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(292) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(308) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(314) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(314) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(318) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(318) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(330) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(330) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(337) : warning C4761: integral size mismatch in argument; conversion supplied
+C:\Users\juhan\Documents\GitHub\ubox_example\demo\cross\green4dos\game.c(337) : warning C4761: integral size mismatch in argument; conversion supplied
+Linking...
+Creating command line "bscmake.exe /nologo /o"Release/green.bsc"  .\Release\data.sbr .\Release\helpers.sbr .\Release\main.sbr .\Release\ubox_mplayer_sdl.sbr .\Release\ubox_sdl.sbr .\Release\ubox_spman_sdl.sbr .\Release\game.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+green.exe - 0 error(s), 66 warning(s)
+</pre>
+</body>
+</html>

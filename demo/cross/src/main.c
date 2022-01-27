@@ -86,7 +86,14 @@ void draw_game_over()
     ubox_wait_for(128);
 }
 
-#if defined(WIN32)
+#if defined(HXWIN32)
+#include <windows.h>
+#include <SDL.h>
+int APIENTRY WinMain(HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
+                     LPSTR     lpCmdLine,
+                     int       nCmdShow)
+#elif defined(WIN32)
 #include <SDL2/SDL.h>
 int main(int argc, char** argv)
 #elif defined(SKYOS32)
