@@ -18,9 +18,13 @@
 #include "player.h"
 #include "enemy.h"
 
+void ubox_render(int object_type, uint8_t flip, uint8_t x, uint8_t y, uint8_t frame);
+
 void render()
 {	
-	ubox_render(self->type, self->x, self->y, walk_frames[self->frame]);
+	if ((self->type == 1) && (invuln & 1))
+        return;
+	ubox_render(self->type, self->dir, self->x, self->y, walk_frames[self->frame]);
 }
 
 void ubox_draw_sprite(int object_type, uint8_t x, uint8_t y, uint8_t frame);
@@ -301,8 +305,9 @@ void update_player()
         // wrap horizontally
         if (self->x == 2)
 		{
-            self->x = (uint8_t)(255 - 16);
 			ubox_draw_sprite(self->type, self->x, self->y, walk_frames[self->frame]);
+            self->x = (uint8_t)(255 - 16);
+			
 		}
         // check if not solid, using bottom left
         else if (!is_map_blocked(self->x, self->y + 15))

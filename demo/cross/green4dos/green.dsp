@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "../../../tools\apultra\src\libdivsufsort\include" /I "./" /I "./generated" /I "../../../include" /I ".\thirdparty\SDL-1.2.15\include" /I "C:.\thirdparty\SDL_image-1.2.12\include" /I "../../../tools\apultra\src" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "HXWIN32" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "../src" /I "../../../tools\apultra\src\libdivsufsort\include" /I "./" /I "./generated" /I "../../../include" /I ".\thirdparty\SDL-1.2.15\include" /I ".\thirdparty\SDLimage-1.2.12" /I "../../../tools\apultra\src" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "HXWIN32" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x412 /d "_DEBUG"
@@ -118,18 +118,6 @@ SOURCE=..\src\main.c
 
 SOURCE=..\src\main.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\ubox_mplayer_sdl.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ubox_sdl.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ubox_spman_sdl.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -154,6 +142,70 @@ SOURCE=.\generated\tiles.h
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# End Group
+# Begin Group "sdl"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ubox_mplayer_sdl.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\ubox_sdl.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\ubox_spman_sdl.cpp
+# End Source File
+# End Group
+# Begin Group "sdl_gfx"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_framerate.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_framerate.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_gfxBlitFunc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_gfxBlitFunc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_gfxPrimitives.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_gfxPrimitives.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_gfxPrimitives_font.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_imageFilter.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_imageFilter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_rotozoom.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\thirdparty\SDL_gfx\SDL_rotozoom.h
+# End Source File
 # End Group
 # End Target
 # End Project

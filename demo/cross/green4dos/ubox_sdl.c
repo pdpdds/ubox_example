@@ -10,6 +10,7 @@
 #else
 #include <SDL.h>
 #include <SDL_image.h>
+#include "thirdparty/sdl_gfx/sdl_rotozoom.h"
 #endif
 
 
@@ -75,7 +76,9 @@ void set_icon()
 SDL_Surface *screen;
 SDL_Surface* tile_surface;
 SDL_Surface* player_surface;
+SDL_Surface* player_flip_surface;
 SDL_Surface* enemy_surface;
+SDL_Surface* enemy_flip_surface;
 
 void ubox_set_mode(uint8_t mode) 
 {
@@ -115,18 +118,27 @@ void ubox_set_colors(uint8_t fg, uint8_t bg, uint8_t border)
 #define MAP_W 32
 #define MAP_H 21
 extern uint8_t cur_map_data[MAP_W * MAP_H];
-void ubox_render(int object_type, uint8_t x, uint8_t y, uint8_t frame)
+void ubox_render(int object_type, uint8_t flip, uint8_t x, uint8_t y, uint8_t frame)
 {
 		SDL_Rect srcRect;
 		SDL_Rect dstRect;		
 	
 	
 
-	srcRect.x = frame * 16;
+	if(flip)
+	{
+		srcRect.x = (2 - frame) * 16;
 	srcRect.y = 0;
+	}
+	else
+	{
+		srcRect.x = frame * 16;
+	srcRect.y = 0;
+	}
+
 	srcRect.w = 16;
 	srcRect.h = 16;
-
+	
 
 	dstRect.x = x;
 	dstRect.y = y;
@@ -134,10 +146,23 @@ void ubox_render(int object_type, uint8_t x, uint8_t y, uint8_t frame)
 	dstRect.h = 16;
 	
 	if(object_type == 1)
+	{
+		if(flip)
+			SDL_BlitSurface(player_flip_surface, &srcRect, screen, &dstRect);
+		else
 		SDL_BlitSurface(player_surface, &srcRect, screen, &dstRect);
+	}
 	if(object_type == 2)
-		SDL_BlitSurface(enemy_surface, &srcRect, screen, &dstRect);
+	{
+		if(flip)
+			SDL_BlitSurface(enemy_flip_surface, &srcRect, screen, &dstRect);
+		else
+			SDL_BlitSurface(enemy_surface, &srcRect, screen, &dstRect);
+	}
 }
+
+
+
 
 void ubox_draw_sprite(int object_type, uint8_t x, uint8_t y, uint8_t frame)
 {
@@ -228,8 +253,15 @@ void ubox_set_tiles(uint8_t* tiles)
 	temp = load_png("player.png");
 	player_surface = SDL_DisplayFormat(temp);
 	SDL_SetColorKey(player_surface, SDL_SRCCOLORKEY, SDL_MapRGB(player_surface->format, 28, 28, 28));
-	enemy_surface = load_png("enemy.png");
+	player_flip_surface = rotozoomSurfaceXY(player_surface, 0, -1.0f, 1.0f, 0);
+	
+	temp = load_png("enemy.png");
+	enemy_surface = SDL_DisplayFormat(temp);
 	SDL_SetColorKey(enemy_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
+	enemy_flip_surface = rotozoomSurfaceXY(enemy_surface, 0, -1.0f, 1.0f, 0);
+	SDL_SetColorKey(enemy_flip_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
+
+	
 #else
 	for (i = 0; i < 8; i++)
 	{
