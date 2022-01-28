@@ -95,7 +95,7 @@ void ubox_set_mode(uint8_t mode)
 	}
 
 	//screen = SDL_SetVideoMode(800, 600, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
-	screen = SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE | SDL_FULLSCREEN);
+	screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
 
 }
 
@@ -252,14 +252,14 @@ void ubox_set_tiles(uint8_t* tiles)
 	tile_surface = load_png("tiles.png");	
 	temp = load_png("player.png");
 	player_surface = SDL_DisplayFormat(temp);
-	SDL_SetColorKey(player_surface, SDL_SRCCOLORKEY, SDL_MapRGB(player_surface->format, 28, 28, 28));
-	player_flip_surface = rotozoomSurfaceXY(player_surface, 0, -1.0f, 1.0f, 0);
+	//SDL_SetColorKey(player_surface, SDL_SRCCOLORKEY, SDL_MapRGB(player_surface->format, 28, 28, 28));
+	//player_flip_surface = rotozoomSurfaceXY(player_surface, 0, -1.0f, 1.0f, 0);
 	
 	temp = load_png("enemy.png");
 	enemy_surface = SDL_DisplayFormat(temp);
 	SDL_SetColorKey(enemy_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
-	enemy_flip_surface = rotozoomSurfaceXY(enemy_surface, 0, -1.0f, 1.0f, 0);
-	SDL_SetColorKey(enemy_flip_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
+	//enemy_flip_surface = rotozoomSurfaceXY(enemy_surface, 0, -1.0f, 1.0f, 0);
+	//SDL_SetColorKey(enemy_flip_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
 
 	
 #else
