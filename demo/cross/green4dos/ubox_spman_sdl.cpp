@@ -9,7 +9,7 @@
 #endif
 
 
-#include <vector>
+//#include <vector>
 //#include "spman.h"
 struct sprite_attr {
     uint8_t y;
@@ -58,12 +58,12 @@ struct pattern_info
 #ifdef SKYOS32
 eastl::vector<pattern_info> g_pattern_info;
 #else
-std::vector<pattern_info> g_pattern_info;
+//std::vector<pattern_info> g_pattern_info;
 #endif
 
 extern "C" void spman_init()
 {
-    g_pattern_info.clear();
+  //  g_pattern_info.clear();
 }
 
 
@@ -72,7 +72,8 @@ extern "C" void spman_init()
 extern "C" uint8_t spman_alloc_pat(uint8_t type, uint8_t* data, uint8_t len, uint8_t flip)
 {
 
-	std::vector<pattern_info>::iterator iter = g_pattern_info.begin();
+    return 0;
+	/*std::vector<pattern_info>::iterator iter = g_pattern_info.begin();
 	pattern_info info;
 
     int index = 0;
@@ -91,7 +92,7 @@ extern "C" uint8_t spman_alloc_pat(uint8_t type, uint8_t* data, uint8_t len, uin
 	
     g_pattern_info.push_back(info);
 
-    return index * max_pattern;
+    return index * max_pattern;*/
 }
 
 extern "C" void spman_alloc_sprite(struct sprite_attr* sp);
@@ -117,7 +118,7 @@ void put_pixel(SDL_Surface* screen,int x,int y,SDL_Color* p)
 
 extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
 {
-    uint8_t sprite_index = sp->pattern / max_pattern;
+    /*uint8_t sprite_index = sp->pattern / max_pattern;
     uint8_t pattern_index = sp->pattern % max_pattern;
     pattern_info iter = g_pattern_info[sprite_index];
     uint8_t* data = iter.data;
@@ -166,7 +167,7 @@ extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
         }
 
 		SDL_UnlockSurface(screen);
-    }
+    }*/
 }
 
 extern "C" void spman_sprite_flush()

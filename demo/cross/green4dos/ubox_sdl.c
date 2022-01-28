@@ -95,7 +95,7 @@ void ubox_set_mode(uint8_t mode)
 	}
 
 	//screen = SDL_SetVideoMode(800, 600, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
-	screen = SDL_SetVideoMode(320, 200, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
+	screen = SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE | SDL_FULLSCREEN);
 
 }
 

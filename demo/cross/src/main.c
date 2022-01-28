@@ -87,12 +87,13 @@ void draw_game_over()
 }
 
 #if defined(HXWIN32)
-#include <windows.h>
+/*#include <windows.h>
 #include <SDL.h>
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
-                     int       nCmdShow)
+                     int       nCmdShow)*/
+void main()
 #elif defined(WIN32)
 #include <SDL2/SDL.h>
 int main(int argc, char** argv)
