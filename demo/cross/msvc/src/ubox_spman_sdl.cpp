@@ -1,6 +1,9 @@
 #include "spman.h"
-#if defined(WIN32)
+#if defined(WIN32) && !defined(HXWIN32)
 #include <SDL2/SDL.h>
+
+extern "C" SDL_Renderer * g_renderer;
+
 #else
 #include <SDL.h>
 #include <SDL_image.h>
@@ -18,11 +21,7 @@ void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, cons
 {
     return new uint8_t[size];
 }
-#else
-#include <vector>
 #endif
-
-extern "C" SDL_Renderer * g_renderer;
 
 extern const unsigned char player_sprite[6][32];
 extern const unsigned char enemy_sprite[3][32];
@@ -58,18 +57,55 @@ struct pattern_info
     uint8_t image_per_sprite;
 };
 
-#ifdef SKYOS32
+#if defined(SKYOS32)
 eastl::vector<pattern_info> g_pattern_info;
+#elif HXWIN32
 #else
+#include <vector>
 std::vector<pattern_info> g_pattern_info;
 #endif
+
+extern "C" void spman_sprite_flush()
+{
+
+}
+
+extern "C" void spman_hide_all_sprites()
+{
+
+}
+
+#if defined(HXWIN32)
+
+extern "C" void spman_init()
+{ 
+}
+
+
+extern "C" uint8_t spman_alloc_pat(uint8_t type, uint8_t * data, uint8_t len, uint8_t flip)
+{
+    return 0;
+}
+
+extern "C" void spman_alloc_fixed_sprite(struct sprite_attr* sp)
+{    
+}
+
+extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
+{
+}
+
+extern "C" void spman_update()
+{
+}
+
+
+#else
 
 extern "C" void spman_init()
 {
     g_pattern_info.clear();
 }
-
-
 
 
 extern "C" uint8_t spman_alloc_pat(uint8_t type, uint8_t* data, uint8_t len, uint8_t flip)
@@ -141,17 +177,10 @@ extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
     }
 }
 
-extern "C" void spman_sprite_flush()
-{
-
-}
-
 extern "C" void spman_update()
 {    
     SDL_RenderPresent(g_renderer);
 }
 
-extern "C" void spman_hide_all_sprites()
-{
 
-}
+#endif

@@ -2,11 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="ubox_sdl.c" />
-    <ClCompile Include="ubox_spman_sdl.cpp" />
     <ClCompile Include="..\src\data.c">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="game.c">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\src\helpers.c">
@@ -18,18 +14,20 @@
     <ClCompile Include="..\msvc\src\ubox_mplayer_sdl.c">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="game.c" />
+    <ClCompile Include="..\msvc\src\ubox_spman_sdl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdint.h" />
-    <ClInclude Include="game.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\helpers.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\main.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="game.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="common">
