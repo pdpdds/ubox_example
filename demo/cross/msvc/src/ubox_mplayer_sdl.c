@@ -1,5 +1,5 @@
 #include "mplayer.h"
-#if defined(WIN32)
+#if defined(WIN32) && !defined(HXWIN32)
 #include <SDL2/SDL.h>
 #include "SDL2/SDL_mixer.h"
 #else
@@ -16,6 +16,7 @@ Mix_Music* gameover = 0;
 
 void mplayer_init(uint8_t* song, uint8_t sub_song)
 {
+#if !defined(HXWIN32)
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		return;
@@ -45,7 +46,7 @@ void mplayer_init(uint8_t* song, uint8_t sub_song)
 	{
 		Mix_HaltMusic();
 	}
-
+#endif
 
 }
 
