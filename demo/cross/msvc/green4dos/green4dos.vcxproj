@@ -135,7 +135,7 @@
       <AdditionalDependencies>msvcrt.lib;sdlimage.lib;sdl.lib;Kernel32.lib;apultra_debug.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>./lib;.;.\thirdparty\SDL-1.2.15\lib\x86;../apultra/bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./thirdparty/lib;../apultra/bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,7 +162,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>msvcrt.lib;sdlimage.lib;sdl.lib;Kernel32.lib;apultra.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>./lib;.;.\thirdparty\SDL-1.2.15\lib\x86;.\thirdparty\SDL_mixer-1.2.12\lib\x86;../apultra/bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./thirdparty/lib;../apultra/bin</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
