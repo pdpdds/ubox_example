@@ -391,14 +391,16 @@ void update_player()
         }
     }
 
+#if defined(HXWIN32)
+    ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#endif
+
     // if we are invulnerable, don't draw odd frames
     // and we get a nice blinking effect
     if (invuln & 1)
         return;
 
-#if defined(HXWIN32)
-    ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
-#else
+#if !defined(HXWIN32)    
     // allocate the player sprites; fixed so they never flicker
     sp.x = self->x;
     // y on the screen starts in 255
