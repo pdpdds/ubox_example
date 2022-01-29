@@ -77,6 +77,8 @@ extern "C" void spman_hide_all_sprites()
 
 #if defined(HXWIN32)
 
+extern  "C" SDL_Surface * screen;
+
 extern "C" void spman_init()
 { 
 }
@@ -95,8 +97,10 @@ extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
 {
 }
 
+
 extern "C" void spman_update()
 {
+    SDL_Flip(screen);
 }
 
 

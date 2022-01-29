@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\ubox_mplayer_sdl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ubox_sdl.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ubox_spman_sdl.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\data.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\game.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\helpers.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\sdl_gfx\SDL_framerate.c" />
+    <ClCompile Include="thirdparty\sdl_gfx\SDL_gfxBlitFunc.c" />
+    <ClCompile Include="thirdparty\sdl_gfx\SDL_gfxPrimitives.c" />
+    <ClCompile Include="thirdparty\sdl_gfx\SDL_imageFilter.c" />
+    <ClCompile Include="thirdparty\sdl_gfx\SDL_rotozoom.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\include\ap.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\mplayer.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\spman.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\ubox.h">
+      <Filter>common\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\enemy.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\map.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\player.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\tiles.h">
+      <Filter>generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\game.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\helpers.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\main.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_framerate.h" />
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_gfxBlitFunc.h" />
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_gfxPrimitives.h" />
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_gfxPrimitives_font.h" />
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_imageFilter.h" />
+    <ClInclude Include="thirdparty\sdl_gfx\SDL_rotozoom.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{24a9127d-1518-4d81-a996-c2b7a99a9391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{b5bfa100-f04e-475e-a04f-252ffa896bf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\include">
+      <UniqueIdentifier>{00eddc31-3fa1-4c29-a9c2-56bfa236ae84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="generated">
+      <UniqueIdentifier>{b54622ad-2825-4279-a907-36286b8a4590}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

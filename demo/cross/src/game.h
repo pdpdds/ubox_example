@@ -81,6 +81,9 @@ struct entity
     uint8_t delay;
     uint8_t frame;
     void (*update)();
+#if defined(HXWIN32)
+    void (*render_sprite)();
+#endif
 };
 
 void run_game();

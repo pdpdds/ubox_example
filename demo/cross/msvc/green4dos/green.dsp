@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 sdl.lib sdlimage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /libpath:"./thirdparty\SDL-1.2.15\lib\x86" /libpath:"./thirdparty\SDL_image-1.2.12\lib\x86"
+# ADD LINK32 sdl.lib sdlimage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /libpath:"./lib" /libpath:"./thirdparty\SDL-1.2.15\lib\x86" /libpath:"./thirdparty\SDLimage-1.2.12\lib\x86"
 
 !ELSEIF  "$(CFG)" == "green - Win32 Debug"
 

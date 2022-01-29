@@ -1,16 +1,34 @@
 #include "ubox.h"
 
-#if defined(WIN32)
+#if defined(WIN32) && !defined(HXWIN32)
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#else
-#include <SDL.h>
-#include <SDL_image.h>
-#endif
 
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture* g_tile_texture;
+#elif defined(HXWIN32)
+#include <SDL.h>
+#include <SDL_image.h>
+#include "sdl_rotozoom.h"
+
+SDL_Surface* screen;
+SDL_Surface* tile_surface;
+SDL_Surface* player_surface;
+SDL_Surface* enemy_surface;
+
+SDL_Surface* enemy_flip_surface;
+SDL_Surface* player_flip_surface;
+
+#else
+#include <SDL.h>
+#include <SDL_image.h>
+
+SDL_Window* g_window;
+SDL_Renderer* g_renderer;
+SDL_Texture* g_tile_texture;
+
+#endif
 
 uint32_t screen_width = 640;
 uint32_t screen_height = 480;
@@ -22,105 +40,28 @@ int32_t g__tick_interval = 73;
 
 extern SDL_Color sprite_pallete[16];
 
-void set_icon()
-{
-	SDL_Surface* surface;     
-
-	//SDL Icon
-	Uint16 pixels[16 * 16] = 
-	{  
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0aab, 0x0789, 0x0bcc, 0x0eee, 0x09aa, 0x099a, 0x0ddd,
-	  0x0fff, 0x0eee, 0x0899, 0x0fff, 0x0fff, 0x1fff, 0x0dde, 0x0dee,
-	  0x0fff, 0xabbc, 0xf779, 0x8cdd, 0x3fff, 0x9bbc, 0xaaab, 0x6fff,
-	  0x0fff, 0x3fff, 0xbaab, 0x0fff, 0x0fff, 0x6689, 0x6fff, 0x0dee,
-	  0xe678, 0xf134, 0x8abb, 0xf235, 0xf678, 0xf013, 0xf568, 0xf001,
-	  0xd889, 0x7abc, 0xf001, 0x0fff, 0x0fff, 0x0bcc, 0x9124, 0x5fff,
-	  0xf124, 0xf356, 0x3eee, 0x0fff, 0x7bbc, 0xf124, 0x0789, 0x2fff,
-	  0xf002, 0xd789, 0xf024, 0x0fff, 0x0fff, 0x0002, 0x0134, 0xd79a,
-	  0x1fff, 0xf023, 0xf000, 0xf124, 0xc99a, 0xf024, 0x0567, 0x0fff,
-	  0xf002, 0xe678, 0xf013, 0x0fff, 0x0ddd, 0x0fff, 0x0fff, 0xb689,
-	  0x8abb, 0x0fff, 0x0fff, 0xf001, 0xf235, 0xf013, 0x0fff, 0xd789,
-	  0xf002, 0x9899, 0xf001, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0xe789,
-	  0xf023, 0xf000, 0xf001, 0xe456, 0x8bcc, 0xf013, 0xf002, 0xf012,
-	  0x1767, 0x5aaa, 0xf013, 0xf001, 0xf000, 0x0fff, 0x7fff, 0xf124,
-	  0x0fff, 0x089a, 0x0578, 0x0fff, 0x089a, 0x0013, 0x0245, 0x0eff,
-	  0x0223, 0x0dde, 0x0135, 0x0789, 0x0ddd, 0xbbbc, 0xf346, 0x0467,
-	  0x0fff, 0x4eee, 0x3ddd, 0x0edd, 0x0dee, 0x0fff, 0x0fff, 0x0dee,
-	  0x0def, 0x08ab, 0x0fff, 0x7fff, 0xfabc, 0xf356, 0x0457, 0x0467,
-	  0x0fff, 0x0bcd, 0x4bde, 0x9bcc, 0x8dee, 0x8eff, 0x8fff, 0x9fff,
-	  0xadee, 0xeccd, 0xf689, 0xc357, 0x2356, 0x0356, 0x0467, 0x0467,
-	  0x0fff, 0x0ccd, 0x0bdd, 0x0cdd, 0x0aaa, 0x2234, 0x4135, 0x4346,
-	  0x5356, 0x2246, 0x0346, 0x0356, 0x0467, 0x0356, 0x0467, 0x0467,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
-	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff
-	};
-	surface = SDL_CreateRGBSurfaceFrom(pixels, 16, 16, 16, 16 * 2, 0x0f00, 0x00f0, 0x000f, 0xf000);
-
-	SDL_SetWindowIcon(g_window, surface);
-	SDL_FreeSurface(surface);
-}
-
-void ubox_set_mode(uint8_t mode) 
-{
-#if defined(__ANDROID__)
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
-#elif defined(WIN32)
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-#else
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-#endif
-	{
-		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-		return;
-	}
-
-#if defined(__ANDROID__)
-	g_window = SDL_CreateWindow("GREEN for Android", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 448, SDL_WINDOW_FULLSCREEN);
-#else
-	g_window = SDL_CreateWindow("GREEN for WIN32", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		screen_width, screen_height, SDL_WINDOW_SHOWN);
-#endif
-
-	if (g_window == NULL)
-	{
-		printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
-		return;
-	}
-
-#if defined(__ANDROID__)
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
-#elif defined(WIN32)
-	set_icon();
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-#else
-	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
-#endif
-
-	if (g_renderer == NULL)
-	{
-		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-		return;
-	}
-
-	SDL_RenderSetLogicalSize(g_renderer, map_width * 8, (map_height + 4) * 8);
-
-}
-
-void ubox_enable_screen()
-{
-	SDL_RenderPresent(g_renderer);
-}
-
 
 void ubox_disable_screen()
+{
+
+}
+
+void ubox_set_tiles_colors(uint8_t* colors)
+{
+
+}
+
+void ubox_init_isr(uint8_t wait_ticks)
+{
+
+}
+
+uint8_t ubox_get_tile(uint8_t x, uint8_t y)
+{
+	return 0;
+}
+
+void ubox_set_user_isr(void (*fn)())
 {
 
 }
@@ -158,57 +99,187 @@ uint8_t ubox_get_vsync_freq()
 	return 0;
 }
 
+void set_icon()
+{
+	SDL_Surface* surface;
 
-void load_png(const char* filename)
-{	
-	if (g_renderer == 0)
+	//SDL Icon
+	Uint16 pixels[16 * 16] =
+	{
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0aab, 0x0789, 0x0bcc, 0x0eee, 0x09aa, 0x099a, 0x0ddd,
+	  0x0fff, 0x0eee, 0x0899, 0x0fff, 0x0fff, 0x1fff, 0x0dde, 0x0dee,
+	  0x0fff, 0xabbc, 0xf779, 0x8cdd, 0x3fff, 0x9bbc, 0xaaab, 0x6fff,
+	  0x0fff, 0x3fff, 0xbaab, 0x0fff, 0x0fff, 0x6689, 0x6fff, 0x0dee,
+	  0xe678, 0xf134, 0x8abb, 0xf235, 0xf678, 0xf013, 0xf568, 0xf001,
+	  0xd889, 0x7abc, 0xf001, 0x0fff, 0x0fff, 0x0bcc, 0x9124, 0x5fff,
+	  0xf124, 0xf356, 0x3eee, 0x0fff, 0x7bbc, 0xf124, 0x0789, 0x2fff,
+	  0xf002, 0xd789, 0xf024, 0x0fff, 0x0fff, 0x0002, 0x0134, 0xd79a,
+	  0x1fff, 0xf023, 0xf000, 0xf124, 0xc99a, 0xf024, 0x0567, 0x0fff,
+	  0xf002, 0xe678, 0xf013, 0x0fff, 0x0ddd, 0x0fff, 0x0fff, 0xb689,
+	  0x8abb, 0x0fff, 0x0fff, 0xf001, 0xf235, 0xf013, 0x0fff, 0xd789,
+	  0xf002, 0x9899, 0xf001, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0xe789,
+	  0xf023, 0xf000, 0xf001, 0xe456, 0x8bcc, 0xf013, 0xf002, 0xf012,
+	  0x1767, 0x5aaa, 0xf013, 0xf001, 0xf000, 0x0fff, 0x7fff, 0xf124,
+	  0x0fff, 0x089a, 0x0578, 0x0fff, 0x089a, 0x0013, 0x0245, 0x0eff,
+	  0x0223, 0x0dde, 0x0135, 0x0789, 0x0ddd, 0xbbbc, 0xf346, 0x0467,
+	  0x0fff, 0x4eee, 0x3ddd, 0x0edd, 0x0dee, 0x0fff, 0x0fff, 0x0dee,
+	  0x0def, 0x08ab, 0x0fff, 0x7fff, 0xfabc, 0xf356, 0x0457, 0x0467,
+	  0x0fff, 0x0bcd, 0x4bde, 0x9bcc, 0x8dee, 0x8eff, 0x8fff, 0x9fff,
+	  0xadee, 0xeccd, 0xf689, 0xc357, 0x2356, 0x0356, 0x0467, 0x0467,
+	  0x0fff, 0x0ccd, 0x0bdd, 0x0cdd, 0x0aaa, 0x2234, 0x4135, 0x4346,
+	  0x5356, 0x2246, 0x0346, 0x0356, 0x0467, 0x0356, 0x0467, 0x0467,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff,
+	  0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff, 0x0fff
+	};
+	surface = SDL_CreateRGBSurfaceFrom(pixels, 16, 16, 16, 16 * 2, 0x0f00, 0x00f0, 0x000f, 0xf000);
+
+#ifdef HXWIN32
+#else
+	SDL_SetWindowIcon(g_window, surface);
+#endif
+	SDL_FreeSurface(surface);
+}
+
+void ubox_set_mode(uint8_t mode)
+{
+#if defined(__ANDROID__)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
+#elif defined(WIN32) && !defined(HXWIN32)
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+#else	
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+#endif
+	{	
+		//printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		return;
+	}	
 
+#if defined(HXWIN32)
+#ifdef _DEBUG
+	screen = SDL_SetVideoMode(320, 200, 32, SDL_SWSURFACE);
+#else
+	screen = SDL_SetVideoMode(320, 200, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
+#endif
+#else
+#if defined(__ANDROID__)
+	g_window = SDL_CreateWindow("GREEN for Android", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 448, SDL_WINDOW_FULLSCREEN);
+#else
+	g_window = SDL_CreateWindow("GREEN for WIN32", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		screen_width, screen_height, SDL_WINDOW_SHOWN);
+#endif
+
+	if (g_window == NULL)
+	{
+		printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+		return;
+	}
+
+#if defined(__ANDROID__)
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
+#elif defined(WIN32)
+	set_icon();
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+#else
+	g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
+#endif
+
+	if (g_renderer == NULL)
+	{
+		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+		return;
+	}
+
+	SDL_RenderSetLogicalSize(g_renderer, map_width * 8, (map_height + 4) * 8);
+#endif
+
+}
+
+void ubox_enable_screen()
+{
+#if defined(HXWIN32)
+	SDL_Flip(screen);
+#else
+	SDL_RenderPresent(g_renderer);
+#endif
+}
+
+
+SDL_Surface* load_png(const char* filename)
+{		
 	//Initialize PNG loading
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags))
 	{
-		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-		return;
+		//printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		return 0;
 	}
 
-	SDL_Surface* surface = IMG_Load(filename);
-
-	if (surface == 0)
-		return;
-
-	g_tile_texture = SDL_CreateTextureFromSurface(g_renderer, surface);
-
-	if (g_tile_texture == 0)
-		return;
-
-	SDL_FreeSurface(surface);
+	return IMG_Load(filename);	
 }
 
 extern const unsigned char tiles_colors[2048];
 
 char g_tiles_rgb[2048 * 8 * 4];
 
+
+
+
+
 void ubox_set_tiles(uint8_t* tiles)
 {
-#if 0
-	load_png("tiles.png");
+	int i = 0, j = 0, k = 0;
+	uint32_t rmask = 0x000000ff;
+	uint32_t gmask = 0x0000ff00;
+	uint32_t bmask = 0x00ff0000;
+	uint32_t amask = 0;
+	SDL_Surface* temp;
+
+#if 1
+	temp = load_png("tiles.png");
+
+#if defined(HXWIN32)
+	tile_surface = temp;
+
+	temp = load_png("player.png");
+	player_surface = SDL_DisplayFormat(temp);
+	SDL_SetColorKey(player_surface, SDL_SRCCOLORKEY, SDL_MapRGB(player_surface->format, 28, 28, 28));
+	player_flip_surface = rotozoomSurfaceXY(player_surface, 0, -1.0f, 1.0f, 0);
+
+	temp = load_png("enemy.png");
+	enemy_surface = SDL_DisplayFormat(temp);
+	SDL_SetColorKey(enemy_surface, SDL_SRCCOLORKEY, SDL_MapRGB(enemy_surface->format, 28, 28, 28));
+	enemy_flip_surface = rotozoomSurfaceXY(enemy_surface, 0, -1.0f, 1.0f, 0);
+	
+
 #else
-	for (int i = 0; i < 8; i++)
+	g_tile_texture = SDL_CreateTextureFromSurface(g_renderer, temp);
+	SDL_FreeSurface(temp);
+#endif
+
+#else
+	for (i = 0; i < 8; i++)
 	{
-		for (int j = 0; j < 32; j++)
+		for (j = 0; j < 32; j++)
 		{
-			for (int k = 0; k < 8; k++)
+			for (k = 0; k < 8; k++)
 			{
 				uint8_t tile_pixels = tiles[(i * 8 * 32) + (j * 8) + k];
 				uint8_t tile_color = tiles_colors[(i * 8 * 32) + (j * 8) + k];
 
 				uint8_t color = (tile_color >> 4);
-			
+
 				uint8_t color2 = (tile_color << 4);
 				color2 = color2 >> 4;
 
-				for (uint8_t t = 0; t < 8; t++)
+				for (t = 0; t < 8; t++)
 				{
 					uint8_t mask = 1 << (7 - t);
 					int index = ((i * 8 * 8 * 32) + (k) * 8 * 32 + (j * 8 + t)) * 3;
@@ -231,10 +302,6 @@ void ubox_set_tiles(uint8_t* tiles)
 		}
 	}
 	
-	uint32_t rmask = 0x000000ff;
-	uint32_t gmask = 0x0000ff00;
-	uint32_t bmask = 0x00ff0000;
-	uint32_t amask = 0;
 
 	SDL_Surface* surface = SDL_CreateRGBSurfaceFrom((void*)g_tiles_rgb, 256, 64, 24, 3 * 256,
 		rmask, gmask, bmask, amask);
@@ -255,10 +322,7 @@ void ubox_set_tiles(uint8_t* tiles)
 
 }
 
-void ubox_set_tiles_colors(uint8_t* colors)
-{
 
-}
 
 void ubox_put_tile(uint8_t x, uint8_t y, uint8_t tile)
 {
@@ -280,35 +344,29 @@ void ubox_put_tile(uint8_t x, uint8_t y, uint8_t tile)
 	dstRect.w = 8;
 	dstRect.h = 8;
 
+#if defined(HXWIN32)
+	SDL_BlitSurface(tile_surface, &srcRect, screen, &dstRect);
+#else
 	SDL_RenderCopy(g_renderer, g_tile_texture, &srcRect, &dstRect);
+#endif
 }
 
-uint8_t ubox_get_tile(uint8_t x, uint8_t y)
-{
-	return 0;
-}
+
 
 void ubox_fill_screen(uint8_t tile)
 {
-	SDL_SetRenderDrawColor(g_renderer, 255, 0, 0, 255);
+	uint8_t x = 0, y = 0;
+	//SDL_SetRenderDrawColor(g_renderer, 255, 0, 0, 255);
 	
-	for (uint8_t y = 0; y < map_height + 4; y++)
-		for (uint8_t x = 0; x < map_width; x++)
+	for (y = 0; y < map_height + 4; y++)
+		for (x = 0; x < map_width; x++)
 		{
 			ubox_put_tile(x, y, tile);
 		}
 
 }
 
-void ubox_init_isr(uint8_t wait_ticks)
-{
 
-}
-
-void ubox_set_user_isr(void (*fn)())
-{
-
-}
 
 Uint32 TimeLeft(void)
 {
@@ -503,3 +561,73 @@ void ap_uncompress(const uint8_t* dst, const uint8_t* src)
 	size_t n = GetMapDataSize(src - 3);
 	apultra_decompress(src, dst, n - 3, 672, 0, 0);
 }
+
+#if defined(HXWIN32)
+void ubox_render(int object_type, uint8_t flip, uint8_t x, uint8_t y, uint8_t frame)
+{
+	SDL_Rect srcRect;
+	SDL_Rect dstRect;
+
+
+	if (flip)
+	{
+		srcRect.x = (2 - frame) * 16;
+		srcRect.y = 0;
+	}
+	else
+	{
+		srcRect.x = frame * 16;
+		srcRect.y = 0;
+	}
+
+	srcRect.w = 16;
+	srcRect.h = 16;
+
+
+	dstRect.x = x;
+	dstRect.y = y;
+	dstRect.w = 16;
+	dstRect.h = 16;
+
+	if (object_type == 1)
+	{
+		if (flip)
+			SDL_BlitSurface(player_flip_surface, &srcRect, screen, &dstRect);
+		else
+			SDL_BlitSurface(player_surface, &srcRect, screen, &dstRect);
+	}
+	if (object_type == 2)
+	{
+		if (flip)
+			SDL_BlitSurface(enemy_flip_surface, &srcRect, screen, &dstRect);
+		else
+			SDL_BlitSurface(enemy_surface, &srcRect, screen, &dstRect);
+	}
+}
+
+#define MAP_W 32
+#define MAP_H 21
+extern uint8_t cur_map_data[MAP_W * MAP_H];
+void ubox_render_background(int object_type, uint8_t x, uint8_t y, uint8_t frame)
+{
+
+	uint32_t tile = cur_map_data[(x / 8) + (y / 8) * map_width];
+	uint32_t tile1 = cur_map_data[(x / 8) + 1 + (y / 8) * map_width];
+	uint32_t tile2 = cur_map_data[(x / 8) + (y / 8 + 1) * map_width];
+	uint32_t tile3 = cur_map_data[(x / 8 + 1) + (y / 8 + 1) * map_width];
+
+	uint32_t tile5 = cur_map_data[(x / 8) + 2 + (y / 8) * map_width];
+	uint32_t tile6 = cur_map_data[(x / 8) + 2 + (y / 8 + 1) * map_width];
+
+
+	ubox_put_tile(x / 8, y / 8, tile);
+	ubox_put_tile(x / 8 + 1, y / 8, tile1);
+	ubox_put_tile(x / 8, y / 8 + 1, tile2);
+	ubox_put_tile(x / 8 + 1, y / 8 + 1, tile3);
+
+	ubox_put_tile(x / 8 + 2, y / 8, tile5);
+	ubox_put_tile(x / 8 + 2, y / 8 + 1, tile6);
+
+
+}
+#endif

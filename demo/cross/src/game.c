@@ -18,6 +18,20 @@
 #include "player.h"
 #include "enemy.h"
 
+#if defined(HXWIN32)
+extern void ubox_render(int object_type, uint8_t flip, uint8_t x, uint8_t y, uint8_t frame);
+extern void ubox_render_background(int object_type, uint8_t x, uint8_t y, uint8_t frame);
+
+
+void render_sprite()
+{
+    if ((self->type == 1) && (invuln & 1))
+        return;
+
+    ubox_render(self->type, self->dir, self->x, self->y, walk_frames[self->frame]);
+}
+#endif
+
 void init_map_entities()
 {
     const uint8_t *m = cur_map;
@@ -57,6 +71,9 @@ void init_map_entities()
                 entities[last].pat = spman_alloc_pat(PAT_PLAYER, (uint8_t*)player_sprite[0], 6, 0);
                 spman_alloc_pat(PAT_PLAYER_FLIP, (uint8_t*)player_sprite[0], 6, 1);
                 entities[last].update = update_player;
+#if defined(HXWIN32)
+                entities[last].render_sprite = render_sprite;
+#endif
                 break;
 
             case ET_ENEMY:
@@ -64,6 +81,9 @@ void init_map_entities()
                 entities[last].pat = spman_alloc_pat(PAT_ENEMY, (uint8_t*)enemy_sprite[0], 3, 0);
                 spman_alloc_pat(PAT_ENEMY_FLIP, (uint8_t*)enemy_sprite[0], 3, 1);
                 entities[last].update = update_enemy;
+#if defined(HXWIN32)
+                entities[last].render_sprite = render_sprite;
+#endif
                 break;
         }
 
@@ -242,6 +262,9 @@ void update_enemy()
             self->frame = 0;
     }
 
+#if defined(HXWIN32)
+    ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#else
     // allocate the sprites
     sp.x = self->x;
     // y on the screen starts in 255
@@ -251,6 +274,7 @@ void update_enemy()
     // red
     sp.attr = 9;
     spman_alloc_sprite(&sp);
+#endif
 }
 
 void update_player()
@@ -273,7 +297,12 @@ void update_player()
 
         // wrap horizontally
         if (self->x == 255 - 16)
-            self->x = 0;
+        {
+#if defined(HXWIN32)
+            ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#endif
+        self->x = 0;    
+        }
         // check if not solid, using bottom right
         else if (!is_map_blocked(self->x + 15, self->y + 15))
             self->x += 2;
@@ -286,7 +315,13 @@ void update_player()
 
         // wrap horizontally
         if (self->x == 2)
+        {
+#if defined(HXWIN32)
+            ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#endif
+
             self->x = (uint8_t)(255 - 16);
+        }
         // check if not solid, using bottom left
         else if (!is_map_blocked(self->x, self->y + 15))
             self->x -= 2;
@@ -312,12 +347,18 @@ void update_player()
             // check elevator down; using bottom middle
             if (is_map_elevator_down(self->x + 8, self->y + 16))
             {
+#if defined(HXWIN32)
+                ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#endif
                 mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
                 self->y += 8 * 4;
             }
             // then elevator up; using bottom middle
             else if (is_map_elevator_up(self->x + 8, self->y + 16))
             {
+#if defined(HXWIN32)
+                ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#endif
                 mplayer_play_effect_p(EFX_ELEVATOR, EFX_CHAN_NO, 0);
                 self->y -= 8 * 4;
             }
@@ -355,6 +396,9 @@ void update_player()
     if (invuln & 1)
         return;
 
+#if defined(HXWIN32)
+    ubox_render_background(self->type, self->x, self->y, walk_frames[self->frame]);
+#else
     // allocate the player sprites; fixed so they never flicker
     sp.x = self->x;
     // y on the screen starts in 255
@@ -369,6 +413,7 @@ void update_player()
     // white
     sp.attr = 15;
     spman_alloc_fixed_sprite(&sp);
+#endif
 }
 
 void run_game()
@@ -389,6 +434,7 @@ void run_game()
 
     // uncompress map data into RAM, we will modify it
     // map data starts on byte 3 (skip map data size and entities size)
+
     ap_uncompress(cur_map_data, cur_map + 3);
 
 
@@ -431,12 +477,18 @@ void run_game()
         for (i = 0, self = entities; i < MAX_ENTITIES && self->type; i++, self++)
             self->update();
 
+#if defined(HXWIN32)
+        for (i = 0, self = entities; i < MAX_ENTITIES && self->type; i++, self++)
+            self->render_sprite();
+#endif
+
         // ensure we wait to our desired update rate
         ubox_wait();
         // update sprites on screen
         spman_update();
 
-#if defined(WIN32) || defined(__ANDROID__) || defined(SKYOS32)
+#if defined(HXWIN32)
+#elif defined(WIN32) || defined(__ANDROID__) || defined(SKYOS32)
         draw_map();
         draw_hud();
 #endif
