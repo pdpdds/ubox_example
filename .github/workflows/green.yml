@@ -30,7 +30,7 @@ jobs:
         args: http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip
     - run: |
         unzip Arkos%20Tracker%202%20Linux64.zip
-        sudo cp ./Arkos%20Tracker%202/tools/Disark /usr/local/bin
+        sudo cp -r Arkos%20Tracker%202/tools/Disark /usr/local/bin
       
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
