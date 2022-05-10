@@ -32,7 +32,7 @@ jobs:
         unzip Arkos%20Tracker%202%20Linux64.zip
         sudo cp -r "Arkos Tracker 2/tools/Disark" /usr/local/bin
         
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
