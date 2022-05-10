@@ -39,10 +39,7 @@ jobs:
         python-version: 3.7
     - name: Install python package # 파이썬 관련 패키지를 설치하고
       run: |        
-        pip install selenium
-        pip install requests        
-        pip install twython
-        pip install pillow
+        sudo apt-get install python-pil
         pip list
         python --version    
     - name: green build
