@@ -42,11 +42,6 @@ jobs:
         sudo apt install python3.9-venv
         pip install pillow
         pip list
-    - name: Display Python version
-      run: python --version    
-    - name: make clean
-      run: make clean
-    - name: make game
-      run: | 
-        python --version
+        python --version    
+        make clean
         sudo make game
