@@ -41,7 +41,6 @@ jobs:
       run: |        
         #sudo apt-get install python-pil
         sudo apt install python3-pip
-        sudo apt-get install python3.9-venv
         python3.9 -m pip install pillow
         sudo apt install python-is-python3
         pip list
