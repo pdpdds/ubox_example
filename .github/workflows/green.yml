@@ -36,7 +36,7 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install dependencies
+    - name: green build
       run: |
         sudo apt install python3-pip
         sudo apt install python3.9-venv
