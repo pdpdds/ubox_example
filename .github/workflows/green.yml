@@ -27,10 +27,10 @@ jobs:
     - name: Disark
       uses: wei/wget@v1
       with:
-        args: 'http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip -o arkos.zip'
+        args: http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip
     - run: |
         sudo apt install unzip
-        unzip arkos.zip
+        unzip Arkos%20Tracker%202%20Linux64.zip
       
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
