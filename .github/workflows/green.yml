@@ -20,14 +20,14 @@ jobs:
         sudo cp -r * /usr/local
       
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
+    - uses: actions/setup-python@v2
       with:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        sudo apt install python3-pip
-        sudo apt-get install python3.9-venv
-        sudo pip install pillow
+        apt install python3-pip
+        apt install python3.9-venv
+        pip install pillow
         pip list
     - name: Display Python version
       run: python --version    
