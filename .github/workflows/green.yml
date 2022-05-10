@@ -17,7 +17,7 @@ jobs:
     - run: |
         tar xvjf sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
         cd sdcc-4.0.0 
-        cp -r * /usr/local
+        sudo cp -r * /usr/local
   build:
     runs-on: ubuntu-latest
     steps:
