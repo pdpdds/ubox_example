@@ -36,7 +36,7 @@ jobs:
     - name: Set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.9
+        python-version: 3.7
     - name: Install python package # 파이썬 관련 패키지를 설치하고
       run: |        
         sudo apt-get install python-pil
