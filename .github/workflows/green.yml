@@ -39,7 +39,7 @@ jobs:
     - name: green build
       run: |
         sudo apt install python3-pip
-        python -m pip install pillow
+        pip install pillow
         pip list
         python --version    
         make clean
