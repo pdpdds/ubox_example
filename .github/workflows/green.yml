@@ -27,7 +27,7 @@ jobs:
     - name: Disark
       uses: wei/wget@v1
       with:
-        args: http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip -o arkos.zip
+        args: 'http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip -o arkos.zip'
     - run: |
         sudo apt install unzip
         unzip arkos.zip
@@ -40,6 +40,7 @@ jobs:
       run: |
         sudo apt install python3-pip
         sudo apt install python3.9-venv
+        python3.9 -m pip install --upgrade pip
         pip install pillow
         pip list
     - name: Display Python version
@@ -48,5 +49,5 @@ jobs:
       run: make clean
     - name: make game
       run: | 
-        python --versio
+        python --version
         sudo make game
