@@ -50,3 +50,8 @@ jobs:
       run: |       
         make clean
         make game
+    - name: Upload a Build Artifact(game.rom)
+      uses: actions/upload-artifact@v2.1.4
+      with:
+          name: game.rom
+          path: bin/game.rom
