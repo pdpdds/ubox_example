@@ -47,5 +47,6 @@ jobs:
         pip list
         python --version     
         pip show Pillow
+        PYTHONPATH=$PHTHONPATH:/opt/hostedtoolcache/Python/3.9.12/x64/lib/python3.9/site-packages
         make clean
         sudo make game
