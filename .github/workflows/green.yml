@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     steps:
     - name: sdcc
       uses: wei/wget@v1
@@ -36,17 +36,17 @@ jobs:
     - name: Set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.9
+        python-version: 3.7
     - name: Install python package # 파이썬 관련 패키지를 설치하고
       run: |       
-        alias python=python3
-        pip uninstall Pillow
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade Pillow
+        #alias python=python3
+        #pip uninstall Pillow
+        #python -m pip install --upgrade pip
+        #python -m pip install --upgrade Pillow
         pip install Pillow
-        pip list
-        python --version     
-        pip show Pillow
-        PYTHONPATH=$PHTHONPATH:/opt/hostedtoolcache/Python/3.9.12/x64/lib/python3.9/site-packages
+        #pip list
+        #python --version     
+        #pip show Pillow
+        #PYTHONPATH=$PHTHONPATH:/opt/hostedtoolcache/Python/3.9.12/x64/lib/python3.9/site-packages
         make clean
         sudo make game
