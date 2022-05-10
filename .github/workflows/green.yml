@@ -39,9 +39,9 @@ jobs:
         python-version: 3.9
     - name: Install python package # 파이썬 관련 패키지를 설치하고
       run: |       
-        #sudo apt install python-is-python3
-        #python3 -m pip install --upgrade pip
-        #python3 -m pip install --upgrade Pillow
+        sudo apt install python-is-python3
+        python3 -m pip install --upgrade pip
+        python3 -m pip install --upgrade Pillow
         sudo apt install python-pil python3-pil
         pip list
         python --version    
