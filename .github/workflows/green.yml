@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - name: wget
+    - name: sdcc
       uses: wei/wget@v1
       with:
         args: https://sourceforge.net/projects/sdcc/files/sdcc-linux-amd64/4.0.0/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
@@ -18,6 +18,19 @@ jobs:
         tar xvjf sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
         cd sdcc-4.0.0 
         sudo cp -r * /usr/local
+    - name: hex2bin
+      uses: wei/wget@v1
+      with:
+        args: https://sourceforge.net/projects/hex2bin
+    - run: |
+        sudo cp -r hex2bin /usr/local/bin
+    - name: Disark
+      uses: wei/wget@v1
+      with:
+        args:http://www.julien-nevo.com/arkostracker/release/linux64/Arkos%20Tracker%202%20Linux64.zip-o arkos.zip
+    - run: |
+        sudo apt install unzip
+        unzip arkos.zip
       
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
@@ -25,8 +38,8 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        apt install python3-pip
-        apt install python3.9-venv
+        sudo apt install python3-pip
+        sudo apt install python3.9-venv
         pip install pillow
         pip list
     - name: Display Python version
