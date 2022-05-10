@@ -49,7 +49,7 @@ jobs:
     - name: build green
       run: |       
         make clean
-        chmod 777 -R scripts/
+        chmod 777 -R tools/chksize
         make game
     - name: Upload a Build Artifact(game.rom)
       uses: actions/upload-artifact@v2.1.4
