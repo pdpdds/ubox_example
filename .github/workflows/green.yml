@@ -40,7 +40,7 @@ jobs:
       run: |
         sudo apt install python3-pip
         sudo apt install python3.9-venv
-        pip install pillow
+        pip install Pillow
         pip list
         python --version    
         make clean
