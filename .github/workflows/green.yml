@@ -32,10 +32,10 @@ jobs:
         unzip Arkos%20Tracker%202%20Linux64.zip
         sudo cp -r "Arkos Tracker 2/tools/Disark" /usr/local/bin
       
-    - uses: actions/checkout@v3
     - uses: actions/setup-python@v3
       with:
-        python-version: 3.9
+        python-version: 3.9  
+    - uses: actions/checkout@v3
     - name: green build
       run: |
         sudo apt install python3-pip
