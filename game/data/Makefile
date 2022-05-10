@@ -7,13 +7,13 @@ $(OUTPUT)/tiles.h: tiles.png
 	python ../../tools/png2tiles.py -i tiles $< > $@
 
 $(OUTPUT)/player.h: player.png
-	python3.9 ../../tools/png2sprites.py -i player_sprite $< > $@
+	python ../../tools/png2sprites.py -i player_sprite $< > $@
 
 $(OUTPUT)/enemy.h: enemy.png
-	python3.9 ../../tools/png2sprites.py -i enemy_sprite $< > $@
+	python ../../tools/png2sprites.py -i enemy_sprite $< > $@
 
 $(OUTPUT)/map.h: map.json map_conf.json
-	python3.9 ../../tools/map.py --aplib --max-ents 11 --room-height 21 map.json map > $@
+	python ../../tools/map.py --aplib --max-ents 11 --room-height 21 map.json map > $@
 
 .PHONY: all clean
 clean:
