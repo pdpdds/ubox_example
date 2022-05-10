@@ -46,5 +46,6 @@ jobs:
         pip install Pillow
         pip list
         python --version     
+        pip show Pillow
         make clean
         sudo make game
