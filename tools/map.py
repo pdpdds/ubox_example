@@ -354,7 +354,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as ex:
-        print("FATAL: %s\n***" % ex, file=sys.stderr)
+#        print("FATAL: %s\n***" % ex, file=sys.stderr)
         traceback.print_exc()
 
         for filename in remove_list:
