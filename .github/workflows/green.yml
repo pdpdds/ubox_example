@@ -14,11 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: sdcc download and install
-    - run: |
-        wget https://sourceforge.net/projects/sdcc/files/sdcc-linux-amd64/4.0.0/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2 |
-        tar xvjf sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2 |
-        cd sdcc-4.0.0 
-        cp -r * /usr/local
+    - run: wget https://sourceforge.net/projects/sdcc/files/sdcc-linux-amd64/4.0.0/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
     - name: make clean
       run: make clean
     - name: make game
