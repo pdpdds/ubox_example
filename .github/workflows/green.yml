@@ -40,8 +40,7 @@ jobs:
       run: |
         sudo apt install python3-pip
         sudo apt install python3.9-venv
-        python3.9 -m pip install --upgrade pip
-        python3.9 pip install pillow
+        pip install pillow
         python3.9 pip list
     - name: Display Python version
       run: python --version    
