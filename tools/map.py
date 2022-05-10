@@ -294,14 +294,14 @@ def main():
                 else:
                     fd.write(bytearray(block))
 
- #       if not args.quiet:
- #           screen_with_data = len(out) - len(empty)
- #           total_bytes = sum(len(b) if b else 0 for b in out)
- #           print("%s: %s (%d screens, %d bytes, %.2f bytes avg)" % (
- #               path.basename(sys.argv[0]), args.id,
- #               screen_with_data, total_bytes, total_bytes / screen_with_data),
- #               file=sys.stderr)
- #       return
+        if not args.quiet:
+            screen_with_data = len(out) - len(empty)
+            total_bytes = sum(len(b) if b else 0 for b in out)
+            print("%s: %s (%d screens, %d bytes, %.2f bytes avg)" % (
+                path.basename(sys.argv[0]), args.id,
+                screen_with_data, total_bytes, total_bytes / screen_with_data),
+                file=sys.stderr)
+        return
 
     print("#ifndef _%s_H" % args.id.upper())
     print("#define _%s_H" % args.id.upper())
@@ -339,13 +339,13 @@ def main():
     print("#endif // LOCAL")
     print("#endif // _%s_H" % args.id.upper())
 
-#    if not args.quiet:
-#        screen_with_data = len(out) - len(empty)
-#        total_bytes = sum(len(b) if b else 0 for b in out)
-#        print("%s: %s (%d screens, %d bytes, %.2f bytes avg)" % (
-#            path.basename(sys.argv[0]), args.id,
-#            screen_with_data, total_bytes, total_bytes / screen_with_data),
-#            file=sys.stderr)
+    if not args.quiet:
+        screen_with_data = len(out) - len(empty)
+        total_bytes = sum(len(b) if b else 0 for b in out)
+        print("%s: %s (%d screens, %d bytes, %.2f bytes avg)" % (
+            path.basename(sys.argv[0]), args.id,
+            screen_with_data, total_bytes, total_bytes / screen_with_data),
+            file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -354,7 +354,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as ex:
-#        print("FATAL: %s\n***" % ex, file=sys.stderr)
+        print("FATAL: %s\n***" % ex, file=sys.stderr)
         traceback.print_exc()
 
         for filename in remove_list:
