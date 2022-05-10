@@ -39,7 +39,6 @@ jobs:
     - name: green build
       run: |
         sudo apt install python3-pip
-        sudo apt-get install python3.9-venv
         python3.9 -m pip install pillow
         pip list
         python --version    
