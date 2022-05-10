@@ -27,7 +27,7 @@ jobs:
       run: |
         sudo apt install python3-pip
         sudo apt-get install python3.9-venv
-        pip install pillow
+        sudo pip install pillow
         pip list
     - name: Display Python version
       run: python --version    
