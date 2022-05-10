@@ -31,4 +31,4 @@ jobs:
     - name: make clean
       run: make clean
     - name: make game
-      run: sudo make game
+      run: make game
