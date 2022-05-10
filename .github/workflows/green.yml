@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  sdcc:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: wget
@@ -18,9 +18,7 @@ jobs:
         tar xvjf sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2
         cd sdcc-4.0.0 
         sudo cp -r * /usr/local
-  build:
-    runs-on: ubuntu-latest
-    steps:
+        
     - uses: actions/checkout@v3
     - name: make clean
       run: make clean
