@@ -4,7 +4,7 @@ GENERATED := $(OUTPUT)/tiles.h $(OUTPUT)/player.h $(OUTPUT)/enemy.h $(OUTPUT)/ma
 all: $(GENERATED)
 
 $(OUTPUT)/tiles.h: tiles.png
-	python3.9 ../../tools/png2tiles.py -i tiles $< > $@
+	python ../../tools/png2tiles.py -i tiles $< > $@
 
 $(OUTPUT)/player.h: player.png
 	python3.9 ../../tools/png2sprites.py -i player_sprite $< > $@
