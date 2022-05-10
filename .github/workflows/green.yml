@@ -8,7 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.9] 
     steps:
     - name: sdcc
       uses: wei/wget@v1
@@ -32,21 +36,20 @@ jobs:
         unzip Arkos%20Tracker%202%20Linux64.zip
         sudo cp -r "Arkos Tracker 2/tools/Disark" /usr/local/bin
         
+        runs-on: ubuntu-latest
+
+
     - uses: actions/checkout@v2
     - name: Set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.9
-    - name: Install python package # 파이썬 관련 패키지를 설치하고
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install python package 
+      run: |        
+        pip install pillow
+        
+    - name: build green
       run: |       
-        #alias python=python3
-        #pip uninstall Pillow
-        #python -m pip install --upgrade pip
-        #python -m pip install --upgrade Pillow
-        pip install Pillow
-        #pip list
-        #python --version     
-        pip show Pillow
-        export PYTHONPATH=$PYTHONPATH:/opt/hostedtoolcache/Python/3.9.12/x64/lib/python3.9/site-packages
         make clean
         sudo make game
