@@ -23,7 +23,7 @@
 
 import os
 from argparse import ArgumentParser
-from PIL import Image
+import PIL.Image
 from collections import defaultdict
 
 __version__ = "1.0"
