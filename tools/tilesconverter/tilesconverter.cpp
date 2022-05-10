@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	SDL_Surface* surface = LoadPNG("tiles_ori.png");
+	SDL_Surface* surface = LoadPNG(argv[1]);
 
 	if (surface == 0)
 		return 0;
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 			SetPixel(dest_surface, x, y, sprite_pallete[index].R, sprite_pallete[index].G, sprite_pallete[index].B);
 		}
 
-	IMG_Custom_SavePNG("tiles.png", dest_surface, -1);
+	IMG_Custom_SavePNG("tiles_.png", dest_surface, -1);
 	SDL_FreeSurface(dest_surface);
 	
 	return 0;
