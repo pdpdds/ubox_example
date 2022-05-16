@@ -64,5 +64,5 @@ jobs:
       uses: actions/upload-artifact@v2.1.4
       with:
           name: examples
-          path: bin
+          path: examples/bin
           
