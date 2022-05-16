@@ -27,7 +27,7 @@ jobs:
       with:
         args: https://sourceforge.net/projects/hex2bin
     - run: |
-        chmod 777 -R hex2bin
+        sudo chmod 777 -R hex2bin
         sudo cp -r hex2bin /usr/local/bin
     - name: Disark
       uses: wei/wget@v1
