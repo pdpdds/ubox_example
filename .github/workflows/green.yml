@@ -65,4 +65,14 @@ jobs:
       with:
           name: examples
           path: examples/bin
+    - name: build demo
+      run: |       
+        cd demo
+        make
+    - name: Upload a Build Artifact(demo)
+      uses: actions/upload-artifact@v2.1.4
+      with:
+          name: demo
+          path: demo/bin      
+          
           
