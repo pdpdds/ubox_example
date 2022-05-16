@@ -1,4 +1,4 @@
-name: green
+name: ubox example
 
 on:
   push:
@@ -51,11 +51,11 @@ jobs:
         make clean
         chmod 777 -R tools/chksize
         make game
-    - name: Upload a Build Artifact(game.rom)
-      uses: actions/upload-artifact@v2.1.4
-      with:
-          name: game.rom
-          path: bin/game.rom
+    #- name: Upload a Build Artifact(game.rom)
+    #  uses: actions/upload-artifact@v2.1.4
+    #  with:
+    #      name: game.rom
+    #      path: bin/game.rom
     - name: build example
       run: |       
         cd examples
