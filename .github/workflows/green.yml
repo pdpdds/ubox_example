@@ -56,3 +56,13 @@ jobs:
       with:
           name: game.rom
           path: bin/game.rom
+    - name: build example
+      run: |       
+        cd examples
+        make
+    - name: Upload a Build Artifact(examples)
+      uses: actions/upload-artifact@v2.1.4
+      with:
+          name: examples
+          path: bin
+          
