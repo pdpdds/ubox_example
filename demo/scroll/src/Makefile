@@ -1,4 +1,4 @@
-TARGET := pyramid
+TARGET := scroll
 
 CODE := 0x4000
 # leaves 222 bytes for AKM player buffer
