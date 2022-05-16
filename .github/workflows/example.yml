@@ -50,7 +50,7 @@ jobs:
       run: |       
         make
         chmod 777 -R tools/chksize
-        chmod 777 -R bin/hex2bin
+        chmod 777 -R bin/hex2bin 
         cd examples
         make
     - name: Upload a Build Artifact(game.rom)
