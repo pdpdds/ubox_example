@@ -1,6 +1,6 @@
 all: generated bin build
 	make -C data
-	cd src && ../tools/mkdeps.py -b ../build -I ../generated:../../../include ./ Makefile.deps
+	cd src && python ../tools/mkdeps.py -b ../build -I ../generated:../../../include ./ Makefile.deps
 	make -C src
 
 generated:
