@@ -97,10 +97,10 @@ extern "C" void spman_alloc_sprite(struct sprite_attr* sp)
 {
 }
 
-
+extern "C" void redner_stretch();
 extern "C" void spman_update()
 {
-    SDL_Flip(screen);
+    redner_stretch();
 }
 
 

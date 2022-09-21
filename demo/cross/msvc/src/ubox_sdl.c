@@ -20,6 +20,9 @@ SDL_Surface* enemy_surface;
 SDL_Surface* enemy_flip_surface;
 SDL_Surface* player_flip_surface;
 
+uint32_t screen_width = 320;
+uint32_t screen_height = 200;
+
 #else
 #include <SDL.h>
 #include <SDL_image.h>
@@ -28,10 +31,12 @@ SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture* g_tile_texture;
 
-#endif
-
 uint32_t screen_width = 640;
 uint32_t screen_height = 480;
+
+#endif
+
+
 
 uint32_t map_width = 32;
 uint32_t map_height = 21;
@@ -164,9 +169,9 @@ void ubox_set_mode(uint8_t mode)
 
 #if defined(HXWIN32)
 #ifdef _DEBUG
-	screen = SDL_SetVideoMode(320, 200, 32, SDL_SWSURFACE);
+	screen = SDL_SetVideoMode(screen_width, screen_height, 32, SDL_SWSURFACE);
 #else
-	screen = SDL_SetVideoMode(320, 200, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
+	screen = SDL_SetVideoMode(screen_width, screen_height, 32, SDL_SWSURFACE | SDL_FULLSCREEN);
 #endif
 #else
 #if defined(__ANDROID__)
@@ -202,10 +207,19 @@ void ubox_set_mode(uint8_t mode)
 
 }
 
+
+void redner_stretch() {
+	//SDL_Surface* scaled_surface = rotozoomSurfaceXY(screen, 0, 1.2, 1.2, 0);
+	//SDL_BlitSurface(scaled_surface, 0, screen, 0);
+	SDL_Flip(screen);
+}
+
 void ubox_enable_screen()
 {
 #if defined(HXWIN32)
-	SDL_Flip(screen);
+
+	redner_stretch();
+	
 #else
 	SDL_RenderPresent(g_renderer);
 #endif
