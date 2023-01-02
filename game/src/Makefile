@@ -19,7 +19,7 @@ CFLAGS := -mz80 --Werror -I../../include -I../generated --fsigned-char --std-sdc
 LDFLAGS := -L../../lib -L. --no-std-crt0 --fomit-frame-pointer
 
 all: $(OUTPUT)/$(TARGET).rom
-	@../../tools/chksize 8000 4000 $(OUTPUT)/$(TARGET).map
+	python ../../tools/chksize 8000 4000 $(OUTPUT)/$(TARGET).map
 	@cp ../bin/$(TARGET).rom ../../bin
 
 openmsx: all
