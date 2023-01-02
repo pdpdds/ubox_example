@@ -2,11 +2,6 @@
 #include <SDL2/SDL_image.h>
 #include <IMG_savepng.h>
 
-SDL_Surface* LoadPNG(const char* filename);
-Uint32 GetPixel(SDL_Surface* surface, int x, int y);
-bool SetPixel(SDL_Surface* surface, int x, int y, uint8_t r, uint8_t g, uint8_t b);
-
-
 typedef struct tag_Color
 {
 	uint8_t R;
@@ -14,8 +9,13 @@ typedef struct tag_Color
 	uint8_t B;
 }Color;
 
+SDL_Surface* LoadPNG(const char* filename);
+Uint32 GetPixel(SDL_Surface* surface, int x, int y);
+bool SetPixel(SDL_Surface* surface, int x, int y, uint8_t r, uint8_t g, uint8_t b);
 int GetDistance(Color current, Color match);
 int FindNearestColor(Color* map, Color current);
+
+
 
 char g_tiles_rgb[2048 * 8 * 4];
 
