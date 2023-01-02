@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import sys
 
 TOP_MEM = 0xc000 - 256  # video memory - stack
