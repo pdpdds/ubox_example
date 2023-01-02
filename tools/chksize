@@ -4,7 +4,6 @@ import sys
 
 TOP_MEM = 0xc000 - 256  # video memory - stack
 
-
 def main():
     if len(sys.argv) != 4:
         sys.exit("usage: %s code_limit_hex data_limit_hex filename.map" %
