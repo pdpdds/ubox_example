@@ -1,5 +1,6 @@
 ﻿#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <IMG_savepng.h>
 
 SDL_Surface* LoadPNG(const char* filename);
 Uint32 GetPixel(SDL_Surface* surface, int x, int y);
@@ -38,23 +39,28 @@ extern "C" Color sprite_pallete[16] =
 	{238, 238, 238},
 };
 
-#include <IMG_savepng.h>
 #undef main
 int main(int argc, char** argv)
 {
 	if (argc != 2)
+	{
+		SDL_Log("Usage : tileconverter <filename>\n");
 		return 0;
+	}
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
-		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+		SDL_Log("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		return 0;
 	}
 
 	SDL_Surface* surface = LoadPNG(argv[1]);
 
 	if (surface == 0)
+	{
+		SDL_Log("can not open file or is not PNG File\n");
 		return 0;
+	}
 
 	if (surface->w != 256 || surface->h != 64)
 	{
@@ -68,6 +74,7 @@ int main(int argc, char** argv)
 	
 	const char* surfacePixelFormatName = SDL_GetPixelFormatName(pixelFormatEnum);
 	if (SDL_PIXELFORMAT_RGB24 != pixelFormatEnum)
+		if (SDL_PIXELFORMAT_ABGR8888 != pixelFormatEnum)
 	{
 		SDL_Log("The surface's pixelformat is %s", surfacePixelFormatName);
 		return 0;
@@ -101,7 +108,13 @@ int main(int argc, char** argv)
 			SetPixel(dest_surface, x, y, sprite_pallete[index].R, sprite_pallete[index].G, sprite_pallete[index].B);
 		}
 
-	IMG_Custom_SavePNG("tiles_.png", dest_surface, -1);
+	char output[256] = "24bit_";
+	strcat(output, argv[1]);
+
+	IMG_Custom_SavePNG(output, dest_surface, -1);
+
+	SDL_Log("%s Generated!!", output);
+
 	SDL_FreeSurface(dest_surface);
 	
 	return 0;
