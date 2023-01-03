@@ -207,12 +207,13 @@ void ubox_set_mode(uint8_t mode)
 
 }
 
-
+#if defined(HXWIN32)
 void redner_stretch() {
 	//SDL_Surface* scaled_surface = rotozoomSurfaceXY(screen, 0, 1.2, 1.2, 0);
 	//SDL_BlitSurface(scaled_surface, 0, screen, 0);
 	SDL_Flip(screen);
 }
+#endif
 
 void ubox_enable_screen()
 {
