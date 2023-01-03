@@ -34,7 +34,6 @@ add_library( main
              ../../msvc/src/ubox_mplayer_sdl.c
              ../../msvc/src/ubox_spman_sdl.cpp
              ../../src/main.c
-			 ../../src/main.cpp
              ../../src/helpers.c
              ../../src/data.c
              ../../../../tools/apultra/src/libdivsufsort/lib/divsufsort.c
