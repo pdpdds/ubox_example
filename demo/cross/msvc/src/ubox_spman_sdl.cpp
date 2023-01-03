@@ -4,6 +4,10 @@
 
 extern "C" SDL_Renderer * g_renderer;
 
+#elif defined(HXWIN32)
+#include <SDL.h>
+#include <SDL_image.h>
+
 #else
 #include <SDL.h>
 #include <SDL_image.h>
