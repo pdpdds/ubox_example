@@ -7,6 +7,9 @@
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture* g_tile_texture;
+
+uint32_t screen_width = 640;
+uint32_t screen_height = 480;
 #elif defined(HXWIN32)
 #include <SDL.h>
 #include <SDL_image.h>

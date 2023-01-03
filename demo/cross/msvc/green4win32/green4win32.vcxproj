@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./;../../../tools/apultra/src;../../generated;../../src;../../../include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../../../../tools/apultra/src;../../generated;../../src;../../../../include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
