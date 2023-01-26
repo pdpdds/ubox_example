@@ -58,3 +58,5 @@ generated
 *.sym
 *.rel
 *.bak
+
+.DS_Store
