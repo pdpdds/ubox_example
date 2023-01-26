@@ -7,6 +7,9 @@
 SDL_Window* g_window;
 SDL_Renderer* g_renderer;
 SDL_Texture* g_tile_texture;
+
+uint32_t screen_width = 640;
+uint32_t screen_height = 480;
 #elif defined(HXWIN32)
 #include <SDL.h>
 #include <SDL_image.h>
@@ -207,12 +210,13 @@ void ubox_set_mode(uint8_t mode)
 
 }
 
-
+#if defined(HXWIN32)
 void redner_stretch() {
 	//SDL_Surface* scaled_surface = rotozoomSurfaceXY(screen, 0, 1.2, 1.2, 0);
 	//SDL_BlitSurface(scaled_surface, 0, screen, 0);
 	SDL_Flip(screen);
 }
+#endif
 
 void ubox_enable_screen()
 {

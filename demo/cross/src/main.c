@@ -35,7 +35,7 @@ void draw_menu()
     put_text(11, 18, "JUHANG PARK");
 #elif  defined(__ANDROID__)
     put_text(3, 2, "UBOX MSX LIB ANDROID DEMO!");
-    put_text(11, 18, "JUHANG PARK");
+    put_text(6, 18, "PORT BY JUHANG PARK");
 #else
     put_text(7, 2, "UBOX MSX LIB DEMO!");
 #endif
@@ -170,6 +170,10 @@ redraw_menu:
 
             goto redraw_menu;
         }
+
+#if defined(__ANDROID__)
+        goto redraw_menu;
+#endif
 
         ubox_wait();
     }

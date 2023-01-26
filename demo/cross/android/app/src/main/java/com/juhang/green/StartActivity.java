@@ -25,11 +25,10 @@ public class StartActivity  extends Activity {
         // if SDK level > 23 then check permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            // 检查该权限是否已经获取
             int i = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+
             if (i != PackageManager.PERMISSION_GRANTED) {
-                // 如果没有授予该权限，就去提示用户请求
+
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
@@ -48,7 +47,7 @@ public class StartActivity  extends Activity {
                     String p = permissions[i];
 
                     if (p.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        Log.d("mame4m", "WRITE_EXTERNAL_STORAGE : " + grantResults[i]);
+                        Log.d("GREEN ANDROID", "WRITE_EXTERNAL_STORAGE : " + grantResults[i]);
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                             startGame();
                         }
