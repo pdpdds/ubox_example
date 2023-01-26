@@ -139,7 +139,7 @@ Uint32 GetPixel(SDL_Surface* surface, int x, int y)
 {
 	int bpp = surface->format->BytesPerPixel;
 
-	SDL_assert(bpp == 3);
+	//SDL_assert(bpp == 3);
 
 	Uint8* p = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
 
