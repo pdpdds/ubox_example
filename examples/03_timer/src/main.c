@@ -17,23 +17,17 @@ void put_text(uint8_t x, uint8_t y, const uint8_t *text)
 char buffer[10];
 
 int g_count = 0;
+int g_counter = 0;
 
 void my_isr()
 {
-	static int counter = 0;
-	 ++counter;
-	 
-	 if(counter >= 30)
-	 {		 		 
-		 g_count++;
-		 counter = 0;
-	 }
+	g_counter++;	
 }
 
 void main()
 {
-    
-    ubox_init_isr(2);
+    uint8_t wait_tick = 2;
+    ubox_init_isr(wait_tick);
 
     ubox_set_mode(2);
   
@@ -50,18 +44,19 @@ void main()
 	put_text(11 + 9, 11, buffer);
 		
     ubox_enable_screen();
-	
+	ubox_wvdp(1, 0xe2);
+
 	ubox_set_user_isr(my_isr);
-	
-	int temp_counter = 0;
 
     while (1)
     {			
-		if(temp_counter != g_count)
+		
+		if((g_counter / wait_tick) == 50)
 		{
+			g_count++;
 			sprintf(buffer, "%d", g_count);
 			put_text(11 + 9, 11, buffer);
-			temp_counter = g_count;
+			g_counter = 0;
 		}
 	
         ubox_wait();
