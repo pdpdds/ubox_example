@@ -1,3 +1,5 @@
+export PATH := $(PWD)/../../bin:$(PATH)
+
 all: generated bin build
 	make -C data
 	cd src && python ../../../tools/mkdeps.py -b ../build -I ../generated:../../../include ./ Makefile.deps
