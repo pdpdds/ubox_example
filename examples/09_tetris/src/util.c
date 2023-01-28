@@ -27,7 +27,7 @@ void RenderTiles(int x, int y, int x_count, int y_count, int tileNum)
 
 }
 
-void InitEnvironnmet()
+void InitEnvironment()
 {
     ubox_init_isr(2);
 

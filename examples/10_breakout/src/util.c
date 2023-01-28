@@ -17,7 +17,7 @@ void RenderTile(int x, int y, int tileNum)
     ubox_put_tile(x, y, tileNum);
 }
 
-void InitEnvironnmet()
+void InitEnvironment()
 {
     ubox_init_isr(2);
 

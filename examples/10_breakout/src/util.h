@@ -17,7 +17,7 @@ struct Rect
 	uint8_t y2;
 };
 
-void InitEnvironnmet();
+void InitEnvironment();
 void RenderTile(int x, int y, int tileNum);
 void RenderBlock(int x, int y);
 void put_text(uint8_t x, uint8_t y, const uint8_t *text);

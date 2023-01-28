@@ -53,7 +53,7 @@ void draw_game_over()
 
 void main()
 {
-    InitEnvironnmet();
+    InitEnvironment();
 
     draw_title();
 
