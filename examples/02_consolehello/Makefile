@@ -1,3 +1,5 @@
+export PATH := $(PWD)/../../bin:$(PATH)
+
 all: bin build
 	make -C src
 
