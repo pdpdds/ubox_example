@@ -16,6 +16,12 @@ struct Rect
 	uint8_t y2;
 };
 
+typedef struct Point
+{
+	uint8_t x;
+	uint8_t y;	
+}Point;
+
 typedef enum
 {
 	LEFT = 0,
@@ -54,7 +60,7 @@ SnakeNode *g_player = 0;
 void InitGame();
 void ProcessLogic(SnakeNode *player);
 void DrawObject();
-void GenerateNewFrog();
+void GenerateNewFrog(Point* point);
 void DrawBackground();
 
 void run_game()
@@ -72,9 +78,7 @@ void run_game()
 		if (ubox_read_keys(7) == UBOX_MSX_KEY_ESC)
 			break;
 
-		ProcessLogic(g_player);
-
-		DrawObject();
+		ProcessLogic(g_player);		
 
 		ubox_wait();
 
@@ -83,9 +87,12 @@ void run_game()
 	}
 }
 
+struct Point g_frog;
+
 void InitGame()
 {
 	srand(now());
+	g_score = 0;
 	//srand(time(NULL));
 
 	g_player = malloc(sizeof(SnakeNode));
@@ -102,9 +109,9 @@ void InitGame()
 		{
 			g_objMap[i][j] = NOTHING;
 		}
-	}
+	}	
 
-	GenerateNewFrog();
+	GenerateNewFrog(&g_frog);	
 
 	g_next_step = now() + step_time;
 	g_next_input_step = now() + input_step_time;
@@ -126,17 +133,16 @@ SnakeNode* MoveBody(SnakeNode *node, int xPos, int yPos)
 }
 
 
-void GenerateNewFrog()
-{
-	char randy = 0, randx = 0;
-
+void GenerateNewFrog(Point* point)
+{		
 	do
 	{
-		randy = (int)(rand() % MAP_HEIGHT);
-		randx = (int)(rand() % MAP_WIDTH);
+		point->x = (int)(rand() % (MAP_WIDTH - 1));
+		point->y = (int)(rand() % (MAP_HEIGHT - 1));
 
-	} while (g_objMap[randy][randx] != NOTHING);
-	g_objMap[randy][randx] = FROG;
+	} while (g_objMap[point->y][point->x] != NOTHING);
+	g_objMap[point->y][point->x] = FROG;
+
 }
 
 char CheckWall(SnakeNode *player)
@@ -172,7 +178,7 @@ void ProcessLogic(SnakeNode *player)
 		return;
 
 	//키 입력을 받을 수 있는 시간인가
-	if (now() > g_next_input_step)
+	//if (now() > g_next_input_step)
 	{
 		//다음 키 입력을 받을 시간을 갱신
 		g_next_input_step = now() + input_step_time;
@@ -213,51 +219,65 @@ void ProcessLogic(SnakeNode *player)
 
 		if (now() > g_next_step)
 		{		
+			
 			if(CheckWall(player))
 			{
 				g_gamestate = STATE_GAME_OVER;
 				return;
-			}
+			}			
 
+			char pos_x = player->x;
+			char pos_y = player->y;
 			char next_pos_x = player->x + x_offset;
 			char next_pos_y = player->y + y_offset;
 
 			char objectType = g_objMap[next_pos_y][next_pos_x];
+			SnakeNode *tail = player; // 뱀의 마지막 부분을 찾는다
+			while (tail->next != NULL)
+			{
+				tail = tail->next;
+			}
+
+			int tail_x = tail->x;
+			int tail_y = tail->y;
 
 			switch (objectType)
 			{
 			case FROG:			
 				g_score++;
-				SnakeNode *tail = player; //뱀의 마지막 부분을 찾는다
-				while (tail->next != NULL)
-				{
-					tail = tail->next;
-				}
-				int new_node_x = tail->x;
-				int new_node_y = tail->y;
-
+				
 				MoveBody(player, next_pos_x, next_pos_y);
 				
 				SnakeNode *newNode = malloc(sizeof(SnakeNode));
-				newNode->x = new_node_x;
-				newNode->y = new_node_y;
+				newNode->x = tail_x;
+				newNode->y = tail_y;
 
 				newNode->dir = tail->dir;
 				newNode->next = NULL;
 				tail->next = newNode;
 
-				GenerateNewFrog();			
+				GenerateNewFrog(&g_frog);						
+
 				break;
 			case SNAKE:
 				g_gamestate = STATE_GAME_OVER;
 				break;
 			default:
 				MoveBody(player, next_pos_x, next_pos_y);
+				RenderTile(tail_x + 1, tail_y + 1, BLACK_TILE); 
 				break;
 			}
 
 			g_objMap[next_pos_y][next_pos_x] = SNAKE;
 			g_next_step = now() + step_time;
+									
+			RenderTile(g_frog.x + 1, g_frog.y + 1, GREEN_TILE);
+
+			if(g_score > 0)
+				RenderTile(pos_x + 1, pos_y + 1, YELLOW_TILE);  	
+
+			RenderTile(next_pos_x + 1, next_pos_y + 1, WHITE_TILE); 
+			
 		}
 	}
 }
@@ -271,6 +291,7 @@ void DrawObject()
 	{
 		for (uint8_t col = 0; col < MAP_WIDTH; col++)
 		{
+			
 			if (g_objMap[row][col] == NOTHING) //정보가 없으면 검은색을 그린다.
 				c = BLACK_TILE;
 
